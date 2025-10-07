@@ -2,7 +2,7 @@ Frontend - Nuxt 3 dla komponentów interaktywnych:
 - Nuxt 3 pozwala na tworzenie szybkich, wydajnych stron i aplikacji z minimalną ilością JavaScript wraz z możliwością tworzenia api w node.js
 - TypeScript 5 dla statycznego typowania kodu i lepszego wsparcia IDE
 - Tailwind 4 pozwala na wygodne stylowanie aplikacji
-- shadcn-vue zapewnia bibliotekę dostępnych komponentów Vue, na których oprzemy UI
+- shadcn-vue@1.0.3 (wersja biblioteki jest krytyczna) zapewnia bibliotekę dostępnych komponentów w Nuxt(Vue.js), na których oprzemy UI
 
 Backend - Supabase jako kompleksowe rozwiązanie backendowe:
 - Zapewnia bazę danych PostgreSQL
