@@ -1,0 +1,37 @@
+---
+globs: *.vue,/store/**/*.ts
+alwaysApply: false
+---
+## FRONTEND
+
+### Guidelines for VUE
+
+#### VUE_CODING_STANDARDS
+
+- Use the Composition API instead of the Options API for better type inference and code reuse
+- Implement `<script setup>` for more concise component definitions
+- Leverage the defineProps and defineEmits macros for type-safe props and events
+- Leverage ref over reactive for primitive values to avoid unintended unwrapping
+- Implement shallow refs for large objects that don't need deep reactivity
+
+#### PINIA
+
+- Create multiple stores based on logical domains instead of a single large store
+- Implement getters for derived state to avoid redundant computations
+- Leverage the storeToRefs helper to extract reactive properties while maintaining reactivity
+- Implement actions for asynchronous operations and complex state mutations
+- Use composable stores by importing and using stores within other stores
+- Use TypeScript with proper return type annotations for maximum type safety
+
+#### NUXT
+
+- Use Nuxt 3 with the Composition API and <script setup> for modern applications
+- Leverage auto-imports for Vue and Nuxt composables to reduce boilerplate
+- Implement server routes with the server directory for API functionality
+- Use Nuxt modules for extending functionality instead of custom plugins when possible
+- Leverage the useAsyncData and useFetch composables for data fetching with SSR support
+- Implement middleware (defineNuxtRouteMiddleware) for navigation guards
+- Use Nuxt layouts for consistent page layouts across routes
+- Leverage Nitro for server-side rendering and API routes
+- Implement Nuxt plugins for global functionality registration
+- Use state management with useState for simple state or Pinia for complex applications

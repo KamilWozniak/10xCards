@@ -1,0 +1,81 @@
+---
+alwaysApply: true
+---
+
+# AI Rules for 10xCards
+
+10x-cards is a web-based educational flashcard application that helps users create and manage flashcard sets efficiently. The app integrates with LLM APIs to automatically generate flashcard suggestions from user-provided text (1,000-10,000 characters), which users can review, edit, accept, or reject. Users can also manually create flashcards with front/back content.
+
+Key features include:
+- AI-powered flashcard generation from text input
+- Manual flashcard creation, editing, and deletion
+- User authentication and account management
+- Spaced repetition learning sessions using an external algorithm
+- Private user data with GDPR compliance
+- Generation statistics tracking
+
+The app uses Nuxt 3, Vue 3 (Composition API), TypeScript, Tailwind CSS, and follows component-driven architecture with shadcn-vue UI components. All user flashcards are private and only accessible to the flashcard owner.
+
+## CODING_PRACTICES
+
+### Guidelines for SUPPORT_LEVEL
+
+#### SUPPORT_BEGINNER
+
+- When running in agent mode, execute up to 3 actions at a time and ask for approval or course correction afterwards.
+- Write code with clear variable names.
+- Add defensive coding patterns and clear error handling. Include validation for user inputs and explicit type checking.
+- Briefly explain why certain approaches are used and link to relevant documentation or learning resources.
+- When suggesting fixes for errors, explain the root cause and how the solution addresses it to build understanding. Ask for confirmation before proceeding.
+- Offer introducing basic test cases that demonstrate how the code works and common edge cases to consider.
+
+#### SUPPORT_EXPERT
+
+- Favor elegant, maintainable solutions over verbose code. Assume understanding of language idioms and design patterns.
+- Highlight potential performance implications and optimization opportunities in suggested code.
+- Frame solutions within broader architectural contexts and suggest design alternatives when appropriate.
+- Focus comments on 'why' not 'what' - assume code readability through well-named functions and variables.
+- Proactively address edge cases, race conditions, and security considerations without being prompted.
+- When debugging, provide targeted diagnostic approaches rather than shotgun solutions.
+- Suggest comprehensive testing strategies rather than just example tests, including considerations for mocking, test organization, and coverage.
+
+
+### Guidelines for VERSION_CONTROL
+
+#### CONVENTIONAL_COMMITS
+
+- Follow the format: type(scope): description for all commit messages
+- Use consistent types (feat, fix, docs, style, refactor, test, chore) across the project
+- Define clear scopes to indicate affected areas
+- Include issue references in commit messages to link changes to requirements
+
+#### GIT
+
+- Use conventional commits to create meaningful commit messages
+- Use feature branches with descriptive names following feature/short-description pattern
+- Write meaningful commit messages that explain why changes were made, not just what
+- Keep commits focused on single logical changes to facilitate code review and bisection
+- Use interactive rebase to clean up history before merging feature branches
+- Leverage git hooks to enforce code quality checks before commits and pushes
+
+## Tech stack
+- Nuxt 3 (Vue.js)
+- Tailwind 3
+- Shadcn-Vue@1.0.3
+- Vitest
+- Pinia
+- TypeScript
+  
+## Project structure
+- pages/ - Enables file-based routing. Each .vue file becomes a route.
+- components/ - Vue components.
+- composables/ - Reusable composition API functions.
+- layouts/ - Shared layouts that wrap pages.
+- server/ - Backend code, API routes, and server middleware.
+- public/ - Static assets served directly without processing.
+- assets/ - Assets.
+- plugins/ - JavaScript plugins to run before mounting the app.
+- middleware/ - Navigation guards for routes.
+- store/ - Pinia stores for state management.
+- helpers/ - Helper functions.
+- docs/ - Documentation.
