@@ -53,7 +53,7 @@ The app uses Nuxt 3, Vue 3 (Composition API), TypeScript, Tailwind CSS, and foll
 
 - Use conventional commits to create meaningful commit messages
 - Use feature branches with descriptive names following feature/short-description pattern
-- Write meaningful commit messages that explain why changes were made, not just what
+- Write meaningful commit messages that explain why changes were made, not just what (Make commit message short but create additional meaningful description)
 - Keep commits focused on single logical changes to facilitate code review and bisection
 - Use interactive rebase to clean up history before merging feature branches
 - Leverage git hooks to enforce code quality checks before commits and pushes
