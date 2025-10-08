@@ -4,10 +4,18 @@
       <h1 class="text-3xl font-bold text-gray-800 mb-4">Tailwind działa! 🎉</h1>
       <p class="text-gray-600 mb-4">Jeśli widzisz gradientowe tło i stylowaną kartę, Tailwind jest poprawnie skonfigurowany.</p>
       <TestComponent />
+      <span>{{ count }}</span>
+      <button @click="increment">Increment</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import TestComponent from './components/TestComponent.vue'
+  
+import TestComponent from './components/TestComponent.vue'
+import { useTestStore } from './store/testStore'
+import { storeToRefs } from 'pinia'
+
+const { count } = storeToRefs(useTestStore())
+const { increment } = useTestStore()
 </script>

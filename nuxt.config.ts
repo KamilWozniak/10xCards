@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils',
     '@nuxtjs/tailwindcss',
-    'shadcn-nuxt'
+    'shadcn-nuxt',
+    '@pinia/nuxt'
   ],
   shadcn: {
     /**
