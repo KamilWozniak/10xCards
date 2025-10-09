@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@nuxt/test-utils',
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
   ],
   shadcn: {
     /**
@@ -18,6 +18,12 @@ export default defineNuxtConfig({
      * Directory that the component lives in.
      * @default "./components/ui"
      */
-    componentDir: './components/ui'
-  }
+    componentDir: './components/ui',
+  },
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || '',
+    },
+  },
 })
