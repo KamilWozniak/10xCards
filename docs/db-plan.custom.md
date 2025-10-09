@@ -11,7 +11,7 @@ Główna tabela aplikacji przechowująca fiszki edukacyjne użytkowników.
 
 | Kolumna | Typ | Ograniczenia | Opis |
 |---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Unikalny identyfikator fiszki |
+| `id` | BIGSERIAL | PRIMARY KEY, DEFAULT gen_random_uuid() | Unikalny identyfikator fiszki |
 | `user_id` | UUID | NOT NULL, FOREIGN KEY → auth.users(id) ON DELETE CASCADE | Identyfikator właściciela fiszki |
 | `generation_id` | UUID | NULLABLE, FOREIGN KEY → generations(id) ON DELETE CASCADE | Identyfikator sesji generowania (NULL dla fiszek ręcznych) |
 | `front` | TEXT | NOT NULL, CHECK (length(front) >= 1 AND length(front) <= 5000) | Przód fiszki (pytanie) |
