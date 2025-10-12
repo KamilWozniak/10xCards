@@ -1,5 +1,3 @@
-import type { TablesInsert } from '../database/database.types'
-
 /**
  * Command for creating a generation record in the database
  * Contains all necessary data from AI generation process

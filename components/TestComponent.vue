@@ -8,11 +8,11 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 
-  onMounted(() => {
-    console.log('TestComponent mounted')
-  })
+onMounted(() => {
+  console.log('TestComponent mounted')
+})
 </script>
 <style scoped>
 .test-component {

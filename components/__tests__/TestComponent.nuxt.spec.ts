@@ -12,7 +12,7 @@ describe('TestComponent', () => {
 
   it('zawiera przycisk', async () => {
     const component = await mountSuspended(TestComponent)
-    
+
     const button = component.find('button')
     expect(button.exists()).toBe(true)
     expect(button.text()).toBe('Click me')
@@ -20,7 +20,7 @@ describe('TestComponent', () => {
 
   it('ma klasę test-component', async () => {
     const component = await mountSuspended(TestComponent)
-    
+
     expect(component.find('.test-component').exists()).toBe(true)
   })
 })

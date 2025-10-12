@@ -19,7 +19,7 @@ export const avatarVariant = cva(
         square: 'rounded-md',
       },
     },
-  },
+  }
 )
 
 export type AvatarVariants = VariantProps<typeof avatarVariant>
