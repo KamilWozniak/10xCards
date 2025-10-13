@@ -200,6 +200,9 @@ This project is currently in active development. The MVP is being built accordin
 For more detailed information, please refer to:
 - [Product Requirements Document (PRD)](./docs/prd.md)
 - [Tech Stack Documentation](./docs/tech_stack.md)
+- [API Documentation](./docs/api/)
+  - [POST /api/generations - Endpoint Documentation](./docs/api/generations-endpoint.md)
+  - [POST /api/generations - Implementation Summary](./docs/api/generations-implementation-summary.md)
 
 ## 📄 License
 

@@ -1,0 +1,7 @@
+---
+alwaysApply: false
+---
+### backend and database 
+
+- use Supabase for backend services, including authentication and database integrations.
+- Follow Supabase guidelines for security and performance.
