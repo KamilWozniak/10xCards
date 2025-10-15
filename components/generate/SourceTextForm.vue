@@ -115,7 +115,8 @@ const progressPercentage = computed(() => {
 const handleTextInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
   formData.value.text = target.value
-  formData.value.characterCount = target.value.length
+  // Use trimmed length for character count to match validation
+  formData.value.characterCount = target.value.trim().length
   formData.value.isValid = validateText(target.value)
 }
 
