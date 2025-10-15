@@ -21,8 +21,12 @@ export interface OpenRouterRequestOptions {
   frequency_penalty?: number
   presence_penalty?: number
   response_format?: {
-    type: 'json_object'
-    schema?: Record<string, unknown>
+    type: 'json_schema'
+    json_schema: {
+      name: string
+      strict: boolean
+      schema: Record<string, unknown>
+    }
   }
 }
 

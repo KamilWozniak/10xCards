@@ -1,4 +1,61 @@
 import type { AIGenerationResult } from '~/types/commands/generation-commands'
+import { createOpenRouterService } from '~/services/openrouter/OpenRouterService'
+
+const AI_MODEL = 'openai/gpt-4o-mini'
+
+/**
+ * System prompt for flashcard generation
+ */
+const FLASHCARD_GENERATION_SYSTEM_PROMPT = `Jesteś ekspertem w tworzeniu edukacyjnych fiszek do nauki metodą spaced repetition.
+
+Twoim zadaniem jest przeanalizowanie dostarczonego tekstu edukacyjnego i wygenerowanie wysokiej jakości fiszek z pytaniami i odpowiedziami.
+
+Wytyczne:
+- Stwórz 2-5 fiszek w zależności od bogactwa treści
+- Skup się na kluczowych konceptach, definicjach i ważnych faktach
+- Pytania powinny być jasne, konkretne i sprawdzać zrozumienie
+- Odpowiedzi powinny być zwięzłe ale kompletne
+- Unikaj pytań tak/nie - preferuj pytania "co", "jak", "dlaczego"
+- Każda fiszka powinna sprawdzać jeden koncept
+- WAŻNE: Wszystkie pytania i odpowiedzi muszą być w języku polskim
+
+Zwróć odpowiedź jako obiekt JSON o dokładnie takiej strukturze:
+{
+  "flashcards": [
+    {"front": "treść pytania", "back": "treść odpowiedzi"}
+  ]
+}`
+
+/**
+ * JSON Schema for flashcard generation response
+ * Follows JSON Schema specification for OpenAI structured outputs
+ */
+const FLASHCARD_SCHEMA = {
+  type: 'object',
+  properties: {
+    flashcards: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          front: { type: 'string' },
+          back: { type: 'string' },
+        },
+        required: ['front', 'back'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['flashcards'],
+  additionalProperties: false,
+}
+
+interface FlashcardGenerationResponse {
+  flashcards: Array<{
+    front: string
+    back: string
+  }>
+}
 
 /**
  * AI Service for flashcard generation
@@ -6,65 +63,48 @@ import type { AIGenerationResult } from '~/types/commands/generation-commands'
  * Handles communication with OpenRouter API to generate flashcard proposals
  * from user-provided source text.
  */
-export class AIService {
-  private readonly apiKey: string
-  private readonly apiUrl: string
-  private readonly model: string
-  private readonly timeout: number
+export function createAIService() {
+  const openRouterService = createOpenRouterService({
+    defaultModel: AI_MODEL,
+    temperature: 0.7,
+    maxTokens: 2000,
+  })
 
-  constructor() {
-    this.apiKey = process.env.OPENROUTER_API_KEY || ''
-    this.apiUrl = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions'
-    this.model = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini'
-    this.timeout = 60000 // 60 seconds
+  return {
+    /**
+     * Generate flashcard proposals from source text using AI
+     *
+     * @param sourceText - Educational text to generate flashcards from (1000-10000 chars)
+     * @returns AIGenerationResult with flashcard proposals
+     * @throws Error if generation fails
+     */
+    generateFlashcards: async (sourceText: string): Promise<AIGenerationResult> => {
+      const messages = [
+        {
+          role: 'system' as const,
+          content: FLASHCARD_GENERATION_SYSTEM_PROMPT,
+        },
+        {
+          role: 'user' as const,
+          content: `Generate flashcards from the following educational text:\n\n${sourceText}`,
+        },
+      ]
+
+      const response = await openRouterService.generateStructuredResponse<FlashcardGenerationResponse>(
+        messages,
+        'flashcard_generation',
+        FLASHCARD_SCHEMA
+      )
+
+      return {
+        proposals: response.flashcards,
+        count: response.flashcards.length,
+      }
+    },
+
+    /**
+     * Get the current AI model name
+     */
+    getModel: (): string => openRouterService.getModel(),
   }
-
-  /**
-   * Generate flashcard proposals from source text using AI
-   *
-   * @param sourceText - Educational text to generate flashcards from (1000-10000 chars)
-   * @returns AIGenerationResult with flashcard proposals
-   * @throws AIServiceError if generation fails
-   */
-  async generateFlashcards(sourceText: string): Promise<AIGenerationResult> {
-    // For development phase, return mock data
-    // Real implementation will be added when integrating with OpenRouter
-    return this.generateMockFlashcards(sourceText)
-  }
-
-  /**
-   * Mock implementation for development
-   * Simulates AI response without calling external API
-   */
-  private async generateMockFlashcards(sourceText: string): Promise<AIGenerationResult> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // Generate 2-5 mock flashcards based on source text length
-    const count = Math.min(5, Math.max(2, Math.floor(sourceText.length / 1000)))
-
-    const mockProposals = Array.from({ length: count }, (_, i) => ({
-      front: `Mock Question ${i + 1} from provided text`,
-      back: `Mock Answer ${i + 1} explaining the concept in detail`,
-    }))
-
-    return {
-      proposals: mockProposals,
-      count: mockProposals.length,
-    }
-  }
-
-  /**
-   * Get the current AI model name
-   */
-  getModel(): string {
-    return this.model
-  }
-}
-
-/**
- * Factory function to create AIService instance
- */
-export function createAIService(): AIService {
-  return new AIService()
 }
