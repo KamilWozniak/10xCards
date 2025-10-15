@@ -115,29 +115,11 @@ const isValid = computed(() => {
   )
 })
 
-// Watch for proposal changes
-watch(
-  () => props.proposal,
-  newProposal => {
-    if (newProposal) {
-      editForm.value = {
-        front: newProposal.front,
-        back: newProposal.back,
-        isValid: false,
-        errors: {},
-      }
-      validateForm()
-    }
-  },
-  { immediate: true }
-)
-
-// Watch for form validity
-watch(isValid, newValidity => {
-  editForm.value.isValid = newValidity
-})
-
 // Methods
+const validateForm = () => {
+  editForm.value.isValid = isValid.value
+}
+
 const validateFront = () => {
   const front = editForm.value.front
   if (front.length === 0) {
@@ -162,9 +144,27 @@ const validateBack = () => {
   validateForm()
 }
 
-const validateForm = () => {
-  editForm.value.isValid = isValid.value
-}
+// Watch for proposal changes
+watch(
+  () => props.proposal,
+  newProposal => {
+    if (newProposal) {
+      editForm.value = {
+        front: newProposal.front,
+        back: newProposal.back,
+        isValid: false,
+        errors: {},
+      }
+      validateForm()
+    }
+  },
+  { immediate: true }
+)
+
+// Watch for form validity
+watch(isValid, newValidity => {
+  editForm.value.isValid = newValidity
+})
 
 const handleSave = () => {
   if (editForm.value.isValid) {

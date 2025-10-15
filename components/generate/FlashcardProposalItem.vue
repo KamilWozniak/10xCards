@@ -79,7 +79,7 @@
 
             <!-- Edit Button -->
             <Button
-              v-if="proposal.isAccepted && !proposal.isRejected"
+              v-if="!proposal.isRejected"
               size="sm"
               variant="outline"
               class="text-blue-600 border-blue-300 hover:bg-blue-50"

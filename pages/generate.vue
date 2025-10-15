@@ -92,8 +92,8 @@ const handleSaveSelected = async (selectedProposals: FlashcardProposalViewModel[
 
     await saveFlashcards(selectedProposals, generationState.value.generationId!)
 
-    // Redirect to flashcards list after successful save
-    await navigateTo('/flashcards')
+    // Stay on the generate page after successful save
+    // User can continue generating more flashcards
   } catch (error) {
     console.error('Error saving flashcards:', error)
   }
