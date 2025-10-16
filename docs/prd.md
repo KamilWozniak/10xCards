@@ -61,7 +61,7 @@ ID: US-002
 Tytuł: Logowanie do aplikacji
 Opis: Jako zarejestrowany użytkownik chcę móc się zalogować, aby mieć dostęp do moich fiszek i historii generowania.
 Kryteria akceptacji:
-- Po podaniu prawidłowych danych logowania użytkownik zostaje przekierowany do widoku generowania fiszek.
+- Po podaniu prawidłowych danych logowania użytkownik zostaje przekierowany do widoku generowania fiszek (US-003).
 - Błędne dane logowania wyświetlają komunikat o nieprawidłowych danych.
 - Dane dotyczące logowania przechowywane są w bezpieczny sposób.
 
@@ -121,6 +121,8 @@ Opis: Jako zalogowany użytkownik chcę mieć pewność, że moje fiszki nie są
 Kryteria akceptacji:
 - Tylko zalogowany użytkownik może wyświetlać, edytować i usuwać swoje fiszki.
 - Nie ma dostępu do fiszek innych użytkowników ani możliwości współdzielenia.
+- użytkownik może wylogować się z systemu poprzez przycisk w prawym górnym rogu. 
+- użytkownik po wylogowaniu jest przenoszony na stronę logowania (US-002)
 
 ## 6. Metryki sukcesu
 1. Efektywność generowania fiszek:
