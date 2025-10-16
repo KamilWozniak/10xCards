@@ -1,0 +1,290 @@
+---
+description: 
+globs:
+alwaysApply: false
+---
+# Supabase Auth Integration with Nuxt 3
+
+Use this guide to introduce authentication (sign-up & sign-in) in Nuxt 3 applications with server-side rendering (SSR) support
+
+## Before we start
+
+VERY IMPORTANT: Ask me which pages or components should behave differently after introducing authentication. Adjust further steps accordingly.
+
+## Core Requirements
+
+1. Use `@supabase/ssr` package (NOT auth-helpers)
+2. Use ONLY `getAll` and `setAll` for cookie management
+3. NEVER use individual `get`, `set`, or `remove` cookie methods
+4. Implement proper session management with middleware based on JWT (Supabase Auth)
+5. Use Nuxt 3's built-in server utilities and composables
+
+## Installation
+
+```bash
+pnpm install @supabase/ssr @supabase/supabase-js
+```
+
+## Environment Variables
+
+Create `.env` file with required Supabase credentials (based on the snippet below or `.env.example` in project root)
+
+```env
+SUPABASE_URL=your_project_url
+SUPABASE_ANON_KEY=your_anon_key
+```
+
+Update `nuxt.config.ts` to include runtime config:
+
+```typescript
+export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    }
+  }
+})
+```
+
+Make sure `.env.example` is updated with the correct environment variables.
+
+## Implementation Steps
+
+### 1. Create OR Extend Supabase Server Instance
+
+Update existing Supabase client or create one in `composables/useSupabase.ts`:
+
+```typescript
+import { createServerClient, createBrowserClient, type CookieOptionsWithName } from '@supabase/ssr'
+import type { Database } from '~/types/database/database.types'
+
+export const cookieOptions: CookieOptionsWithName = {
+  path: '/',
+  secure: true,
+  httpOnly: true,
+  sameSite: 'lax',
+}
+
+function parseCookieHeader(cookieHeader: string): { name: string; value: string }[] {
+  return cookieHeader.split(';').map((cookie) => {
+    const [name, ...rest] = cookie.trim().split('=')
+    return { name, value: rest.join('=') }
+  })
+}
+
+export const createSupabaseServerClient = (event: any) => {
+  const config = useRuntimeConfig()
+  
+  const supabase = createServerClient<Database>(
+    config.public.supabaseUrl,
+    config.public.supabaseAnonKey,
+    {
+      cookieOptions,
+      cookies: {
+        getAll() {
+          return parseCookieHeader(getHeader(event, 'cookie') ?? '')
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            setCookie(event, name, value, options)
+          )
+        },
+      },
+    },
+  )
+
+  return supabase
+}
+
+// Client-side composable for Vue components
+export const useSupabaseClient = () => {
+  const config = useRuntimeConfig()
+  
+  return createBrowserClient<Database>(
+    config.public.supabaseUrl,
+    config.public.supabaseAnonKey
+  )
+}
+```
+
+### 2. Implement OR Extend Authentication Middleware
+
+Update existing auth middleware or create one in `middleware/auth.global.ts`:
+
+```typescript
+export default defineNuxtRouteMiddleware((to) => {
+  // Public paths - Auth API endpoints & Pages
+  const PUBLIC_PATHS = [
+    // Auth pages
+    '/auth/login',
+    '/auth/register',
+    '/auth/reset-password',
+    // Public pages
+    '/',
+    // Auth API endpoints
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/logout',
+    '/api/auth/reset-password',
+  ]
+
+  // Skip auth check for public paths
+  if (PUBLIC_PATHS.includes(to.path)) {
+    return
+  }
+
+  // Check if running on server side
+  if (process.server) {
+    const event = useRequestEvent()
+    const supabase = createSupabaseServerClient(event!)
+
+    // Get user session
+    return supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        throw createError({
+          statusCode: 401,
+          statusMessage: 'Unauthorized'
+        })
+      }
+    })
+  }
+
+  // Client-side auth check
+  if (process.client) {
+    const supabase = useSupabaseClient()
+    
+    return supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        return navigateTo('/auth/login')
+      }
+    })
+  }
+})
+```
+
+### 3. Create Auth API Endpoints
+
+Create the following endpoints in `server/api/auth/`:
+
+```typescript
+// server/api/auth/login.post.ts
+export default defineEventHandler(async (event) => {
+  const { email, password } = await readBody(event)
+
+  if (!email || !password) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Email and password are required'
+    })
+  }
+
+  const supabase = createSupabaseServerClient(event)
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (error) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: error.message
+    })
+  }
+
+  return { user: data.user }
+})
+
+// server/api/auth/register.post.ts
+export default defineEventHandler(async (event) => {
+  const { email, password } = await readBody(event)
+
+  if (!email || !password) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Email and password are required'
+    })
+  }
+
+  const supabase = createSupabaseServerClient(event)
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
+
+  if (error) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: error.message
+    })
+  }
+
+  return { user: data.user }
+})
+
+// server/api/auth/logout.post.ts
+export default defineEventHandler(async (event) => {
+  const supabase = createSupabaseServerClient(event)
+
+  const { error } = await supabase.auth.signOut()
+
+  if (error) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: error.message
+    })
+  }
+
+  return { success: true }
+})
+```
+
+### 4. Protect Routes
+
+In protected Nuxt pages:
+
+```vue
+<!-- pages/protected.vue -->
+<template>
+  <div>
+    <h1>Protected Page</h1>
+    <p v-if="user">Welcome {{ user.email }}!</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Check authentication on server side
+const event = await useRequestEvent()
+const supabase = createSupabaseServerClient(event!)
+
+const { data: { user } } = await supabase.auth.getUser()
+
+if (!user) {
+  throw createError({
+    statusCode: 401,
+    statusMessage: 'Unauthorized'
+  })
+}
+</script>
+```
+
+### 5. Verify SSR Configuration
+
+Verify whether auth pages are rendered server-side by ensuring SSR is enabled in `nuxt.config.ts` (which is the default for Nuxt 3).
+
+## Security Best Practices
+
+- Set proper cookie options (httpOnly, secure, sameSite)
+- Never expose Supabase integration & keys in client-side components
+- Validate all user input server-side
+- Use proper error handling and logging
+
+## Common Pitfalls
+
+1. DO NOT use individual cookie methods (get/set/remove)
+2. DO NOT import from @supabase/auth-helpers-nextjs
+3. DO NOT skip the auth.getUser() call in middleware
+4. DO NOT modify cookie handling logic
+5. Always handle auth state changes properly
