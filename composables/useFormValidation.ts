@@ -70,6 +70,44 @@ export function useFormValidation() {
     return validateText(formData.text)
   }
 
+  // Auth validation methods
+  const validateEmail = (email: string): string | null => {
+    if (!email || email.trim().length === 0) {
+      return 'Email jest wymagany'
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return 'Nieprawidłowy format email'
+    }
+
+    return null
+  }
+
+  const validatePassword = (password: string, minLength = 6): string | null => {
+    if (!password || password.length === 0) {
+      return 'Hasło jest wymagane'
+    }
+
+    if (password.length < minLength) {
+      return `Hasło musi mieć minimum ${minLength} znaków`
+    }
+
+    return null
+  }
+
+  const validatePasswordMatch = (password: string, confirmPassword: string): string | null => {
+    if (!confirmPassword || confirmPassword.length === 0) {
+      return 'Powtórz hasło'
+    }
+
+    if (password !== confirmPassword) {
+      return 'Hasła nie są identyczne'
+    }
+
+    return null
+  }
+
   return {
     // State
     formValidation: readonly(formValidation),
@@ -83,5 +121,10 @@ export function useFormValidation() {
     validateText,
     validateFormData,
     resetValidation,
+
+    // Auth validation methods
+    validateEmail,
+    validatePassword,
+    validatePasswordMatch,
   }
 }
