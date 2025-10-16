@@ -56,7 +56,7 @@ export default defineEventHandler(
       let requestBody: any
       try {
         requestBody = await readBody(event)
-      } catch (error) {
+      } catch {
         setResponseStatus(event, 400)
         return {
           error: 'Invalid JSON format',

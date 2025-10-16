@@ -20,7 +20,13 @@ export default defineNuxtConfig({
      */
     componentDir: './components/ui',
   },
+  vite: {
+    optimizeDeps: {
+      exclude: ['oxc-parser', 'oxc-transform', 'oxc-minify', 'oxc-resolver']
+    }
+  },
   runtimeConfig: {
+    openRouterApiKey: process.env.OPENROUTER_API_KEY,
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || '',
