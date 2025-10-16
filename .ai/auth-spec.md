@@ -2,21 +2,20 @@
 
 ## Przegląd
 
-Dokument określa architekturę techniczną systemu autentykacji dla aplikacji 10xCards, obejmującą rejestrację, logowanie, wylogowywanie oraz odzyskiwanie hasła. Implementacja wykorzystuje Supabase Auth jako backend autentykacji w połączeniu z Nuxt 3 i Vue 3.
+Dokument określa architekturę techniczną systemu autentykacji dla aplikacji 10xCards, obejmującą rejestrację, logowanie i wylogowywanie. Implementacja wykorzystuje Supabase Auth jako backend autentykacji w połączeniu z Nuxt 3 i Vue 3.
 
 ### Zakres funkcjonalny
 
 - **US-001**: Rejestracja konta użytkownika
 - **US-002**: Logowanie do aplikacji
 - **US-009**: Bezpieczny dostęp, autoryzacja i wylogowywanie
-- **Dodatkowo**: Odzyskiwanie hasła (funkcjonalność uzupełniająca)
 
 ### Wymagania techniczne
 
 - Integracja z Supabase Auth dla zarządzania użytkownikami
 - Wykorzystanie Nuxt 3 composables do zarządzania sesją
 - Middleware do ochrony tras wymagających autentykacji
-- Wykorzystanie shadcn-vue dla komponentów UI
+- Wykorzystanie shadcn-vue@1.0.3 dla komponentów UI
 - TypeScript dla bezpieczeństwa typów
 - Walidacja po stronie klienta i serwera
 
@@ -32,7 +31,6 @@ Dokument określa architekturę techniczną systemu autentykacji dla aplikacji 1
 - Strona logowania użytkownika
 - Zawiera formularz logowania (email + hasło)
 - Link do strony rejestracji
-- Link do strony odzyskiwania hasła
 - Pole komunikatów o błędach i sukcesach
 - Po pomyślnym logowaniu przekierowuje do `/generate`
 - Jeśli użytkownik jest już zalogowany, automatyczne przekierowanie do `/generate`
@@ -42,19 +40,9 @@ Dokument określa architekturę techniczną systemu autentykacji dla aplikacji 1
 - Zawiera formularz rejestracji (email + hasło + powtórz hasło)
 - Link do strony logowania
 - Pole komunikatów o błędach i sukcesach
-- Po pomyślnej rejestracji wyświetla komunikat o konieczności potwierdzenia emaila (jeśli włączone) lub automatyczne logowanie i przekierowanie do `/generate`
+- Po pomyślnej rejestracji automatyczne logowanie i przekierowanie do `/generate`
 - Jeśli użytkownik jest już zalogowany, automatyczne przekierowanie do `/generate`
 
-**`pages/auth/forgot-password.vue`**
-- Strona odzyskiwania hasła
-- Zawiera formularz z polem email
-- Po wysłaniu wyświetla komunikat o wysłaniu instrukcji na email
-- Link powrotny do strony logowania
-
-**`pages/auth/reset-password.vue`**
-- Strona resetowania hasła (dostępna przez link z emaila)
-- Zawiera formularz z polami: nowe hasło + powtórz nowe hasło
-- Po pomyślnym resecie przekierowuje do `/auth/login` z komunikatem sukcesu
 
 **Modyfikacja `pages/index.vue`**
 - Aktualna wersja przekierowuje do `/generate`
@@ -91,32 +79,11 @@ Dokument określa architekturę techniczną systemu autentykacji dla aplikacji 1
   - Format email
   - Minimalna długość hasła (6 znaków)
   - Zgodność haseł
-  - Siła hasła (opcjonalnie wskaźnik)
 - Wyświetlanie błędów walidacji przy polach
 - Stan loading podczas wysyłania
 - Emisja eventu `@submit` z danymi formularza
 - Wykorzystanie komponentów shadcn-vue: Input, Button, Label, Card
 
-**`components/auth/ForgotPasswordForm.vue`**
-- Formularz odzyskiwania hasła z polem:
-  - Email (input type="email", wymagane)
-  - Przycisk "Wyślij instrukcje"
-- Walidacja formatu email
-- Wyświetlanie błędów walidacji
-- Stan loading podczas wysyłania
-- Emisja eventu `@submit` z emailem
-- Wykorzystanie komponentów shadcn-vue: Input, Button, Label, Card
-
-**`components/auth/ResetPasswordForm.vue`**
-- Formularz resetowania hasła z polami:
-  - Nowe hasło (input type="password", wymagane, min 6 znaków)
-  - Powtórz nowe hasło (input type="password", wymagane, musi być identyczne)
-  - Przycisk "Resetuj hasło"
-- Walidacja zgodności haseł i minimalnej długości
-- Wyświetlanie błędów walidacji
-- Stan loading podczas wysyłania
-- Emisja eventu `@submit` z nowym hasłem
-- Wykorzystanie komponentów shadcn-vue: Input, Button, Label, Card
 
 **`components/auth/AuthErrorDisplay.vue`**
 - Komponent do wyświetlania komunikatów błędów autentykacji
@@ -129,18 +96,17 @@ Dokument określa architekturę techniczną systemu autentykacji dla aplikacji 1
 **`layouts/default.vue`** (nowy)
 - Layout dla stron wymagających autentykacji
 - Zawiera:
-  - Nawigację górną z logo aplikacji
+  - Nawigację górną
   - Przycisk wylogowania w prawym górnym rogu
-  - Avatar użytkownika (opcjonalnie email lub inicjały)
+  - Email użytkownika
   - Obszar główny dla `<slot />`
 - Wykorzystuje composable `useAuth()` do pobrania danych użytkownika
 - Przycisk wylogowania wywołuje metodę wylogowania i przekierowuje do `/auth/login`
 
 **`layouts/auth.vue`** (nowy)
-- Layout dla stron autentykacji (login, register, forgot-password, reset-password)
+- Layout dla stron autentykacji (login, register)
 - Minimalistyczny design:
   - Wycentrowany kontener
-  - Logo aplikacji u góry
   - Obszar główny dla formularzy `<slot />`
   - Stopka z linkami (opcjonalnie)
 - Brak nawigacji i przycisków wylogowania
@@ -151,7 +117,6 @@ Należy zainstalować następujące komponenty z shadcn-vue (jeśli nie są jesz
 - `Input` - pole tekstowe dla formularzy
 - `Label` - etykiety dla pól formularza
 - `Alert` / `AlertDescription` - wyświetlanie komunikatów
-- `Checkbox` - opcjonalne "Zapamiętaj mnie"
 
 Już dostępne komponenty:
 - `Button` - przyciski formularzy
@@ -167,8 +132,6 @@ Już dostępne komponenty:
 /generate                   → Chronione middleware, wymaga autentykacji
 /auth/login                 → Publiczne, logowanie
 /auth/register              → Publiczne, rejestracja
-/auth/forgot-password       → Publiczne, odzyskiwanie hasła
-/auth/reset-password        → Publiczne (z tokenem w URL), resetowanie hasła
 ```
 
 #### 1.2.2 Middleware autentykacji
@@ -193,11 +156,11 @@ Już dostępne komponenty:
 2. Wypełnia formularz (email, hasło, powtórz hasło)
 3. Kliknięcie "Zarejestruj się" → walidacja client-side
 4. Jeśli walidacja OK → wywołanie `useAuth().signUp(email, password)`
-5. Supabase tworzy użytkownika i wysyła email weryfikacyjny (jeśli włączone)
+5. Supabase tworzy użytkownika
 6. Obsługa odpowiedzi:
    - **Sukces**: Wyświetlenie komunikatu "Sprawdź email i potwierdź rejestrację" lub automatyczne zalogowanie (zależnie od konfiguracji Supabase)
    - **Błąd**: Wyświetlenie komunikatu błędu (np. "Email już istnieje", "Hasło za słabe")
-7. Po potwierdzeniu emaila (jeśli wymagane) użytkownik może się zalogować
+7. Po pomyślnej rejestracji użytkownik jest automatycznie logowany
 
 #### 1.3.2 Scenariusz: Logowanie (US-002)
 
@@ -218,19 +181,6 @@ Już dostępne komponenty:
 4. Czyszczenie lokalnego stanu (user, session)
 5. Przekierowanie do `/auth/login`
 
-#### 1.3.4 Scenariusz: Odzyskiwanie hasła
-
-1. Użytkownik wchodzi na `/auth/forgot-password`
-2. Wprowadza email
-3. Kliknięcie "Wyślij instrukcje" → wywołanie `useAuth().resetPasswordRequest(email)`
-4. Supabase wysyła email z linkiem resetowania
-5. Wyświetlenie komunikatu "Sprawdź email z instrukcjami resetowania hasła"
-6. Użytkownik klika link w emailu → przekierowanie do `/auth/reset-password?token=...`
-7. Wprowadza nowe hasło
-8. Kliknięcie "Resetuj hasło" → wywołanie `useAuth().resetPassword(token, newPassword)`
-9. Obsługa odpowiedzi:
-   - **Sukces**: Przekierowanie do `/auth/login` z komunikatem "Hasło zostało zmienione"
-   - **Błąd**: Wyświetlenie komunikatu błędu (np. "Token wygasł", "Hasło za słabe")
 
 ### 1.4 Walidacja i komunikaty błędów
 
@@ -257,21 +207,6 @@ Komunikaty błędów:
 - "Hasło musi mieć minimum 6 znaków"
 - "Hasła nie są identyczne"
 
-**Formularz odzyskiwania hasła:**
-- Email: wymagane, format email
-
-Komunikaty błędów:
-- "Email jest wymagany"
-- "Nieprawidłowy format email"
-
-**Formularz resetowania hasła:**
-- Nowe hasło: wymagane, min 6 znaków
-- Powtórz nowe hasło: wymagane, musi być identyczne
-
-Komunikaty błędów:
-- "Hasło jest wymagane"
-- "Hasło musi mieć minimum 6 znaków"
-- "Hasła nie są identyczne"
 
 #### 1.4.2 Komunikaty błędów z Supabase Auth
 
@@ -296,8 +231,6 @@ Należy stworzyć mapowanie błędów Supabase na przyjazne komunikaty po polsku
 | Rejestracja (bez weryfikacji) | "Konto zostało utworzone pomyślnie" |
 | Logowanie | Przekierowanie bez komunikatu |
 | Wylogowanie | Przekierowanie bez komunikatu |
-| Wysłanie emaila resetującego | "Instrukcje resetowania hasła zostały wysłane na podany email" |
-| Reset hasła | "Hasło zostało zmienione pomyślnie" |
 
 ### 1.5 Podział odpowiedzialności frontend vs backend
 
@@ -325,8 +258,6 @@ Należy stworzyć mapowanie błędów Supabase na przyjazne komunikaty po polsku
 - Weryfikacja danych logowania (email + hasło)
 - Generowanie i walidacja tokenów JWT
 - Wysyłanie emaili weryfikacyjnych
-- Wysyłanie emaili z linkiem resetowania hasła
-- Walidacja tokenów resetowania hasła
 - Zarządzanie sesjami użytkowników
 - Hashowanie i przechowywanie haseł
 
@@ -350,32 +281,85 @@ Należy stworzyć mapowanie błędów Supabase na przyjazne komunikaty po polsku
 
 ## 2. LOGIKA BACKENDOWA
 
-### 2.1 Aktualizacja endpointów API
+### 2.1 Alternatywne podejścia do autentykacji w endpointach API
 
-Wszystkie istniejące endpointy (`/api/flashcards`, `/api/generations`) już korzystają z funkcji `getUserId()` do weryfikacji autentykacji. Należy zaktualizować implementację tej funkcji.
+Obecne endpointy korzystają z funkcji `getUserId()`, która zwraca zamockowanego użytkownika. W rzeczywistym systemie autentykacji mamy kilka opcji implementacji:
 
-#### 2.1.1 Aktualizacja `server/utils/auth/get-user-id.ts`
+#### 2.1.1 Opcja A: Bezpośrednie wykorzystanie Supabase SDK (ZALECANA)
 
-**Obecna implementacja:**
-- Zwraca hardkodowany UUID użytkownika testowego
+**Korzyści:**
+- Automatyczna obsługa tokenów JWT przez Supabase SDK
+- RLS policies automatycznie izolują dane użytkowników
+- Brak potrzeby ręcznej weryfikacji tokenów w endpointach
+- Mniej kodu do napisania i utrzymania
 
-**Nowa implementacja:**
-- Pobiera token JWT z nagłówka `Authorization` żądania HTTP
-- Weryfikuje token za pomocą Supabase Auth
-- Wyciąga `user_id` z tokenu
-- Zwraca `user_id` lub rzuca błąd `UnauthorizedError`
+**Implementacja:**
+```typescript
+// W endpointach API zamiast getUserId() używamy bezpośrednio Supabase
+export default defineEventHandler(async (event) => {
+  const { supabase } = useSupabase()
+  
+  // Pobranie tokenu z nagłówka i ustawienie w Supabase client
+  const authHeader = getHeader(event, 'authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.substring(7)
+    await supabase.auth.setSession({ access_token: token, refresh_token: '' })
+  }
+  
+  // RLS automatycznie ograniczy dostęp do danych użytkownika
+  const { data: flashcards } = await supabase
+    .from('flashcards')
+    .select('*')
+    
+  return { flashcards }
+})
+```
 
-**Pseudokod:**
+#### 2.1.2 Opcja B: Aktualizacja `server/utils/auth/get-user-id.ts`
+
+**Korzyści:**
+- Zachowuje obecną architekturę (mniejsze zmiany w istniejących endpointach)
+- Explicite kontrola nad weryfikacją tokenu
+- Łatwiejsze testowanie (możliwość mockowania getUserId)
+
+**Wady:**
+- Wymaga ręcznej weryfikacji tokenu w każdym endpoincie
+- Duplikuje logikę, którą Supabase RLS już zapewnia
+- Więcej kodu do utrzymania
+
+**Implementacja:**
 ```typescript
 export async function getUserId(event: H3Event): Promise<string> {
-  // 1. Pobierz token z nagłówka Authorization: "Bearer <token>"
-  // 2. Jeśli brak tokenu → rzuć UnauthorizedError
-  // 3. Zweryfikuj token za pomocą Supabase client
-  // 4. Jeśli token nieprawidłowy/wygasły → rzuć UnauthorizedError
-  // 5. Pobierz user_id z tokenu
-  // 6. Zwróć user_id
+  const authHeader = getHeader(event, 'authorization')
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new UnauthorizedError('Missing authorization token')
+  }
+  
+  const token = authHeader.substring(7)
+  const { supabase } = useSupabase()
+  const { data, error } = await supabase.auth.getUser(token)
+  
+  if (error || !data?.user) {
+    throw new UnauthorizedError('Invalid or expired token')
+  }
+  
+  return data.user.id
 }
 ```
+
+#### 2.1.3 Rekomendacja dla MVP
+
+**ZALECANA: Opcja A (bezpośrednie Supabase SDK)**
+
+Dla MVP lepszym rozwiązaniem jest Opcja A, ponieważ:
+- **Szybsza implementacja** - mniej kodu do napisania
+- **Mniejsze ryzyko błędów** - Supabase SDK jest przetestowany
+- **Automatyczne bezpieczeństwo** - RLS policies działają automatycznie
+- **Przyszłościowa** - łatwiejsze dodawanie nowych endpointów
+
+Opcja B może być użyta gdy potrzebujemy specyficznej logiki biznesowej przed dostępem do danych lub gdy chcemy zachować obecną strukturę kodu.
+
 
 ### 2.2 Nowe typy błędów
 
@@ -436,16 +420,12 @@ Middleware `auth.ts` i `guest.ts` obsługują wyjątki związane z brakiem sesji
 
 1. **Email Templates (w Supabase Dashboard)**
    - Szablon emaila weryfikacyjnego (confirmation email)
-   - Szablon emaila resetowania hasła (password reset email)
-   - Dostosowanie szablonów do języka polskiego (opcjonalnie)
+   - Dostosowanie szablonu do języka polskiego (opcjonalnie)
 
 2. **Auth Settings (w Supabase Dashboard)**
    - Włączenie/wyłączenie wymogu potwierdzenia emaila (`Enable email confirmations`)
    - Konfiguracja URL przekierowań:
      - Site URL: `http://localhost:3000` (dev) / `https://yourdomain.com` (prod)
-     - Redirect URLs: 
-       - `http://localhost:3000/auth/reset-password` (dev)
-       - `https://yourdomain.com/auth/reset-password` (prod)
    - Minimalna długość hasła: 6 znaków
    - Włączenie rejestracji (`Enable sign ups`)
 
@@ -538,20 +518,6 @@ Composable przechowuje:
 - Przekierowuje do `/auth/login`
 - Zwraca Promise
 
-**`resetPasswordRequest(email: string): Promise<void>`**
-- Wywołuje `supabase.auth.resetPasswordForEmail(email, { redirectTo: '/auth/reset-password' })`
-- Obsługuje odpowiedź:
-  - Sukces: ustawia komunikat sukcesu
-  - Błąd: mapuje błąd Supabase na polski komunikat
-- Zwraca Promise
-
-**`resetPassword(newPassword: string): Promise<void>`**
-- Wywołuje `supabase.auth.updateUser({ password: newPassword })`
-- Wymaga aktywnej sesji z tokenu resetowania (Supabase automatycznie loguje użytkownika po kliknięciu w link)
-- Obsługuje odpowiedź:
-  - Sukces: aktualizuje hasło, przekierowuje do logowania
-  - Błąd: mapuje błąd Supabase na polski komunikat
-- Zwraca Promise
 
 **`initializeAuth(): Promise<void>`**
 - Wywołuje `supabase.auth.getSession()` aby pobrać aktualną sesję
@@ -865,15 +831,6 @@ export interface RegisterCredentials {
   password: string
   confirmPassword: string
 }
-
-export interface ResetPasswordCredentials {
-  newPassword: string
-  confirmNewPassword: string
-}
-
-export interface ForgotPasswordData {
-  email: string
-}
 ```
 
 ### 4.2 Composable walidacji formularzy
@@ -907,8 +864,6 @@ Testy powinny weryfikować:
 **Pliki:**
 - `components/auth/__tests__/LoginForm.spec.ts`
 - `components/auth/__tests__/RegisterForm.spec.ts`
-- `components/auth/__tests__/ForgotPasswordForm.spec.ts`
-- `components/auth/__tests__/ResetPasswordForm.spec.ts`
 
 #### 4.3.3 Testy middleware
 
@@ -990,26 +945,20 @@ Jeśli włączony jest wymóg potwierdzenia emaila:
 
 **Rozwiązanie:** Dodanie przycisku "Wyślij ponownie email weryfikacyjny" na stronie logowania (opcjonalnie).
 
-#### 4.7.2 Token resetowania wygasły
 
-Tokeny resetowania hasła wygasają po 1 godzinie (domyślnie w Supabase).
-- Jeśli użytkownik kliknie link po wygaśnięciu → błąd przy `updateUser()`
-- Aplikacja wyświetla komunikat: "Link resetowania hasła wygasł. Poproś o nowy link"
-- Użytkownik musi ponownie przejść przez proces "Zapomniałem hasła"
-
-#### 4.7.3 Użytkownik już zalogowany próbuje wejść na /auth/login
+#### 4.7.2 Użytkownik już zalogowany próbuje wejść na /auth/login
 
 Middleware `guest.ts` przekierowuje do `/generate`.
 
-#### 4.7.4 Użytkownik niezalogowany próbuje wejść na /generate
+#### 4.7.3 Użytkownik niezalogowany próbuje wejść na /generate
 
 Middleware `auth.ts` przekierowuje do `/auth/login?redirect=/generate`.
 
-#### 4.7.5 Duplikacja adresu email przy rejestracji
+#### 4.7.4 Duplikacja adresu email przy rejestracji
 
 Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym adresem email już istnieje".
 
-#### 4.7.6 Sesja wygasła podczas korzystania z aplikacji
+#### 4.7.5 Sesja wygasła podczas korzystania z aplikacji
 
 - SDK automatycznie próbuje odświeżyć token
 - Jeśli odświeżenie nie powiedzie się → event `SIGNED_OUT`
@@ -1042,42 +991,37 @@ Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym 
 14. Utworzenie `components/auth/AuthErrorDisplay.vue`
 15. Utworzenie `components/auth/LoginForm.vue`
 16. Utworzenie `components/auth/RegisterForm.vue`
-17. Utworzenie `components/auth/ForgotPasswordForm.vue`
-18. Utworzenie `components/auth/ResetPasswordForm.vue`
-19. Testy jednostkowe komponentów formularzy
+17. Testy jednostkowe komponentów formularzy
 
 ### Faza 4: Strony autentykacji
-20. Utworzenie `layouts/auth.vue`
-21. Utworzenie `layouts/default.vue` z nawigacją i wylogowaniem
-22. Utworzenie `pages/auth/login.vue`
-23. Utworzenie `pages/auth/register.vue`
-24. Utworzenie `pages/auth/forgot-password.vue`
-25. Utworzenie `pages/auth/reset-password.vue`
+18. Utworzenie `layouts/auth.vue`
+19. Utworzenie `layouts/default.vue` z nawigacją i wylogowaniem
+20. Utworzenie `pages/auth/login.vue`
+21. Utworzenie `pages/auth/register.vue`
 
 ### Faza 5: Integracja z istniejącym kodem
-26. Aktualizacja `useGenerationState.ts` do użycia `useApi()`
-27. Aktualizacja wszystkich wywołań API w composables
-28. Dodanie layoutu `default` do `pages/generate.vue`
-29. Aktualizacja endpointów API do obsługi `UnauthorizedError`
+22. Aktualizacja `useGenerationState.ts` do użycia `useApi()`
+23. Aktualizacja wszystkich wywołań API w composables
+24. Dodanie layoutu `default` do `pages/generate.vue`
+25. Implementacja wybranej opcji autentykacji w endpointach API (Opcja A lub B)
 
 ### Faza 6: Konfiguracja Supabase
-30. Konfiguracja Auth Settings w Supabase Dashboard
-31. Dostosowanie szablonów emaili (opcjonalnie)
-32. Testowanie przepływu rejestracji end-to-end
-33. Testowanie przepływu logowania end-to-end
-34. Testowanie przepływu resetowania hasła end-to-end
+26. Konfiguracja Auth Settings w Supabase Dashboard
+27. Dostosowanie szablonu emaila weryfikacyjnego (opcjonalnie)
+28. Testowanie przepływu rejestracji end-to-end
+29. Testowanie przepływu logowania end-to-end
 
 ### Faza 7: Testy integracyjne i poprawki
-35. Testy E2E dla wszystkich scenariuszy autentykacji
-36. Testy obsługi błędów
-37. Testy middleware w różnych scenariuszach
-38. Poprawki błędów i edge cases
-39. Weryfikacja komunikatów błędów w języku polskim
+30. Testy E2E dla wszystkich scenariuszy autentykacji
+31. Testy obsługi błędów
+32. Testy middleware w różnych scenariuszach
+33. Poprawki błędów i edge cases
+34. Weryfikacja komunikatów błędów w języku polskim
 
 ### Faza 8: Dokumentacja
-40. Aktualizacja README z instrukcjami konfiguracji auth
-41. Dokumentacja zmiennych środowiskowych
-42. Dokumentacja API (aktualizacja istniejących plików w `/docs/api/`)
+35. Aktualizacja README z instrukcjami konfiguracji auth
+36. Dokumentacja zmiennych środowiskowych
+37. Dokumentacja API (aktualizacja istniejących plików w `/docs/api/`)
 
 ---
 
@@ -1147,7 +1091,6 @@ Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym 
 - [ ] Sesja użytkownika jest zapisywana w localStorage
 - [ ] Po odświeżeniu strony użytkownik pozostaje zalogowany
 - [ ] Link do strony rejestracji działa
-- [ ] Link do strony odzyskiwania hasła działa
 - [ ] Zalogowany użytkownik próbujący wejść na `/auth/login` jest przekierowany do `/generate`
 
 ### Checklist: Wylogowanie (US-009)
@@ -1168,18 +1111,6 @@ Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym 
 - [ ] RLS policies zapewniają że użytkownik widzi tylko swoje generacje
 - [ ] Usunięcie użytkownika kaskadowo usuwa wszystkie jego dane (fiszki, generacje, logi)
 
-### Checklist: Odzyskiwanie hasła
-
-- [ ] Strona `/auth/forgot-password` istnieje i renderuje się poprawnie
-- [ ] Formularz odzyskiwania waliduje format email
-- [ ] Po wysłaniu formularza wyświetla się komunikat "Sprawdź email z instrukcjami"
-- [ ] Email z linkiem resetowania jest wysyłany przez Supabase
-- [ ] Link w emailu prowadzi do `/auth/reset-password?token=...`
-- [ ] Strona `/auth/reset-password` istnieje i renderuje się poprawnie
-- [ ] Formularz resetowania waliduje długość nowego hasła
-- [ ] Formularz resetowania waliduje zgodność nowych haseł
-- [ ] Po pomyślnym resecie hasła użytkownik jest przekierowany do `/auth/login` z komunikatem sukcesu
-- [ ] Wygasły token resetowania wyświetla odpowiedni komunikat błędu
 
 ### Checklist: Integracja z istniejącym kodem
 
@@ -1220,15 +1151,11 @@ Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym 
 5. **Strony:**
    - `pages/auth/login.vue` - logowanie
    - `pages/auth/register.vue` - rejestracja
-   - `pages/auth/forgot-password.vue` - odzyskiwanie hasła
-   - `pages/auth/reset-password.vue` - resetowanie hasła
    - Aktualizacja `pages/index.vue` i `pages/generate.vue`
 
 6. **Komponenty:**
    - `components/auth/LoginForm.vue`
    - `components/auth/RegisterForm.vue`
-   - `components/auth/ForgotPasswordForm.vue`
-   - `components/auth/ResetPasswordForm.vue`
    - `components/auth/AuthErrorDisplay.vue`
 
 7. **Plugin:**
@@ -1253,11 +1180,10 @@ Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym 
 - ✅ **US-001**: Rejestracja z email/hasło, weryfikacja emaila, komunikaty błędów
 - ✅ **US-002**: Logowanie z email/hasło, przekierowanie po sukcesie, obsługa błędów
 - ✅ **US-009**: Ochrona tras middleware, RLS policies, przycisk wylogowania, prywatność danych
-- ✅ **Dodatkowo**: Odzyskiwanie i resetowanie hasła
 
 ### Brak naruszeń istniejącej funkcjonalności
 
-- Istniejące endpointy `/api/flashcards`, `/api/generations` wymagają jedynie aktualizacji `getUserId()` - API kontrakty pozostają bez zmian
+- Istniejące endpointy `/api/flashcards`, `/api/generations` będą zaktualizowane zgodnie z wybraną opcją autentykacji (A lub B) - API kontrakty pozostają bez zmian
 - Istniejące komponenty generowania fiszek (`generate/`) działają bez zmian
 - Istniejące composables (`useGenerationState`, `useFlashcardProposals`) wymagają jedynie zamiany `$fetch` na `useApi().apiFetch`
 - Istniejące migracje bazy danych nie wymagają zmian (już zawierają relacje do `auth.users`)
@@ -1265,6 +1191,8 @@ Supabase zwraca błąd `email_exists`. Aplikacja wyświetla: "Użytkownik z tym 
 ---
 
 **Status:** Specyfikacja kompletna i gotowa do implementacji.
+
+**Zaktualizowano:** 2025-10-16 - Usunięto funkcjonalności odzyskiwania hasła (forgot-password, reset-password) zgodnie z uproszczeniami dla MVP. Dodano alternatywne podejścia do architektury backendowej z rekomendacją dla bezpośredniego wykorzystania Supabase SDK.
 
 **Data utworzenia:** 2025-10-16
 
