@@ -1,10 +1,8 @@
 <template>
-  <Card>
+  <Card class="w-full max-w-md mx-auto register-form">
     <CardHeader>
       <CardTitle>Zarejestruj się</CardTitle>
-      <CardDescription>
-        Utwórz nowe konto, aby korzystać z aplikacji
-      </CardDescription>
+      <CardDescription> Utwórz nowe konto, aby korzystać z aplikacji </CardDescription>
     </CardHeader>
     <CardContent>
       <div class="space-y-4">
@@ -38,9 +36,7 @@
           <p v-if="errors.password" class="text-sm text-red-600">
             {{ errors.password }}
           </p>
-          <p v-else class="text-xs text-gray-500">
-            Hasło musi mieć minimum 6 znaków
-          </p>
+          <p v-else class="text-xs text-gray-500">Hasło musi mieć minimum 6 znaków</p>
         </div>
 
         <!-- Confirm Password Field -->
@@ -61,11 +57,7 @@
       </div>
     </CardContent>
     <CardFooter>
-      <Button
-        :disabled="!isFormValid || isLoading"
-        class="w-full"
-        @click="handleSubmit"
-      >
+      <Button :disabled="!isFormValid || isLoading" class="w-full" @click="handleSubmit">
         <span v-if="isLoading">Rejestracja...</span>
         <span v-else>Zarejestruj się</span>
       </Button>
@@ -157,11 +149,7 @@ const validateForm = (): boolean => {
   validatePasswordField()
   validateConfirmPasswordField()
 
-  return (
-    !errors.value.email &&
-    !errors.value.password &&
-    !errors.value.confirmPassword
-  )
+  return !errors.value.email && !errors.value.password && !errors.value.confirmPassword
 }
 
 const handleSubmit = () => {
@@ -174,3 +162,9 @@ const handleSubmit = () => {
   }
 }
 </script>
+<style scoped>
+.register-form {
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+}
+</style>

@@ -1,28 +1,21 @@
 <template>
-  <div>
-    <!-- Error/Success Message Display -->
-    <AuthErrorDisplay
-      :message="errorMessage"
-      :type="messageType"
-    />
+  <div class="register-page">
+    <div>
+      <!-- Error/Success Message Display -->
+      <AuthErrorDisplay :message="errorMessage" :type="messageType" />
 
-    <!-- Register Form -->
-    <RegisterForm
-      :is-loading="isLoading"
-      @submit="handleRegister"
-    />
+      <!-- Register Form -->
+      <RegisterForm :is-loading="isLoading" @submit="handleRegister" />
 
-    <!-- Link to Login -->
-    <div class="mt-6 text-center">
-      <p class="text-sm text-gray-600">
-        Masz już konto?
-        <NuxtLink
-          to="/auth/login"
-          class="font-medium text-blue-600 hover:text-blue-500"
-        >
-          Zaloguj się
-        </NuxtLink>
-      </p>
+      <!-- Link to Login -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+          Masz już konto?
+          <NuxtLink to="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
+            Zaloguj się
+          </NuxtLink>
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -64,7 +57,6 @@ const handleRegister = async (credentials: RegisterFormData) => {
     // For now, just show success message
     messageType.value = 'success'
     errorMessage.value = 'Rejestracja zostanie zaimplementowana z useAuth composable'
-
   } catch (error) {
     messageType.value = 'error'
     errorMessage.value = 'Wystąpił błąd podczas rejestracji'
@@ -74,3 +66,14 @@ const handleRegister = async (credentials: RegisterFormData) => {
   }
 }
 </script>
+<style scoped>
+.register-page {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

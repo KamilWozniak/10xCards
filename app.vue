@@ -1,5 +1,13 @@
 <template>
-  <NuxtPage />
+  <div class="app-root">
+    <NuxtPage />
+  </div>
 </template>
-
-<script setup lang="ts"></script>
+<style scoped>
+.app-root {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+</style>

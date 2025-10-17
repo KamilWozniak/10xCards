@@ -1,10 +1,8 @@
 <template>
-  <Card>
+  <Card class="w-full max-w-md mx-auto login-form">
     <CardHeader>
       <CardTitle>Zaloguj się</CardTitle>
-      <CardDescription>
-        Wprowadź swoje dane logowania
-      </CardDescription>
+      <CardDescription> Wprowadź swoje dane logowania </CardDescription>
     </CardHeader>
     <CardContent>
       <div class="space-y-4">
@@ -42,11 +40,7 @@
       </div>
     </CardContent>
     <CardFooter>
-      <Button
-        :disabled="!isFormValid || isLoading"
-        class="w-full"
-        @click="handleSubmit"
-      >
+      <Button :disabled="!isFormValid || isLoading" class="w-full" @click="handleSubmit">
         <span v-if="isLoading">Logowanie...</span>
         <span v-else>Zaloguj się</span>
       </Button>
@@ -134,3 +128,9 @@ const handleSubmit = () => {
   }
 }
 </script>
+<style scoped>
+.login-form {
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+}
+</style>
