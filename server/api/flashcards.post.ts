@@ -3,6 +3,7 @@ import { validateCreateFlashcardsRequest } from '~/server/utils/validators/flash
 import { getUserId } from '~/server/utils/auth/get-user-id'
 import { createFlashcardsService } from '~/services/database/FlashcardsService'
 import { ValidationError, UnauthorizedError } from '~/server/utils/errors/custom-errors'
+import { createSupabaseServerClient } from '~/server/utils/supabase/server-client'
 
 /**
  * POST /api/flashcards
@@ -42,6 +43,9 @@ import { ValidationError, UnauthorizedError } from '~/server/utils/errors/custom
 export default defineEventHandler(
   async (event): Promise<CreateFlashcardsResponseDTO | ApiErrorResponseDTO> => {
     try {
+      // 0. Create Supabase server client for database operations
+      const supabase = createSupabaseServerClient(event)
+
       // 1. Validate authentication
       let userId: string
       try {
@@ -85,7 +89,7 @@ export default defineEventHandler(
       }
 
       // 4. Validate generation_id ownership for AI-generated flashcards
-      const flashcardsService = createFlashcardsService()
+      const flashcardsService = createFlashcardsService(supabase)
       const aiFlashcards = validatedRequest.flashcards.filter(
         flashcard => flashcard.source === 'ai-full' || flashcard.source === 'ai-edited'
       )

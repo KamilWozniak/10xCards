@@ -1,5 +1,6 @@
 import type { FlashcardDTO, FlashcardCreateData } from '~/types/dto/types'
-import { useSupabase } from '~/composables/useSupabase'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '~/types/database/database.types'
 
 /**
  * Database service for managing flashcards
@@ -7,6 +8,11 @@ import { useSupabase } from '~/composables/useSupabase'
  * Handles CRUD operations for the flashcards table
  */
 export class FlashcardsService {
+  private supabase: SupabaseClient<Database>
+
+  constructor(supabase: SupabaseClient<Database>) {
+    this.supabase = supabase
+  }
   /**
    * Create multiple flashcards in a single transaction
    *
@@ -16,15 +22,13 @@ export class FlashcardsService {
    * @throws Error if database operation fails
    */
   async createMultiple(flashcards: FlashcardCreateData[], userId: string): Promise<FlashcardDTO[]> {
-    const { supabase } = useSupabase()
-
     // Prepare data with user_id for each flashcard
     const flashcardsWithUserId = flashcards.map(flashcard => ({
       ...flashcard,
       user_id: userId,
     }))
 
-    const { data, error } = await supabase.from('flashcards').insert(flashcardsWithUserId).select()
+    const { data, error } = await this.supabase.from('flashcards').insert(flashcardsWithUserId).select()
 
     if (error) {
       throw new Error(`Failed to create flashcards: ${error.message}`)
@@ -46,9 +50,7 @@ export class FlashcardsService {
    * @throws Error if database operation fails
    */
   async create(flashcard: FlashcardCreateData, userId: string): Promise<FlashcardDTO> {
-    const { supabase } = useSupabase()
-
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from('flashcards')
       .insert({
         ...flashcard,
@@ -77,9 +79,7 @@ export class FlashcardsService {
    * @throws Error if database operation fails
    */
   async validateGenerationOwnership(generationId: number, userId: string): Promise<boolean> {
-    const { supabase } = useSupabase()
-
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from('generations')
       .select('id, user_id')
       .eq('id', generationId)
@@ -109,9 +109,7 @@ export class FlashcardsService {
     generationIds: number[],
     userId: string
   ): Promise<number[]> {
-    const { supabase } = useSupabase()
-
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from('generations')
       .select('id')
       .in('id', generationIds)
@@ -141,9 +139,7 @@ export class FlashcardsService {
       offset?: number
     }
   ): Promise<FlashcardDTO[]> {
-    const { supabase } = useSupabase()
-
-    let query = supabase
+    let query = this.supabase
       .from('flashcards')
       .select('*')
       .eq('user_id', userId)
@@ -183,9 +179,7 @@ export class FlashcardsService {
    * @throws Error if database operation fails
    */
   async getById(flashcardId: number, userId: string): Promise<FlashcardDTO | null> {
-    const { supabase } = useSupabase()
-
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from('flashcards')
       .select('*')
       .eq('id', flashcardId)
@@ -205,7 +199,11 @@ export class FlashcardsService {
 
 /**
  * Factory function to create FlashcardsService instance
+ *
+ * @param supabase - Supabase client instance
  */
-export function createFlashcardsService(): FlashcardsService {
-  return new FlashcardsService()
+export function createFlashcardsService(
+  supabase: SupabaseClient<Database>
+): FlashcardsService {
+  return new FlashcardsService(supabase)
 }

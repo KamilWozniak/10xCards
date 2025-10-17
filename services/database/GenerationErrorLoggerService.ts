@@ -1,4 +1,6 @@
 import type { CreateGenerationErrorLogCommand } from '~/types/commands/generation-commands'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '~/types/database/database.types'
 
 /**
  * Service for logging generation errors to the database
@@ -6,6 +8,12 @@ import type { CreateGenerationErrorLogCommand } from '~/types/commands/generatio
  * Stores AI service failures for debugging, monitoring, and analytics
  */
 export class GenerationErrorLoggerService {
+  private supabase: SupabaseClient<Database>
+
+  constructor(supabase: SupabaseClient<Database>) {
+    this.supabase = supabase
+  }
+
   /**
    * Log an AI generation error to the database
    *
@@ -14,9 +22,7 @@ export class GenerationErrorLoggerService {
    */
   async log(command: CreateGenerationErrorLogCommand): Promise<void> {
     try {
-      const { supabase } = useSupabase()
-
-      const { error } = await supabase.from('generation_error_logs').insert({
+      const { error } = await this.supabase.from('generation_error_logs').insert({
         user_id: command.user_id,
         model: command.model,
         source_text_hash: command.source_text_hash,
@@ -38,7 +44,11 @@ export class GenerationErrorLoggerService {
 
 /**
  * Factory function to create GenerationErrorLoggerService instance
+ *
+ * @param supabase - Supabase client instance
  */
-export function createGenerationErrorLoggerService(): GenerationErrorLoggerService {
-  return new GenerationErrorLoggerService()
+export function createGenerationErrorLoggerService(
+  supabase: SupabaseClient<Database>
+): GenerationErrorLoggerService {
+  return new GenerationErrorLoggerService(supabase)
 }

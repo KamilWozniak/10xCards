@@ -17,6 +17,7 @@ import { createTimer } from '../utils/timer'
 import { createAIService } from '~/services/ai/AIService'
 import { createGenerationsService } from '~/services/database/GenerationsService'
 import { createGenerationErrorLoggerService } from '~/services/database/GenerationErrorLoggerService'
+import { createSupabaseServerClient } from '~/server/utils/supabase/server-client'
 
 /**
  * POST /api/generations
@@ -31,6 +32,9 @@ import { createGenerationErrorLoggerService } from '~/services/database/Generati
  */
 export default defineEventHandler(async event => {
   try {
+    // 0. Create Supabase server client for database operations
+    const supabase = createSupabaseServerClient(event)
+
     // 1. Get authenticated user ID from session
     const userId = await getUserId(event)
 
@@ -55,7 +59,7 @@ export default defineEventHandler(async event => {
       aiResult = await aiService.generateFlashcards(sourceText)
     } catch (error) {
       // Log AI error to database
-      const errorLogger = createGenerationErrorLoggerService()
+      const errorLogger = createGenerationErrorLoggerService(supabase)
       await errorLogger.log({
         user_id: userId,
         model,
@@ -77,7 +81,7 @@ export default defineEventHandler(async event => {
     const generationDuration = timer.elapsed()
 
     // 7. Save generation metadata to database
-    const generationsService = createGenerationsService()
+    const generationsService = createGenerationsService(supabase)
     const command: CreateGenerationCommand = {
       user_id: userId,
       model,
@@ -87,10 +91,18 @@ export default defineEventHandler(async event => {
       generation_duration: generationDuration,
     }
 
+    console.log('[generations.post] Attempting to save generation to database:', command)
+
     let generation
     try {
       generation = await generationsService.create(command)
+      console.log('[generations.post] Generation saved successfully:', generation.id)
     } catch (error) {
+      console.error('[generations.post] Database error:', error)
+      console.error('[generations.post] Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown',
+        stack: error instanceof Error ? error.stack : undefined,
+      })
       throw new DatabaseError(
         'Database error. Please try again.',
         error instanceof Error ? error.message : 'Unknown database error'

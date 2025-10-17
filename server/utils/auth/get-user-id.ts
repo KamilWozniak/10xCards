@@ -17,23 +17,34 @@ export async function getUserId(event: H3Event): Promise<string> {
     // Create Supabase server client (reads auth cookies)
     const supabase = createSupabaseServerClient(event)
 
+    console.log('[getUserId] Attempting to get user from session')
+
     // Get user from session
     const {
       data: { user },
       error,
     } = await supabase.auth.getUser()
 
+    console.log('[getUserId] Result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      hasError: !!error,
+      errorMessage: error?.message,
+    })
+
     // Check for authentication errors
     if (error) {
-      console.error('Auth error in getUserId:', error)
+      console.error('[getUserId] Auth error:', error)
       throw new UnauthorizedError('Invalid or expired authentication token', error.message)
     }
 
     // Check if user exists
     if (!user || !user.id) {
+      console.error('[getUserId] No user found in session')
       throw new UnauthorizedError('No authenticated user found')
     }
 
+    console.log('[getUserId] Successfully retrieved user ID:', user.id)
     // Return user ID
     return user.id
   } catch (error: any) {
@@ -43,7 +54,7 @@ export async function getUserId(event: H3Event): Promise<string> {
     }
 
     // Handle unexpected errors
-    console.error('Unexpected error in getUserId:', error)
+    console.error('[getUserId] Unexpected error:', error)
     throw new UnauthorizedError('Authentication verification failed', error.message)
   }
 }

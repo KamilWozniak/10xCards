@@ -6,9 +6,7 @@
         <div class="flex justify-between items-center h-16">
           <!-- Logo/Brand -->
           <div class="flex items-center">
-            <NuxtLink to="/generate" class="text-2xl font-bold text-gray-900">
-              10xCards
-            </NuxtLink>
+            <NuxtLink to="/generate" class="text-2xl font-bold text-gray-900"> 10xCards </NuxtLink>
           </div>
 
           <!-- User Section (Right side) -->
@@ -70,27 +68,21 @@ const handleLogout = async () => {
   try {
     console.log('Logging out...')
 
-    // Call logout API endpoint
+    // Sign out from client-side Supabase (clears localStorage)
+    const supabase = useSupabase()
+    await supabase.supabase.auth.signOut()
+
+    // Call logout API endpoint (clears httpOnly cookies)
     await $fetch('/api/auth/logout', {
       method: 'POST',
     })
 
-    // Sign out from client-side Supabase
-    const supabase = useSupabase()
-    await supabase.supabase.auth.signOut()
-
-    // Redirect to login
-    await navigateTo('/auth/login')
+    // Redirect to login with full page reload to ensure clean state
+    await navigateTo('/auth/login', { external: true })
   } catch (error) {
     console.error('Logout error:', error)
-    // Even if API fails, try to sign out client-side
-    try {
-      const supabase = useSupabase()
-      await supabase.supabase.auth.signOut()
-      await navigateTo('/auth/login')
-    } catch (fallbackError) {
-      console.error('Fallback logout error:', fallbackError)
-    }
+    // Even if API fails, client is signed out, redirect anyway
+    await navigateTo('/auth/login', { external: true })
   }
 }
 </script>
