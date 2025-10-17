@@ -46,19 +46,63 @@ const handleLogin = async (credentials: LoginFormData) => {
 
     console.log('Login attempt with:', { email: credentials.email })
 
-    // TODO: Implement actual login logic with useAuth composable
-    // await auth.signIn(credentials.email, credentials.password)
-    // navigateTo('/generate')
+    // Call server-side login endpoint
+    const response = await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: {
+        email: credentials.email,
+        password: credentials.password,
+      },
+    })
 
-    // Placeholder - simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log('Login successful:', response)
+    console.log('Response has session?', !!response.session)
+    console.log('Session data:', response.session)
 
-    // For now, just show success message
+    // Login successful - show success message
     messageType.value = 'success'
-    errorMessage.value = 'Logowanie zostanie zaimplementowane z useAuth composable'
-  } catch (error) {
+    errorMessage.value = 'Zalogowano pomyślnie. Przekierowywanie...'
+
+    // Set session in client-side Supabase (for middleware to work)
+    const supabase = useSupabase()
+
+    if (!response.session) {
+      throw new Error('No session in response!')
+    }
+
+    const { data, error: setSessionError } = await supabase.supabase.auth.setSession({
+      access_token: response.session.access_token,
+      refresh_token: response.session.refresh_token,
+    })
+
+    if (setSessionError) {
+      console.error('Error setting session:', setSessionError)
+      throw setSessionError
+    }
+
+    if (!data?.user) {
+      throw new Error('No user returned from setSession!')
+    }
+
+    console.log('User logged in successfully:', data.user.email)
+
+    // Session is now set - redirect to /generate
+    // Middleware will allow access because session is loaded in Supabase client
+    await navigateTo('/generate')
+  } catch (error: any) {
     messageType.value = 'error'
-    errorMessage.value = 'Wystąpił błąd podczas logowania'
+
+    // Map error to user-friendly message
+    const { mapError } = useAuthErrors()
+
+    if (error?.data?.statusMessage) {
+      errorMessage.value = error.data.statusMessage
+    } else if (error?.statusMessage) {
+      errorMessage.value = error.statusMessage
+    } else {
+      errorMessage.value = mapError(error)
+    }
+
     console.error('Login error:', error)
   } finally {
     isLoading.value = false

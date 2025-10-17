@@ -5,7 +5,12 @@ import type {
 } from '~/types/dto/types'
 import type { CreateGenerationCommand } from '~/types/commands/generation-commands'
 import { validateCreateGenerationRequest } from '../utils/validators/generation-validator'
-import { ValidationError, AIServiceError, DatabaseError } from '../utils/errors/custom-errors'
+import {
+  ValidationError,
+  AIServiceError,
+  DatabaseError,
+  UnauthorizedError,
+} from '../utils/errors/custom-errors'
 import { getUserId } from '../utils/auth/get-user-id'
 import { computeHash } from '../utils/crypto/hash'
 import { createTimer } from '../utils/timer'
@@ -26,8 +31,8 @@ import { createGenerationErrorLoggerService } from '~/services/database/Generati
  */
 export default defineEventHandler(async event => {
   try {
-    // 1. Get user ID (development mode: uses DEFAULT_USER_ID)
-    const userId = getUserId()
+    // 1. Get authenticated user ID from session
+    const userId = await getUserId(event)
 
     // 2. Parse and validate request body
     const body = await readBody(event)
@@ -109,6 +114,17 @@ export default defineEventHandler(async event => {
     return response
   } catch (error) {
     // Handle known error types
+    if (error instanceof UnauthorizedError) {
+      throw createError({
+        statusCode: error.statusCode,
+        statusMessage: error.message,
+        data: {
+          error: error.message,
+          details: error.details,
+        },
+      })
+    }
+
     if (error instanceof ValidationError) {
       throw createError({
         statusCode: error.statusCode,

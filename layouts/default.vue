@@ -13,25 +13,20 @@
 
           <!-- User Section (Right side) -->
           <div class="flex items-center space-x-4">
-            <!-- User Avatar and Email Placeholder -->
+            <!-- User Avatar and Email -->
             <div class="flex items-center space-x-3">
               <Avatar>
                 <AvatarFallback>
-                  <span class="text-sm font-medium">U</span>
+                  <span class="text-sm font-medium">{{ userInitial }}</span>
                 </AvatarFallback>
               </Avatar>
               <div class="hidden md:block">
-                <p class="text-sm font-medium text-gray-900">użytkownik@email.com</p>
+                <p class="text-sm font-medium text-gray-900">{{ userEmail }}</p>
               </div>
             </div>
 
-            <!-- Logout Button Placeholder -->
-            <Button
-              variant="outline"
-              @click="handleLogout"
-            >
-              Wyloguj
-            </Button>
+            <!-- Logout Button -->
+            <Button variant="outline" @click="handleLogout"> Wyloguj </Button>
           </div>
         </div>
       </div>
@@ -47,12 +42,55 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
+import { ref, onMounted } from 'vue'
 
-// Placeholder logout handler - will be implemented with useAuth composable
-const handleLogout = () => {
-  console.log('Logout clicked - to be implemented with useAuth()')
-  // TODO: Implement logout logic with useAuth composable
-  // await auth.signOut()
-  // navigateTo('/auth/login')
+// Get user data
+const userEmail = ref<string>('Ładowanie...')
+const userInitial = ref<string>('U')
+
+// Fetch user data on mount
+onMounted(async () => {
+  try {
+    const supabase = useSupabase()
+    const {
+      data: { user },
+    } = await supabase.supabase.auth.getUser()
+
+    if (user?.email) {
+      userEmail.value = user.email
+      userInitial.value = user.email.charAt(0).toUpperCase()
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error)
+  }
+})
+
+// Logout handler
+const handleLogout = async () => {
+  try {
+    console.log('Logging out...')
+
+    // Call logout API endpoint
+    await $fetch('/api/auth/logout', {
+      method: 'POST',
+    })
+
+    // Sign out from client-side Supabase
+    const supabase = useSupabase()
+    await supabase.supabase.auth.signOut()
+
+    // Redirect to login
+    await navigateTo('/auth/login')
+  } catch (error) {
+    console.error('Logout error:', error)
+    // Even if API fails, try to sign out client-side
+    try {
+      const supabase = useSupabase()
+      await supabase.supabase.auth.signOut()
+      await navigateTo('/auth/login')
+    } catch (fallbackError) {
+      console.error('Fallback logout error:', fallbackError)
+    }
+  }
 }
 </script>

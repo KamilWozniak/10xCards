@@ -71,6 +71,14 @@ import SourceTextForm from '~/components/generate/SourceTextForm.vue'
 import FlashcardProposalsList from '~/components/generate/FlashcardProposalsList.vue'
 import type { FlashcardProposalViewModel } from '~/types/views/generate.types'
 
+// Use default layout with navigation
+definePageMeta({
+  layout: 'default',
+})
+
+// Authentication is handled by middleware/auth.global.ts
+// No need to check here
+
 // Composables
 const { generationState, generateFlashcards, saveFlashcards, clearError } = useGenerationState()
 

@@ -64,3 +64,14 @@ export class AuthenticationError extends Error {
     this.details = details
   }
 }
+
+/**
+ * Alias for AuthenticationError
+ * HTTP Status: 401 Unauthorized
+ */
+export class UnauthorizedError extends AuthenticationError {
+  constructor(message: string = 'Unauthorized', details?: string) {
+    super(message, details)
+    this.name = 'UnauthorizedError'
+  }
+}
