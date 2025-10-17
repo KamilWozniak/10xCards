@@ -27,8 +27,7 @@ import type { LoginFormData } from '~/types/auth/auth.types'
 // Define page meta
 definePageMeta({
   layout: 'auth',
-  // TODO: Add guest middleware when implemented
-  // middleware: 'guest',
+  middleware: 'guest',
 })
 
 // State
