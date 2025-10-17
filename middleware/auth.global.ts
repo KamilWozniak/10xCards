@@ -86,10 +86,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
         userEmail: user?.email,
       })
 
-      // If no user, redirect to login
+      // If no user, redirect to login with external redirect (full page reload)
       if (!user) {
         console.log('[Middleware] No user found, redirecting to login')
-        return navigateTo('/auth/login')
+        return navigateTo('/auth/login', { external: true })
       }
 
       // User is authenticated, allow access

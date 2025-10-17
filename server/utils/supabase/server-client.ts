@@ -1,5 +1,5 @@
 import { createServerClient, type CookieOptionsWithName } from '@supabase/ssr'
-import type { H3Event } from 'h3'
+import { getHeader, setCookie, type H3Event } from 'h3'
 import type { Database } from '~/types/database/database.types'
 
 /**

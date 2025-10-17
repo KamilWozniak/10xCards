@@ -1,21 +1,19 @@
 <template>
-  <div class="login-page">
-    <div>
-      <!-- Error/Success Message Display -->
-      <AuthErrorDisplay :message="errorMessage" :type="messageType" />
+  <div>
+    <!-- Error/Success Message Display -->
+    <AuthErrorDisplay :message="errorMessage" :type="messageType" />
 
-      <!-- Login Form -->
-      <LoginForm :is-loading="isLoading" @submit="handleLogin" />
+    <!-- Login Form -->
+    <LoginForm :is-loading="isLoading" @submit="handleLogin" />
 
-      <!-- Link to Register -->
-      <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600">
-          Nie masz konta?
-          <NuxtLink to="/auth/register" class="font-medium text-blue-600 hover:text-blue-500">
-            Zarejestruj się
-          </NuxtLink>
-        </p>
-      </div>
+    <!-- Link to Register -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600">
+        Nie masz konta?
+        <NuxtLink to="/auth/register" class="font-medium text-blue-600 hover:text-blue-500">
+          Zarejestruj się
+        </NuxtLink>
+      </p>
     </div>
   </div>
 </template>
@@ -109,14 +107,3 @@ const handleLogin = async (credentials: LoginFormData) => {
   }
 }
 </script>
-<style scoped>
-.login-page {
-  height: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>
