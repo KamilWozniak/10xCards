@@ -1,21 +1,19 @@
 <template>
-  <div class="register-page">
-    <div>
-      <!-- Error/Success Message Display -->
-      <AuthErrorDisplay :message="errorMessage" :type="messageType" />
+  <div>
+    <!-- Error/Success Message Display -->
+    <AuthErrorDisplay :message="errorMessage" :type="messageType" />
 
-      <!-- Register Form -->
-      <RegisterForm :is-loading="isLoading" @submit="handleRegister" />
+    <!-- Register Form -->
+    <RegisterForm :is-loading="isLoading" @submit="handleRegister" />
 
-      <!-- Link to Login -->
-      <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600">
-          Masz już konto?
-          <NuxtLink to="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
-            Zaloguj się
-          </NuxtLink>
-        </p>
-      </div>
+    <!-- Link to Login -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600">
+        Masz już konto?
+        <NuxtLink to="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
+          Zaloguj się
+        </NuxtLink>
+      </p>
     </div>
   </div>
 </template>
@@ -45,34 +43,65 @@ const handleRegister = async (credentials: RegisterFormData) => {
 
     console.log('Registration attempt with:', { email: credentials.email })
 
-    // TODO: Implement actual registration logic with useAuth composable
-    // await auth.signUp(credentials.email, credentials.password)
-    // Show success message or auto-login
-    // navigateTo('/generate')
+    // Call server-side register endpoint
+    const response = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        email: credentials.email,
+        password: credentials.password,
+        confirmPassword: credentials.confirmPassword,
+      },
+    })
 
-    // Placeholder - simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log('Registration successful:', response)
 
-    // For now, just show success message
+    // Registration successful - show success message
     messageType.value = 'success'
-    errorMessage.value = 'Rejestracja zostanie zaimplementowana z useAuth composable'
-  } catch (error) {
+    errorMessage.value = 'Konto zostało utworzone pomyślnie. Przekierowywanie...'
+
+    // Set session in client-side Supabase (for middleware to work)
+    const supabase = useSupabase()
+
+    if (!response.session) {
+      throw new Error('No session in response!')
+    }
+
+    const { data, error: setSessionError } = await supabase.supabase.auth.setSession({
+      access_token: response.session.access_token,
+      refresh_token: response.session.refresh_token,
+    })
+
+    if (setSessionError) {
+      console.error('Error setting session:', setSessionError)
+      throw setSessionError
+    }
+
+    if (!data?.user) {
+      throw new Error('No user returned from setSession!')
+    }
+
+    console.log('User registered and logged in successfully:', data.user.email)
+
+    // Session is now set - redirect to /generate
+    // Middleware will allow access because session is loaded in Supabase client
+    await navigateTo('/generate')
+  } catch (error: any) {
     messageType.value = 'error'
-    errorMessage.value = 'Wystąpił błąd podczas rejestracji'
+
+    // Map error to user-friendly message
+    const { mapError } = useAuthErrors()
+
+    if (error?.data?.statusMessage) {
+      errorMessage.value = error.data.statusMessage
+    } else if (error?.statusMessage) {
+      errorMessage.value = error.statusMessage
+    } else {
+      errorMessage.value = mapError(error)
+    }
+
     console.error('Registration error:', error)
   } finally {
     isLoading.value = false
   }
 }
 </script>
-<style scoped>
-.register-page {
-  height: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>
