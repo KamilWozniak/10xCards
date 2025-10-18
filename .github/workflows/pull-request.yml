@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         
+      - name: Prepare Nuxt
+        run: pnpm postinstall
+        
       - name: Run ESLint
         run: pnpm exec eslint .
 
