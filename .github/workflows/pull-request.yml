@@ -61,7 +61,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-coverage
-          path: coverage/
+          path: |
+            coverage/
+            !coverage/**/*:*
           retention-days: 5
 
   e2e-test:
