@@ -59,9 +59,22 @@ Manual creation of high-quality flashcards requires significant time and effort,
   - API key financial limits
 
 ### Development & Testing
-- **Vitest** - Fast unit testing framework
+- **Unit Testing**
+  - **Vitest** - Fast unit testing framework
+  - **@nuxt/test-utils** - Utilities for testing Nuxt applications
+  - **@vue/test-utils** - Official testing utilities for Vue components
+  - **happy-dom** - Lightweight DOM environment
+  - **@testing-library/vue** - User-centric component testing
+  - **@testing-library/dom** - DOM testing utilities
+  - **@pinia/testing** - Pinia state management testing helpers
+  - **MSW** - Mock Service Worker for HTTP mocking
+  - **@vitest/coverage-v8** - Native coverage reporting
+  - **@vitest/ui** - Interactive test dashboard
+  - **@faker-js/faker** - Test data generation
+- **E2E Testing**
+  - **Playwright** - End-to-end testing framework
+  - **@playwright/test** - Playwright test runner
 - **ESLint** - Code linting and quality enforcement
-- **Vue Test Utils** - Official testing utilities for Vue components
 
 ### CI/CD & Hosting
 - **GitHub Actions** - Automated CI/CD pipelines
@@ -139,6 +152,11 @@ Manual creation of high-quality flashcards requires significant time and effort,
 | **generate** | `pnpm generate` | Generate a static version of the application |
 | **preview** | `pnpm preview` | Preview the production build locally |
 | **test** | `pnpm test` | Run unit tests with Vitest |
+| **test:ui** | `pnpm test:ui` | Run tests with interactive UI dashboard |
+| **test:coverage** | `pnpm test:coverage` | Run tests with coverage reporting |
+| **test:watch** | `pnpm test:watch` | Run tests in watch mode |
+| **test:e2e** | `pnpm test:e2e` | Run end-to-end tests with Playwright |
+| **test:e2e:ui** | `pnpm test:e2e:ui` | Run end-to-end tests with Playwright UI |
 | **postinstall** | `pnpm postinstall` | Automatically run after installation (prepares Nuxt) |
 
 ## 📋 Project Scope
