@@ -3,7 +3,7 @@
  * This file contains mocks and configurations for CI environments
  */
 
-import { Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 /**
  * Mock user authentication for CI environment
