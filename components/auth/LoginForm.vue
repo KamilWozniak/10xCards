@@ -1,5 +1,5 @@
 <template>
-  <Card class="w-full max-w-md mx-auto login-form">
+  <Card class="w-full max-w-md mx-auto login-form" data-testid="login-form">
     <CardHeader>
       <CardTitle>Zaloguj się</CardTitle>
       <CardDescription> Wprowadź swoje dane logowania </CardDescription>
@@ -15,9 +15,10 @@
             type="email"
             placeholder="twoj@email.com"
             :disabled="isLoading"
+            data-testid="login-email-input"
             @blur="validateEmailField"
           />
-          <p v-if="errors.email" class="text-sm text-red-600">
+          <p v-if="errors.email" class="text-sm text-red-600" data-testid="login-email-error">
             {{ errors.email }}
           </p>
         </div>
@@ -31,18 +32,24 @@
             type="password"
             placeholder="••••••••"
             :disabled="isLoading"
+            data-testid="login-password-input"
             @blur="validatePasswordField"
           />
-          <p v-if="errors.password" class="text-sm text-red-600">
+          <p v-if="errors.password" class="text-sm text-red-600" data-testid="login-password-error">
             {{ errors.password }}
           </p>
         </div>
       </div>
     </CardContent>
     <CardFooter>
-      <Button :disabled="!isFormValid || isLoading" class="w-full" @click="handleSubmit">
-        <span v-if="isLoading">Logowanie...</span>
-        <span v-else>Zaloguj się</span>
+      <Button
+        :disabled="!isFormValid || isLoading"
+        class="w-full"
+        data-testid="login-submit-button"
+        @click="handleSubmit"
+      >
+        <span v-if="isLoading" data-testid="login-loading-text">Logowanie...</span>
+        <span v-else data-testid="login-submit-text">Zaloguj się</span>
       </Button>
     </CardFooter>
   </Card>

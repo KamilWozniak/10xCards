@@ -1,6 +1,6 @@
 <template>
-  <Alert v-if="message" :variant="alertVariant" class="mb-4">
-    <AlertDescription>
+  <Alert v-if="message" :variant="alertVariant" class="mb-4" :data-testid="`auth-message-${type}`">
+    <AlertDescription data-testid="auth-message-text">
       {{ message }}
     </AlertDescription>
   </Alert>

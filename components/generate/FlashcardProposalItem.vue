@@ -2,27 +2,28 @@
   <Card
     class="transition-all duration-200 hover:shadow-md"
     :class="{ 'opacity-50': proposal.isRejected }"
+    :data-testid="`proposal-card-${proposal.id}`"
   >
     <CardContent class="p-4">
       <div class="space-y-4">
         <!-- Front Content -->
-        <div>
+        <div data-testid="proposal-front-section">
           <h4 class="text-sm font-medium text-gray-700 mb-2">Przód:</h4>
-          <p class="text-gray-900 bg-gray-50 p-3 rounded-md border">
+          <p class="text-gray-900 bg-gray-50 p-3 rounded-md border" data-testid="proposal-front-content">
             {{ proposal.front }}
           </p>
         </div>
 
         <!-- Back Content -->
-        <div>
+        <div data-testid="proposal-back-section">
           <h4 class="text-sm font-medium text-gray-700 mb-2">Tył:</h4>
-          <p class="text-gray-900 bg-gray-50 p-3 rounded-md border">
+          <p class="text-gray-900 bg-gray-50 p-3 rounded-md border" data-testid="proposal-back-content">
             {{ proposal.back }}
           </p>
         </div>
 
         <!-- Source Badge -->
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2" data-testid="proposal-source-section">
           <span
             :class="[
               'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -30,21 +31,23 @@
                 ? 'bg-blue-100 text-blue-800'
                 : 'bg-green-100 text-green-800',
             ]"
+            data-testid="proposal-source-badge"
           >
             {{ proposal.source === 'ai-full' ? 'AI' : 'Edytowane' }}
           </span>
-          <span v-if="proposal.isEdited" class="text-xs text-gray-500"> (edytowane) </span>
+          <span v-if="proposal.isEdited" class="text-xs text-gray-500" data-testid="proposal-edited-label"> (edytowane) </span>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center justify-between pt-2 border-t">
-          <div class="flex items-center space-x-2">
+        <div class="flex items-center justify-between pt-2 border-t" data-testid="proposal-actions">
+          <div class="flex items-center space-x-2" data-testid="proposal-action-buttons">
             <!-- Accept Button -->
             <Button
               v-if="!proposal.isAccepted"
               size="sm"
               variant="default"
               class="bg-green-600 hover:bg-green-700"
+              :data-testid="`proposal-accept-button-${proposal.id}`"
               @click="handleAccept"
             >
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,6 +67,7 @@
               size="sm"
               variant="outline"
               class="text-red-600 border-red-300 hover:bg-red-50"
+              :data-testid="`proposal-reject-button-${proposal.id}`"
               @click="handleReject"
             >
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,6 +87,7 @@
               size="sm"
               variant="outline"
               class="text-blue-600 border-blue-300 hover:bg-blue-50"
+              :data-testid="`proposal-edit-button-${proposal.id}`"
               @click="handleEdit"
             >
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,7 +103,7 @@
           </div>
 
           <!-- Status Indicator -->
-          <div v-if="proposal.isAccepted" class="flex items-center text-green-600">
+          <div v-if="proposal.isAccepted" class="flex items-center text-green-600" data-testid="proposal-accepted-status">
             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -109,7 +114,7 @@
             <span class="text-sm font-medium">Zaakceptowane</span>
           </div>
 
-          <div v-else-if="proposal.isRejected" class="flex items-center text-red-600">
+          <div v-else-if="proposal.isRejected" class="flex items-center text-red-600" data-testid="proposal-rejected-status">
             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"

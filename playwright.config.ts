@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
+import dotenv from 'dotenv'
+import path from 'path'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.test') })
 
 /**
  * Playwright configuration for E2E testing
@@ -7,6 +11,9 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   // Test directory
   testDir: './tests/e2e',
+
+  // Global teardown
+  globalTeardown: './tests/e2e/global.teardown.ts',
 
   // Maximum time one test can run
   timeout: 30 * 1000,

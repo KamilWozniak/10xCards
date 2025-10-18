@@ -1,5 +1,5 @@
 <template>
-  <Card>
+  <Card data-testid="source-text-form">
     <CardHeader>
       <CardTitle>Tekst źródłowy</CardTitle>
       <CardDescription>
@@ -15,15 +15,17 @@
             :disabled="disabled"
             placeholder="Wprowadź tekst źródłowy..."
             class="w-full min-h-[200px]"
+            data-testid="source-text-textarea"
             @input="handleTextInput"
           />
         </div>
 
         <!-- Character Counter -->
-        <div class="flex justify-between items-center text-sm">
+        <div class="flex justify-between items-center text-sm" data-testid="character-counter-section">
           <div class="flex items-center space-x-2">
             <span
               :class="['font-medium', formValidation.isValid ? 'text-green-600' : 'text-red-600']"
+              data-testid="character-count"
             >
               {{ formData.characterCount }} znaków
             </span>
@@ -33,19 +35,20 @@
           </div>
 
           <!-- Progress Bar -->
-          <div class="w-32 bg-gray-200 rounded-full h-2">
+          <div class="w-32 bg-gray-200 rounded-full h-2" data-testid="character-progress-bar">
             <div
               :class="[
                 'h-2 rounded-full transition-all duration-300',
                 formValidation.isValid ? 'bg-green-500' : 'bg-red-500',
               ]"
               :style="{ width: `${progressPercentage}%` }"
+              data-testid="character-progress-fill"
             />
           </div>
         </div>
 
         <!-- Error Message -->
-        <div v-if="formValidation.errorMessage" class="text-sm text-red-600">
+        <div v-if="formValidation.errorMessage" class="text-sm text-red-600" data-testid="form-validation-error">
           {{ formValidation.errorMessage }}
         </div>
       </div>
@@ -55,10 +58,11 @@
         :disabled="!formValidation.isValid || disabled"
         :loading="isLoading"
         class="w-full"
+        data-testid="generate-flashcards-button"
         @click="handleGenerate"
       >
-        <span v-if="isLoading">Generuję fiszki...</span>
-        <span v-else>Generuj fiszki</span>
+        <span v-if="isLoading" data-testid="generate-loading-text">Generuję fiszki...</span>
+        <span v-else data-testid="generate-button-text">Generuj fiszki</span>
       </Button>
     </CardFooter>
   </Card>
