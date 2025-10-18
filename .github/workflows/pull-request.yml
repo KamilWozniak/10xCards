@@ -121,6 +121,8 @@ jobs:
     if: ${{ success() }}
     needs: [unit-test, e2e-test]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     
     steps:
       - name: Checkout repository
