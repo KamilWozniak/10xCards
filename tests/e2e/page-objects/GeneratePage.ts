@@ -111,20 +111,20 @@ export class GeneratePage extends BasePage {
   async performCompleteGenerationFlow(text: string): Promise<void> {
     // 1. Sprawdź czy strona jest załadowana
     await this.expectPageFullyLoaded()
-    
+
     // 2. Wypełnij formularz i rozpocznij generowanie
     await this.sourceTextForm.performGenerationFlow(text)
-    
+
     // 3. Oczekuj na rozpoczęcie ładowania
     await this.generationState.waitForLoadingStart()
-    
+
     // 4. Oczekuj na zakończenie generowania
     const finalState = await this.generationState.waitForStateChange()
-    
+
     if (finalState === 'error') {
       throw new Error('Generation failed with error')
     }
-    
+
     // 5. Sprawdź czy propozycje są widoczne
     await this.expectGenerationSuccess()
   }
@@ -145,14 +145,14 @@ export class GeneratePage extends BasePage {
   async acceptFirstProposal(): Promise<void> {
     // Pobierz ID pierwszej propozycji
     const proposalIds = await this.proposalItem.getAllProposalIds()
-    
+
     if (proposalIds.length === 0) {
       throw new Error('No proposals available to accept')
     }
-    
+
     const firstProposalId = proposalIds[0]
     await this.proposalItem.acceptProposal(firstProposalId)
-    
+
     // Sprawdź aktualizację podsumowania
     await this.proposalsList.expectSelectionSummary(1)
     await this.proposalsList.expectSaveButtonEnabled(true)
@@ -163,16 +163,16 @@ export class GeneratePage extends BasePage {
    */
   async acceptAllProposals(): Promise<void> {
     const proposalIds = await this.proposalItem.getAllProposalIds()
-    
+
     if (proposalIds.length === 0) {
       throw new Error('No proposals available to accept')
     }
-    
+
     // Akceptuj wszystkie propozycje
     for (const proposalId of proposalIds) {
       await this.proposalItem.clickAcceptButton(proposalId)
     }
-    
+
     // Sprawdź podsumowanie
     await this.proposalsList.expectSelectionSummary(proposalIds.length)
     await this.proposalsList.expectSaveButtonEnabled(true)
@@ -187,19 +187,26 @@ export class GeneratePage extends BasePage {
     if (!exists) {
       throw new Error(`Proposal with ID ${proposalId} does not exist`)
     }
-    
+
     // 2. Kliknij przycisk edycji
     await this.proposalItem.clickEditButton(proposalId)
-    
+
     // 3. Oczekuj na otwarcie modala
     await this.editModal.waitForModalOpen()
-    
+
     // 4. Wykonaj edycję
     await this.editModal.performEdit(newFront, newBack)
-    
+
     // 5. Sprawdź czy propozycja została zaktualizowana
     await this.proposalItem.expectProposalContent(proposalId, newFront, newBack)
-    await this.proposalItem.expectProposalState(proposalId, 'accepted', newFront, newBack, 'Edytowane', true)
+    await this.proposalItem.expectProposalState(
+      proposalId,
+      'accepted',
+      newFront,
+      newBack,
+      'Edytowane',
+      true
+    )
   }
 
   /**
@@ -215,14 +222,14 @@ export class GeneratePage extends BasePage {
   async saveSelectedProposals(): Promise<void> {
     // Sprawdź czy są wybrane propozycje
     const selectedCount = await this.proposalsList.getSelectedCountFromUI()
-    
+
     if (selectedCount === 0) {
       throw new Error('No proposals selected for saving')
     }
-    
+
     // Kliknij przycisk zapisu
     await this.proposalsList.clickSaveSelectedButton()
-    
+
     // Oczekuj na zakończenie operacji zapisu
     // (może wymagać dodatkowej logiki w zależności od implementacji)
   }
@@ -236,20 +243,22 @@ export class GeneratePage extends BasePage {
   ): Promise<void> {
     // 1. Wygeneruj propozycje
     await this.performCompleteGenerationFlow(text)
-    
+
     // 2. Sprawdź liczbę wygenerowanych propozycji
     const totalCount = await this.proposalsList.getProposalCount()
     const proposalIds = await this.proposalItem.getAllProposalIds()
-    
+
     if (totalCount < proposalsToAccept) {
-      throw new Error(`Not enough proposals generated. Expected at least ${proposalsToAccept}, got ${totalCount}`)
+      throw new Error(
+        `Not enough proposals generated. Expected at least ${proposalsToAccept}, got ${totalCount}`
+      )
     }
-    
+
     // 3. Akceptuj określoną liczbę propozycji
     for (let i = 0; i < proposalsToAccept && i < proposalIds.length; i++) {
       await this.proposalItem.acceptProposal(proposalIds[i])
     }
-    
+
     // 4. Sprawdź podsumowanie
     await this.proposalsList.expectCompleteProposalsState(
       totalCount,
@@ -257,7 +266,7 @@ export class GeneratePage extends BasePage {
       proposalsToAccept,
       0
     )
-    
+
     // 5. Zapisz wybrane propozycje
     await this.saveSelectedProposals()
   }
@@ -273,14 +282,14 @@ export class GeneratePage extends BasePage {
   ): Promise<void> {
     // 1. Wygeneruj propozycje
     await this.performCompleteGenerationFlow(text)
-    
+
     // 2. Edytuj określoną propozycję
     await this.editProposal(proposalIdToEdit, newFront, newBack)
-    
+
     // 3. Sprawdź stan po edycji
     await this.proposalsList.expectSelectionSummary(1)
     await this.proposalsList.expectSelectionBreakdown(0, 1)
-    
+
     // 4. Zapisz edytowaną propozycję
     await this.saveSelectedProposals()
   }
@@ -290,23 +299,23 @@ export class GeneratePage extends BasePage {
    */
   async handleGenerationErrorWithRetry(text: string, maxRetries: number = 2): Promise<void> {
     let attempts = 0
-    
+
     while (attempts < maxRetries) {
       try {
         await this.performCompleteGenerationFlow(text)
         return // Sukces
       } catch (error) {
         attempts++
-        
+
         // Sprawdź czy wystąpił błąd generowania
         const hasError = await this.generationState.hasGenerationError()
-        
+
         if (hasError && attempts < maxRetries) {
           // Spróbuj ponownie
           await this.generationState.handleErrorWithRetry()
           continue
         }
-        
+
         // Przekaż błąd dalej jeśli wyczerpano próby
         throw error
       }

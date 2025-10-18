@@ -94,7 +94,7 @@ export class FlashcardProposalItemComponent extends BasePage {
   async expectProposalContent(proposalId: string, front: string, back: string): Promise<void> {
     const frontContent = this.getFrontContent(proposalId)
     const backContent = this.getBackContent(proposalId)
-    
+
     await this.expectVisible(frontContent)
     await this.expectVisible(backContent)
     await this.expectText(frontContent, front)
@@ -107,7 +107,7 @@ export class FlashcardProposalItemComponent extends BasePage {
   async getFrontContent(proposalId: string): Promise<string> {
     const frontContent = this.getFrontContent(proposalId)
     await this.expectVisible(frontContent)
-    return await frontContent.textContent() || ''
+    return (await frontContent.textContent()) || ''
   }
 
   /**
@@ -116,7 +116,7 @@ export class FlashcardProposalItemComponent extends BasePage {
   async getBackContent(proposalId: string): Promise<string> {
     const backContent = this.getBackContent(proposalId)
     await this.expectVisible(backContent)
-    return await backContent.textContent() || ''
+    return (await backContent.textContent()) || ''
   }
 
   /**
@@ -133,7 +133,7 @@ export class FlashcardProposalItemComponent extends BasePage {
    */
   async expectEditedLabel(proposalId: string, shouldBeVisible: boolean = true): Promise<void> {
     const editedLabel = this.getEditedLabel(proposalId)
-    
+
     if (shouldBeVisible) {
       await this.expectVisible(editedLabel)
       await this.expectText(editedLabel, '(edytowane)')
@@ -196,10 +196,10 @@ export class FlashcardProposalItemComponent extends BasePage {
   async expectNeutralStatus(proposalId: string): Promise<void> {
     const acceptedStatus = this.getAcceptedStatus(proposalId)
     const rejectedStatus = this.getRejectedStatus(proposalId)
-    
+
     const acceptedCount = await acceptedStatus.count()
     const rejectedCount = await rejectedStatus.count()
-    
+
     if (acceptedCount > 0 || rejectedCount > 0) {
       throw new Error('Proposal should be in neutral state (neither accepted nor rejected)')
     }
@@ -208,11 +208,14 @@ export class FlashcardProposalItemComponent extends BasePage {
   /**
    * Sprawdzenie widoczności przycisków akcji
    */
-  async expectButtonsVisible(proposalId: string, expectedButtons: ('accept' | 'reject' | 'edit')[]): Promise<void> {
+  async expectButtonsVisible(
+    proposalId: string,
+    expectedButtons: ('accept' | 'reject' | 'edit')[]
+  ): Promise<void> {
     const acceptButton = this.getAcceptButton(proposalId)
     const rejectButton = this.getRejectButton(proposalId)
     const editButton = this.getEditButton(proposalId)
-    
+
     if (expectedButtons.includes('accept')) {
       await this.expectVisible(acceptButton)
       await this.expectText(acceptButton, 'Akceptuj')
@@ -222,7 +225,7 @@ export class FlashcardProposalItemComponent extends BasePage {
         throw new Error('Accept button should not be visible')
       }
     }
-    
+
     if (expectedButtons.includes('reject')) {
       await this.expectVisible(rejectButton)
       await this.expectText(rejectButton, 'Odrzuć')
@@ -232,7 +235,7 @@ export class FlashcardProposalItemComponent extends BasePage {
         throw new Error('Reject button should not be visible')
       }
     }
-    
+
     if (expectedButtons.includes('edit')) {
       await this.expectVisible(editButton)
       await this.expectText(editButton, 'Edytuj')
@@ -250,9 +253,9 @@ export class FlashcardProposalItemComponent extends BasePage {
   async expectRejectedOpacity(proposalId: string): Promise<void> {
     const card = this.getProposalCard(proposalId)
     await this.expectVisible(card)
-    
+
     await this.page.waitForFunction(
-      (id) => {
+      id => {
         const element = document.querySelector(`[data-testid="proposal-card-${id}"]`)
         return element && element.classList.contains('opacity-50')
       },
@@ -267,9 +270,9 @@ export class FlashcardProposalItemComponent extends BasePage {
   async expectNormalOpacity(proposalId: string): Promise<void> {
     const card = this.getProposalCard(proposalId)
     await this.expectVisible(card)
-    
+
     await this.page.waitForFunction(
-      (id) => {
+      id => {
         const element = document.querySelector(`[data-testid="proposal-card-${id}"]`)
         return element && !element.classList.contains('opacity-50')
       },
@@ -290,32 +293,32 @@ export class FlashcardProposalItemComponent extends BasePage {
     isEdited?: boolean
   ): Promise<void> {
     await this.expectProposalVisible(proposalId)
-    
+
     if (front && back) {
       await this.expectProposalContent(proposalId, front, back)
     }
-    
+
     if (sourceType) {
       await this.expectSourceBadge(proposalId, sourceType)
     }
-    
+
     if (isEdited !== undefined) {
       await this.expectEditedLabel(proposalId, isEdited)
     }
-    
+
     switch (expectedState) {
       case 'neutral':
         await this.expectNeutralStatus(proposalId)
         await this.expectNormalOpacity(proposalId)
         await this.expectButtonsVisible(proposalId, ['accept', 'reject', 'edit'])
         break
-        
+
       case 'accepted':
         await this.expectAcceptedStatus(proposalId)
         await this.expectNormalOpacity(proposalId)
         await this.expectButtonsVisible(proposalId, ['reject', 'edit'])
         break
-        
+
       case 'rejected':
         await this.expectRejectedStatus(proposalId)
         await this.expectRejectedOpacity(proposalId)
@@ -349,7 +352,7 @@ export class FlashcardProposalItemComponent extends BasePage {
     const proposalCards = this.page.locator('[data-testid^="proposal-card-"]')
     const count = await proposalCards.count()
     const ids: string[] = []
-    
+
     for (let i = 0; i < count; i++) {
       const card = proposalCards.nth(i)
       const testId = await card.getAttribute('data-testid')
@@ -358,7 +361,7 @@ export class FlashcardProposalItemComponent extends BasePage {
         ids.push(id)
       }
     }
-    
+
     return ids
   }
 

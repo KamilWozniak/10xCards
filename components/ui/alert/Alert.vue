@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils'
 import { alertVariants } from '.'
 
 const props = defineProps<{
-  class?: HTMLAttributes["class"]
-  variant?: AlertVariants["variant"]
+  class?: HTMLAttributes['class']
+  variant?: AlertVariants['variant']
 }>()
 </script>
 

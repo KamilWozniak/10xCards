@@ -21,7 +21,10 @@
         </div>
 
         <!-- Character Counter -->
-        <div class="flex justify-between items-center text-sm" data-testid="character-counter-section">
+        <div
+          class="flex justify-between items-center text-sm"
+          data-testid="character-counter-section"
+        >
           <div class="flex items-center space-x-2">
             <span
               :class="['font-medium', formValidation.isValid ? 'text-green-600' : 'text-red-600']"
@@ -48,7 +51,11 @@
         </div>
 
         <!-- Error Message -->
-        <div v-if="formValidation.errorMessage" class="text-sm text-red-600" data-testid="form-validation-error">
+        <div
+          v-if="formValidation.errorMessage"
+          class="text-sm text-red-600"
+          data-testid="form-validation-error"
+        >
           {{ formValidation.errorMessage }}
         </div>
       </div>

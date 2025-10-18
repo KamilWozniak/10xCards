@@ -179,9 +179,7 @@ describe('OpenRouterService', () => {
     it('should throw error when message content is empty', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: '' },
-      ]
+      const messages = [{ role: 'user' as const, content: '' }]
 
       // Act & Assert
       await expect(service.generateResponse(messages)).rejects.toThrow(
@@ -192,22 +190,16 @@ describe('OpenRouterService', () => {
     it('should throw error when message has invalid role', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'invalid' as any, content: 'Hello' },
-      ]
+      const messages = [{ role: 'invalid' as any, content: 'Hello' }]
 
       // Act & Assert
-      await expect(service.generateResponse(messages)).rejects.toThrow(
-        'Invalid message role'
-      )
+      await expect(service.generateResponse(messages)).rejects.toThrow('Invalid message role')
     })
 
     it('should use custom options when provided', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Test message' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Test message' }]
 
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-456',
@@ -257,9 +249,7 @@ describe('OpenRouterService', () => {
     it('should throw error when API request fails', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Test' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Test' }]
 
       const mockError = {
         error: {
@@ -284,9 +274,7 @@ describe('OpenRouterService', () => {
     it('should throw error when response format is invalid', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Test' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Test' }]
 
       const invalidResponse = {
         id: 'chatcmpl-789',
@@ -357,9 +345,7 @@ describe('OpenRouterService', () => {
     it('should successfully generate structured JSON response', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Generate a flashcard' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Generate a flashcard' }]
       const schema = {
         type: 'object',
         properties: {
@@ -428,9 +414,7 @@ describe('OpenRouterService', () => {
     it('should throw error when JSON parsing fails', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Generate data' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Generate data' }]
       const schema = {
         type: 'object',
         properties: { value: { type: 'string' } },
@@ -470,9 +454,7 @@ describe('OpenRouterService', () => {
     it('should merge custom options with response format', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Test' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Test' }]
       const schema = { type: 'object' }
 
       const mockResponse: OpenRouterResponse = {
@@ -501,15 +483,10 @@ describe('OpenRouterService', () => {
       vi.stubGlobal('$fetch', mockFetch)
 
       // Act
-      await service.generateStructuredResponse(
-        messages,
-        'custom_schema',
-        schema,
-        {
-          model: 'openai/gpt-4-turbo',
-          temperature: 0.3,
-        }
-      )
+      await service.generateStructuredResponse(messages, 'custom_schema', schema, {
+        model: 'openai/gpt-4-turbo',
+        temperature: 0.3,
+      })
 
       // Assert
       expect(mockFetch).toHaveBeenCalledWith(
@@ -529,9 +506,7 @@ describe('OpenRouterService', () => {
     it('should handle complex nested JSON structures', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: 'Generate flashcards' },
-      ]
+      const messages = [{ role: 'user' as const, content: 'Generate flashcards' }]
       const schema = {
         type: 'object',
         properties: {
@@ -596,15 +571,13 @@ describe('OpenRouterService', () => {
     it('should validate messages before making structured request', async () => {
       // Arrange
       const service = createOpenRouterService({ apiKey: mockApiKey })
-      const messages = [
-        { role: 'user' as const, content: '   ' },
-      ]
+      const messages = [{ role: 'user' as const, content: '   ' }]
       const schema = { type: 'object' }
 
       // Act & Assert
-      await expect(
-        service.generateStructuredResponse(messages, 'schema', schema)
-      ).rejects.toThrow('Message content cannot be empty')
+      await expect(service.generateStructuredResponse(messages, 'schema', schema)).rejects.toThrow(
+        'Message content cannot be empty'
+      )
     })
   })
 })

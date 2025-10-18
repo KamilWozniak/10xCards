@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" data-testid="flashcard-edit-modal" @click="handleBackdropClick">
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-50 overflow-y-auto"
+    data-testid="flashcard-edit-modal"
+    @click="handleBackdropClick"
+  >
     <!-- Backdrop -->
     <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
 
@@ -62,8 +67,16 @@
             </div>
           </CardContent>
           <CardFooter class="flex justify-end space-x-2">
-            <Button variant="outline" data-testid="edit-modal-cancel-button" @click="handleCancel"> Anuluj </Button>
-            <Button :disabled="!editForm.isValid" data-testid="edit-modal-save-button" @click="handleSave"> Zapisz zmiany </Button>
+            <Button variant="outline" data-testid="edit-modal-cancel-button" @click="handleCancel">
+              Anuluj
+            </Button>
+            <Button
+              :disabled="!editForm.isValid"
+              data-testid="edit-modal-save-button"
+              @click="handleSave"
+            >
+              Zapisz zmiany
+            </Button>
           </CardFooter>
         </Card>
       </div>
@@ -99,7 +112,8 @@ const emit = defineEmits<{
 }>()
 
 // Form handling
-const { editForm, validateFront, validateBack, initializeForm, getEditedProposal } = useFlashcardEditForm(props.proposal)
+const { editForm, validateFront, validateBack, initializeForm, getEditedProposal } =
+  useFlashcardEditForm(props.proposal)
 
 // Watch for proposal changes
 watch(

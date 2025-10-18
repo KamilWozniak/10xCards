@@ -53,8 +53,6 @@ export class GenerationsService {
  *
  * @param supabase - Supabase client instance
  */
-export function createGenerationsService(
-  supabase: SupabaseClient<Database>
-): GenerationsService {
+export function createGenerationsService(supabase: SupabaseClient<Database>): GenerationsService {
   return new GenerationsService(supabase)
 }

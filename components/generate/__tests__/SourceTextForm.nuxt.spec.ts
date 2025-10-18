@@ -42,7 +42,9 @@ describe('SourceTextForm', () => {
       expect(wrapper.find('textarea').exists()).toBe(true)
       expect(wrapper.find('button').exists()).toBe(true)
       expect(wrapper.text()).toContain('Tekst źródłowy')
-      expect(wrapper.text()).toContain('Wprowadź tekst, z którego AI wygeneruje fiszki (1000-10000 znaków)')
+      expect(wrapper.text()).toContain(
+        'Wprowadź tekst, z którego AI wygeneruje fiszki (1000-10000 znaków)'
+      )
     })
 
     it('should initialize with empty form data', () => {

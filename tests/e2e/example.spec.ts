@@ -6,9 +6,7 @@ import { test, expect } from '@playwright/test'
  */
 
 test.describe('Application', () => {
-  test('should redirect to login page when not authenticated', async ({
-    page,
-  }) => {
+  test('should redirect to login page when not authenticated', async ({ page }) => {
     // Navigate to homepage
     await page.goto('/')
 

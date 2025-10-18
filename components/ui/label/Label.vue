@@ -5,7 +5,7 @@ import { reactiveOmit } from '@vueuse/core'
 import { Label } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<LabelProps & { class?: HTMLAttributes["class"] }>()
+const props = defineProps<LabelProps & { class?: HTMLAttributes['class'] }>()
 
 const delegatedProps = reactiveOmit(props, 'class')
 </script>
@@ -16,7 +16,7 @@ const delegatedProps = reactiveOmit(props, 'class')
     :class="
       cn(
         'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-        props.class,
+        props.class
       )
     "
   >

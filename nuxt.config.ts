@@ -22,8 +22,8 @@ export default defineNuxtConfig({
   },
   vite: {
     optimizeDeps: {
-      exclude: ['oxc-parser', 'oxc-transform', 'oxc-minify', 'oxc-resolver']
-    }
+      exclude: ['oxc-parser', 'oxc-transform', 'oxc-minify', 'oxc-resolver'],
+    },
   },
   runtimeConfig: {
     openRouterApiKey: process.env.OPENROUTER_API_KEY,

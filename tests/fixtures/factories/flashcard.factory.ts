@@ -30,9 +30,7 @@ export interface FlashcardFactoryOptions {
  * })
  * ```
  */
-export function createMockFlashcard(
-  overrides: FlashcardFactoryOptions = {}
-): Flashcard {
+export function createMockFlashcard(overrides: FlashcardFactoryOptions = {}): Flashcard {
   const now = new Date().toISOString()
 
   return {
@@ -72,9 +70,7 @@ export function createMockFlashcards(
  * const aiFlashcard = createMockAIFlashcard()
  * ```
  */
-export function createMockAIFlashcard(
-  overrides: FlashcardFactoryOptions = {}
-): Flashcard {
+export function createMockAIFlashcard(overrides: FlashcardFactoryOptions = {}): Flashcard {
   return createMockFlashcard({
     source: 'ai_generated',
     generation_id: faker.string.uuid(),

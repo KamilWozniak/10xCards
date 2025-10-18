@@ -15,7 +15,7 @@ import { deleteCookie } from 'h3'
  * Errors:
  * - 500: Logout failed
  */
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   try {
     // Create Supabase server client
     const supabase = createSupabaseServerClient(event)

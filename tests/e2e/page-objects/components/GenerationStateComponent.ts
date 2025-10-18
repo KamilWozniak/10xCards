@@ -78,11 +78,11 @@ export class GenerationStateComponent extends BasePage {
    */
   async expectErrorMessage(message?: string): Promise<void> {
     await this.expectVisible(this.errorMessage)
-    
+
     if (message) {
       // Sprawdź czy komunikat zawiera oczekiwany tekst
       await this.page.waitForFunction(
-        (expectedMessage) => {
+        expectedMessage => {
           const errorElement = document.querySelector('[data-testid="generation-error-message"]')
           return errorElement && errorElement.textContent?.includes(expectedMessage)
         },
@@ -242,13 +242,13 @@ export class GenerationStateComponent extends BasePage {
     timeout: number = 30000
   ): Promise<void> {
     await this.page.waitForFunction(
-      (state) => {
+      state => {
         const spinner = document.querySelector('[data-testid="generation-loading-spinner"]')
         const error = document.querySelector('[data-testid="generation-error-message"]')
-        
+
         const isLoading = spinner && window.getComputedStyle(spinner).display !== 'none'
         const hasError = error && window.getComputedStyle(error).display !== 'none'
-        
+
         switch (state) {
           case 'loading':
             return isLoading && !hasError

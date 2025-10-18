@@ -25,7 +25,7 @@ import { createSupabaseServerClient } from '~/server/utils/supabase/server-clien
  * - 400: Missing or invalid credentials
  * - 401: Invalid email or password
  */
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   try {
     // Parse request body
     const body = await readBody(event)

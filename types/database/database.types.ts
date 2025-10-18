@@ -3,11 +3,9 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   graphql_public: {
     Tables: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
     Views: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
     Functions: {
@@ -22,11 +20,9 @@ export type Database = {
       }
     }
     Enums: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
     CompositeTypes: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
   }
@@ -150,19 +146,15 @@ export type Database = {
       }
     }
     Views: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
     Functions: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
     Enums: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
     CompositeTypes: {
-      // eslint-disable-next-line no-unused-vars
       [_ in never]: never
     }
   }
