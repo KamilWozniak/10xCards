@@ -1,20 +1,6 @@
 ---
 alwaysApply: false
 ---
-## TESTING
-
-### Guidelines for UNIT
-
-#### VITEST
-
-- Leverage the `vi` object for test doubles - Use `vi.fn()` for function mocks, `vi.spyOn()` to monitor existing functions, and `vi.stubGlobal()` for global mocks. Prefer spies over mocks when you only need to verify interactions without changing behavior.
-- Master `vi.mock()` factory patterns - Place mock factory functions at the top level of your test file, return typed mock implementations, and use `mockImplementation()` or `mockReturnValue()` for dynamic control during tests. Remember the factory runs before imports are processed.
-- Create setup files for reusable configuration - Define global mocks, custom matchers, and environment setup in dedicated files referenced in your `vitest.config.ts`. This keeps your test files clean while ensuring consistent test environments.
-- Make watch mode part of your workflow - Run `vitest --watch` during development for instant feedback as you modify code, filtering tests with `-t` to focus on specific areas under development.
-- Structure tests for maintainability - use explicit assertion messages, and follow the Arrange-Act-Assert pattern to make tests self-documenting.
-- Leverage TypeScript type checking in tests - ensure mocks preserve the original type signatures.
-## TESTING
-
 ### Guidelines for UNIT
 
 #### VITEST
@@ -26,3 +12,4 @@ alwaysApply: false
 - Structure tests for maintainability - use explicit assertion messages, and follow the Arrange-Act-Assert pattern to make tests self-documenting.
 - Leverage TypeScript type checking in tests - ensure mocks preserve the original type signatures.
 - do not create separate test documentation in new file. Tests are documentation themselves
+- always re-run tests after making changes in test files to make sure that tests still work
