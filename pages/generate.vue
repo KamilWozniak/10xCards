@@ -1,10 +1,12 @@
 <template>
-  <div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="container mx-auto px-4 py-8 max-w-4xl" data-testid="generate-page">
     <div class="space-y-8">
       <!-- Header -->
-      <div class="text-center">
-        <h1 class="text-3xl font-bold text-gray-900">Generuj fiszki z AI</h1>
-        <p class="mt-2 text-gray-600">
+      <div class="text-center" data-testid="generate-page-header">
+        <h1 class="text-3xl font-bold text-gray-900" data-testid="generate-page-title">
+          Generuj fiszki z AI
+        </h1>
+        <p class="mt-2 text-gray-600" data-testid="generate-page-description">
           Wprowadź tekst (1000-10000 znaków), a AI wygeneruje dla Ciebie propozycje fiszek
         </p>
       </div>

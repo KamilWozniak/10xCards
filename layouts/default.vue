@@ -1,37 +1,47 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50" data-testid="app-layout">
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow-sm border-b">
+    <nav class="bg-white shadow-sm border-b" data-testid="main-navigation">
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
           <!-- Logo/Brand -->
           <div class="flex items-center">
-            <NuxtLink to="/generate" class="text-2xl font-bold text-gray-900"> 10xCards </NuxtLink>
+            <NuxtLink
+              to="/generate"
+              class="text-2xl font-bold text-gray-900"
+              data-testid="app-logo"
+            >
+              10xCards
+            </NuxtLink>
           </div>
 
           <!-- User Section (Right side) -->
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-4" data-testid="user-section">
             <!-- User Avatar and Email -->
             <div class="flex items-center space-x-3">
-              <Avatar>
+              <Avatar data-testid="user-avatar">
                 <AvatarFallback>
                   <span class="text-sm font-medium">{{ userInitial }}</span>
                 </AvatarFallback>
               </Avatar>
               <div class="hidden md:block">
-                <p class="text-sm font-medium text-gray-900">{{ userEmail }}</p>
+                <p class="text-sm font-medium text-gray-900" data-testid="user-email">
+                  {{ userEmail }}
+                </p>
               </div>
             </div>
 
             <!-- Logout Button -->
-            <Button variant="outline" @click="handleLogout"> Wyloguj </Button>
+            <Button variant="outline" data-testid="logout-button" @click="handleLogout">
+              Wyloguj
+            </Button>
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <main data-testid="main-content">
       <slot />
     </main>
   </div>

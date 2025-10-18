@@ -1,0 +1,7 @@
+# Screenshots from E2E tests
+*.png
+*.jpg
+*.jpeg
+
+# Keep the directory but ignore all images
+!.gitignore

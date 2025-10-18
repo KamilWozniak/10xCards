@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-testid="login-page">
     <!-- Error/Success Message Display -->
     <AuthErrorDisplay :message="errorMessage" :type="messageType" />
 
@@ -7,10 +7,14 @@
     <LoginForm :is-loading="isLoading" @submit="handleLogin" />
 
     <!-- Link to Register -->
-    <div class="mt-6 text-center">
+    <div class="mt-6 text-center" data-testid="register-link-section">
       <p class="text-sm text-gray-600">
         Nie masz konta?
-        <NuxtLink to="/auth/register" class="font-medium text-blue-600 hover:text-blue-500">
+        <NuxtLink
+          to="/auth/register"
+          class="font-medium text-blue-600 hover:text-blue-500"
+          data-testid="register-link"
+        >
           Zarejestruj się
         </NuxtLink>
       </p>
