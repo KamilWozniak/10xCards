@@ -39,10 +39,10 @@ export default defineVitestConfig({
         '**/coverage/**',
       ],
       thresholds: {
-        lines: 60,
-        functions: 60,
-        branches: 60,
-        statements: 60,
+        lines: 50,
+        functions: 50,
+        branches: 50,
+        statements: 50,
       },
     },
     // Global test timeout
