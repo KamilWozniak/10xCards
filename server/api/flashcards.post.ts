@@ -2,7 +2,8 @@ import type { CreateFlashcardsResponseDTO, ApiErrorResponseDTO } from '~/types/d
 import { validateCreateFlashcardsRequest } from '~/server/utils/validators/flashcard-validator'
 import { getUserId } from '~/server/utils/auth/get-user-id'
 import { createFlashcardsService } from '~/services/database/FlashcardsService'
-import { ValidationError } from '~/server/utils/errors/custom-errors'
+import { ValidationError, UnauthorizedError } from '~/server/utils/errors/custom-errors'
+import { createSupabaseServerClient } from '~/server/utils/supabase/server-client'
 
 /**
  * POST /api/flashcards
@@ -42,14 +43,22 @@ import { ValidationError } from '~/server/utils/errors/custom-errors'
 export default defineEventHandler(
   async (event): Promise<CreateFlashcardsResponseDTO | ApiErrorResponseDTO> => {
     try {
+      // 0. Create Supabase server client for database operations
+      const supabase = createSupabaseServerClient(event)
+
       // 1. Validate authentication
-      const userId = getUserId()
-      if (!userId) {
-        setResponseStatus(event, 401)
-        return {
-          error: 'Unauthorized',
-          details: 'Authentication token is required',
+      let userId: string
+      try {
+        userId = await getUserId(event)
+      } catch (error) {
+        if (error instanceof UnauthorizedError) {
+          setResponseStatus(event, 401)
+          return {
+            error: 'Unauthorized',
+            details: error.message || 'Authentication token is required',
+          }
         }
+        throw error
       }
 
       // 2. Parse and validate request body
@@ -80,7 +89,7 @@ export default defineEventHandler(
       }
 
       // 4. Validate generation_id ownership for AI-generated flashcards
-      const flashcardsService = createFlashcardsService()
+      const flashcardsService = createFlashcardsService(supabase)
       const aiFlashcards = validatedRequest.flashcards.filter(
         flashcard => flashcard.source === 'ai-full' || flashcard.source === 'ai-edited'
       )

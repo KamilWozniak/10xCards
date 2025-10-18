@@ -1,6 +1,7 @@
 import type { CreateGenerationCommand } from '~/types/commands/generation-commands'
 import type { GenerationDTO } from '~/types/dto/types'
-import { useSupabase } from '~/composables/useSupabase'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '~/types/database/database.types'
 
 /**
  * Database service for managing generations
@@ -8,6 +9,12 @@ import { useSupabase } from '~/composables/useSupabase'
  * Handles CRUD operations for the generations table
  */
 export class GenerationsService {
+  private supabase: SupabaseClient<Database>
+
+  constructor(supabase: SupabaseClient<Database>) {
+    this.supabase = supabase
+  }
+
   /**
    * Create a new generation record in the database
    *
@@ -16,9 +23,7 @@ export class GenerationsService {
    * @throws Error if database operation fails
    */
   async create(command: CreateGenerationCommand): Promise<GenerationDTO> {
-    const { supabase } = useSupabase()
-
-    const { data, error } = await supabase
+    const { data, error } = await this.supabase
       .from('generations')
       .insert({
         user_id: command.user_id,
@@ -45,7 +50,11 @@ export class GenerationsService {
 
 /**
  * Factory function to create GenerationsService instance
+ *
+ * @param supabase - Supabase client instance
  */
-export function createGenerationsService(): GenerationsService {
-  return new GenerationsService()
+export function createGenerationsService(
+  supabase: SupabaseClient<Database>
+): GenerationsService {
+  return new GenerationsService(supabase)
 }

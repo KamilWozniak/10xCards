@@ -5,13 +5,19 @@ import type {
 } from '~/types/dto/types'
 import type { CreateGenerationCommand } from '~/types/commands/generation-commands'
 import { validateCreateGenerationRequest } from '../utils/validators/generation-validator'
-import { ValidationError, AIServiceError, DatabaseError } from '../utils/errors/custom-errors'
+import {
+  ValidationError,
+  AIServiceError,
+  DatabaseError,
+  UnauthorizedError,
+} from '../utils/errors/custom-errors'
 import { getUserId } from '../utils/auth/get-user-id'
 import { computeHash } from '../utils/crypto/hash'
 import { createTimer } from '../utils/timer'
 import { createAIService } from '~/services/ai/AIService'
 import { createGenerationsService } from '~/services/database/GenerationsService'
 import { createGenerationErrorLoggerService } from '~/services/database/GenerationErrorLoggerService'
+import { createSupabaseServerClient } from '~/server/utils/supabase/server-client'
 
 /**
  * POST /api/generations
@@ -26,8 +32,11 @@ import { createGenerationErrorLoggerService } from '~/services/database/Generati
  */
 export default defineEventHandler(async event => {
   try {
-    // 1. Get user ID (development mode: uses DEFAULT_USER_ID)
-    const userId = getUserId()
+    // 0. Create Supabase server client for database operations
+    const supabase = createSupabaseServerClient(event)
+
+    // 1. Get authenticated user ID from session
+    const userId = await getUserId(event)
 
     // 2. Parse and validate request body
     const body = await readBody(event)
@@ -50,7 +59,7 @@ export default defineEventHandler(async event => {
       aiResult = await aiService.generateFlashcards(sourceText)
     } catch (error) {
       // Log AI error to database
-      const errorLogger = createGenerationErrorLoggerService()
+      const errorLogger = createGenerationErrorLoggerService(supabase)
       await errorLogger.log({
         user_id: userId,
         model,
@@ -72,7 +81,7 @@ export default defineEventHandler(async event => {
     const generationDuration = timer.elapsed()
 
     // 7. Save generation metadata to database
-    const generationsService = createGenerationsService()
+    const generationsService = createGenerationsService(supabase)
     const command: CreateGenerationCommand = {
       user_id: userId,
       model,
@@ -82,10 +91,18 @@ export default defineEventHandler(async event => {
       generation_duration: generationDuration,
     }
 
+    console.log('[generations.post] Attempting to save generation to database:', command)
+
     let generation
     try {
       generation = await generationsService.create(command)
+      console.log('[generations.post] Generation saved successfully:', generation.id)
     } catch (error) {
+      console.error('[generations.post] Database error:', error)
+      console.error('[generations.post] Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown',
+        stack: error instanceof Error ? error.stack : undefined,
+      })
       throw new DatabaseError(
         'Database error. Please try again.',
         error instanceof Error ? error.message : 'Unknown database error'
@@ -109,6 +126,17 @@ export default defineEventHandler(async event => {
     return response
   } catch (error) {
     // Handle known error types
+    if (error instanceof UnauthorizedError) {
+      throw createError({
+        statusCode: error.statusCode,
+        statusMessage: error.message,
+        data: {
+          error: error.message,
+          details: error.details,
+        },
+      })
+    }
+
     if (error instanceof ValidationError) {
       throw createError({
         statusCode: error.statusCode,
