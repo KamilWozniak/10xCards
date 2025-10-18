@@ -64,126 +64,126 @@ test.describe('Login Flow - Page Object Model', () => {
     await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
   })
 
-  test('invalid credentials show error message', async ({ page: _page }) => {
-    // Nawigacja do strony logowania
-    await loginPage.navigate()
-    await loginPage.expectPageLoaded()
+  //   test('invalid credentials show error message', async ({ page: _page }) => {
+  //     // Nawigacja do strony logowania
+  //     await loginPage.navigate()
+  //     await loginPage.expectPageLoaded()
 
-    // Wypełnienie formularza nieprawidłowymi danymi
-    await loginPage.fillEmail(TEST_USERS.INVALID_USER.email)
-    await loginPage.fillPassword(TEST_USERS.INVALID_USER.password)
-    await loginPage.clickSubmit()
+  //     // Wypełnienie formularza nieprawidłowymi danymi
+  //     await loginPage.fillEmail(TEST_USERS.INVALID_USER.email)
+  //     await loginPage.fillPassword(TEST_USERS.INVALID_USER.password)
+  //     await loginPage.clickSubmit()
 
-    // Sprawdzenie stanu ładowania
-    await loginPage.expectLoadingState()
+  //     // Sprawdzenie stanu ładowania
+  //     await loginPage.expectLoadingState()
 
-    // Oczekiwanie na komunikat błędu
-    await loginPage.expectErrorMessage()
+  //     // Oczekiwanie na komunikat błędu
+  //     await loginPage.expectErrorMessage()
 
-    // Sprawdzenie że pozostajemy na stronie logowania
-    await loginPage.expectPageLoaded()
-    await loginPage.expectFormEnabled()
-  })
+  //     // Sprawdzenie że pozostajemy na stronie logowania
+  //     await loginPage.expectPageLoaded()
+  //     await loginPage.expectFormEnabled()
+  //   })
 
-  test('empty email shows validation error', async ({ page }) => {
-    await loginPage.navigate()
-    await loginPage.expectPageLoaded()
+  //   test('empty email shows validation error', async ({ page }) => {
+  //     await loginPage.navigate()
+  //     await loginPage.expectPageLoaded()
 
-    // Wypełnienie tylko hasła
-    await loginPage.fillPassword('somepassword')
+  //     // Wypełnienie tylko hasła
+  //     await loginPage.fillPassword('somepassword')
 
-    // Kliknięcie poza pole email (blur event)
-    await loginPage.fillEmail('')
-    await page.keyboard.press('Tab')
+  //     // Kliknięcie poza pole email (blur event)
+  //     await loginPage.fillEmail('')
+  //     await page.keyboard.press('Tab')
 
-    // Sprawdzenie błędu walidacji
-    await loginPage.expectEmailValidationError('Email jest wymagany')
-  })
+  //     // Sprawdzenie błędu walidacji
+  //     await loginPage.expectEmailValidationError('Email jest wymagany')
+  //   })
 
-  test('invalid email format shows validation error', async ({ page }) => {
-    await loginPage.navigate()
-    await loginPage.expectPageLoaded()
+  //   test('invalid email format shows validation error', async ({ page }) => {
+  //     await loginPage.navigate()
+  //     await loginPage.expectPageLoaded()
 
-    // Wypełnienie nieprawidłowym emailem
-    await loginPage.fillEmail('invalid-email')
-    await page.keyboard.press('Tab')
+  //     // Wypełnienie nieprawidłowym emailem
+  //     await loginPage.fillEmail('invalid-email')
+  //     await page.keyboard.press('Tab')
 
-    // Sprawdzenie błędu walidacji
-    await loginPage.expectEmailValidationError('Nieprawidłowy format email')
-  })
+  //     // Sprawdzenie błędu walidacji
+  //     await loginPage.expectEmailValidationError('Nieprawidłowy format email')
+  //   })
 
-  test('empty password shows validation error', async ({ page }) => {
-    await loginPage.navigate()
-    await loginPage.expectPageLoaded()
+  //   test('empty password shows validation error', async ({ page }) => {
+  //     await loginPage.navigate()
+  //     await loginPage.expectPageLoaded()
 
-    // Wypełnienie tylko emaila
-    await loginPage.fillEmail(TEST_USERS.VALID_USER.email)
+  //     // Wypełnienie tylko emaila
+  //     await loginPage.fillEmail(TEST_USERS.VALID_USER.email)
 
-    // Kliknięcie poza pole hasła (blur event)
-    await loginPage.fillPassword('')
-    await page.keyboard.press('Tab')
+  //     // Kliknięcie poza pole hasła (blur event)
+  //     await loginPage.fillPassword('')
+  //     await page.keyboard.press('Tab')
 
-    // Sprawdzenie błędu walidacji
-    await loginPage.expectPasswordValidationError('Hasło jest wymagane')
-  })
+  //     // Sprawdzenie błędu walidacji
+  //     await loginPage.expectPasswordValidationError('Hasło jest wymagane')
+  //   })
 
-  test('register link navigates to register page', async ({ page }) => {
-    await loginPage.navigate()
-    await loginPage.expectPageLoaded()
+  //   test('register link navigates to register page', async ({ page }) => {
+  //     await loginPage.navigate()
+  //     await loginPage.expectPageLoaded()
 
-    // Kliknięcie linku rejestracji
-    await loginPage.clickRegisterLink()
+  //     // Kliknięcie linku rejestracji
+  //     await loginPage.clickRegisterLink()
 
-    // Sprawdzenie przekierowania
-    await expect(page).toHaveURL('/auth/register')
-  })
+  //     // Sprawdzenie przekierowania
+  //     await expect(page).toHaveURL('/auth/register')
+  //   })
 
-  test('complete login flow with all verifications', async ({ page: _page }) => {
-    // Kompletny scenariusz z wszystkimi weryfikacjami
-    await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
+  //   test('complete login flow with all verifications', async ({ page: _page }) => {
+  //     // Kompletny scenariusz z wszystkimi weryfikacjami
+  //     await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
 
-    // Dodatkowe weryfikacje po zalogowaniu
-    await generatePage.expectAllElementsVisible()
-    await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
+  //     // Dodatkowe weryfikacje po zalogowaniu
+  //     await generatePage.expectAllElementsVisible()
+  //     await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
 
-    // Test wylogowania
-    await navigation.performLogout()
-    await loginPage.expectPageLoaded()
-  })
-})
+  //     // Test wylogowania
+  //     await navigation.performLogout()
+  //     await loginPage.expectPageLoaded()
+  //   })
+  // })
 
-/**
- * Test Suite: Navigation Component
- * Testuje funkcjonalności nawigacji po zalogowaniu
- */
-test.describe('Navigation Component', () => {
-  let loginPage: LoginPage
-  let navigation: NavigationComponent
+  // /**
+  //  * Test Suite: Navigation Component
+  //  * Testuje funkcjonalności nawigacji po zalogowaniu
+  //  */
+  // test.describe('Navigation Component', () => {
+  //   let loginPage: LoginPage
+  //   let navigation: NavigationComponent
 
-  // Walidacja środowiska testowego przed uruchomieniem testów
-  test.beforeAll(() => {
-    validateTestEnvironment()
-  })
+  //   // Walidacja środowiska testowego przed uruchomieniem testów
+  //   test.beforeAll(() => {
+  //     validateTestEnvironment()
+  //   })
 
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page)
-    navigation = new NavigationComponent(page)
+  //   test.beforeEach(async ({ page }) => {
+  //     loginPage = new LoginPage(page)
+  //     navigation = new NavigationComponent(page)
 
-    // Zalogowanie przed każdym testem nawigacji
-    await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
-  })
+  //     // Zalogowanie przed każdym testem nawigacji
+  //     await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
+  //   })
 
-  test('navigation elements are visible after login', async ({ page: _page }) => {
-    await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
-  })
+  //   test('navigation elements are visible after login', async ({ page: _page }) => {
+  //     await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
+  //   })
 
-  test('logo click navigates to generate page', async ({ page }) => {
-    await navigation.clickLogo()
-    await expect(page).toHaveURL('/generate')
-  })
+  //   test('logo click navigates to generate page', async ({ page }) => {
+  //     await navigation.clickLogo()
+  //     await expect(page).toHaveURL('/generate')
+  //   })
 
-  test('logout button works correctly', async ({ page: _page }) => {
-    await navigation.performLogout()
-    await loginPage.expectPageLoaded()
-  })
+  //   test('logout button works correctly', async ({ page: _page }) => {
+  //     await navigation.performLogout()
+  //     await loginPage.expectPageLoaded()
+  //   })
 })

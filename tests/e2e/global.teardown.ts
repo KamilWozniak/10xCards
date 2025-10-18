@@ -6,28 +6,36 @@ async function globalTeardown() {
   const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      'Missing NUXT_PUBLIC_SUPABASE_URL or NUXT_PUBLIC_SUPABASE_KEY environment variables'
+    console.warn(
+      '⚠️  Skipping E2E test data cleanup: Missing NUXT_PUBLIC_SUPABASE_URL or NUXT_PUBLIC_SUPABASE_KEY environment variables'
     )
+    return
   }
 
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey)
-
-  console.log('Starting E2E test data cleanup...')
   const userId = process.env.E2E_USERNAME_ID
 
   if (!userId) {
-    throw new Error('Missing E2E_USERNAME_ID environment variable')
+    console.warn('⚠️  Skipping E2E test data cleanup: Missing E2E_USERNAME_ID environment variable')
+    return
   }
 
-  // Delete in correct order to respect foreign key constraints
-  await supabase.from('flashcards').delete().eq('user_id', userId)
+  try {
+    const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
-  await supabase.from('generations').delete().eq('user_id', userId)
+    console.log('🧹 Starting E2E test data cleanup...')
 
-  await supabase.from('generation_error_logs').delete().eq('user_id', userId)
+    // Delete in correct order to respect foreign key constraints
+    await supabase.from('flashcards').delete().eq('user_id', userId)
 
-  console.log('✓ E2E test data cleaned up successfully')
+    await supabase.from('generations').delete().eq('user_id', userId)
+
+    await supabase.from('generation_error_logs').delete().eq('user_id', userId)
+
+    console.log('✅ E2E test data cleaned up successfully')
+  } catch (error) {
+    console.error('❌ Error during E2E test data cleanup:', error)
+    // Don't throw - teardown errors shouldn't fail the test run
+  }
 }
 
 export default globalTeardown
