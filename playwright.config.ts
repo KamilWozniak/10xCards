@@ -12,6 +12,9 @@ export default defineConfig({
   // Test directory
   testDir: './tests/e2e',
 
+  // Global teardown
+  globalTeardown: './tests/e2e/global.teardown.ts',
+
   // Maximum time one test can run
   timeout: 30 * 1000,
 

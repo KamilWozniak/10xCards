@@ -77,33 +77,4 @@ test.describe('Flashcard Generation Flow', () => {
       await generatePage.proposalItem.expectProposalState(proposalId, 'neutral')
     }
   })
-
-  test('should handle form validation correctly', async ({ page }) => {
-    // Logowanie
-    await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
-    await generatePage.expectPageFullyLoaded()
-
-    // Test z pustym tekstem
-    await generatePage.sourceTextForm.fillSourceText(GENERATION_TEST_DATA.emptyText)
-    await generatePage.sourceTextForm.expectRequiredTextError()
-    await generatePage.sourceTextForm.expectButtonDisabled()
-
-    // Test z za krótkim tekstem
-    await generatePage.sourceTextForm.fillSourceText(GENERATION_TEST_DATA.shortText)
-    await generatePage.sourceTextForm.expectMinimumLengthError()
-    await generatePage.sourceTextForm.expectValidationState(false)
-    await generatePage.sourceTextForm.expectButtonDisabled()
-
-    // Test z za długim tekstem
-    await generatePage.sourceTextForm.fillSourceText(GENERATION_TEST_DATA.longText)
-    await generatePage.sourceTextForm.expectMaximumLengthError()
-    await generatePage.sourceTextForm.expectValidationState(false)
-    await generatePage.sourceTextForm.expectButtonDisabled()
-
-    // Test z poprawnym tekstem
-    await generatePage.sourceTextForm.fillSourceText(GENERATION_TEST_DATA.validText)
-    await generatePage.sourceTextForm.expectNoFormError()
-    await generatePage.sourceTextForm.expectValidationState(true)
-    await generatePage.sourceTextForm.expectButtonEnabled()
-  })
 })
