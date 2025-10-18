@@ -1,5 +1,4 @@
 ---
-globs: *.test.ts,*.spec.ts
 alwaysApply: false
 ---
 ## TESTING
