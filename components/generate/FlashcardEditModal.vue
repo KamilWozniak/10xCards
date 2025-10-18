@@ -72,7 +72,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
 import {
   Card,
   CardContent,
@@ -83,7 +82,7 @@ import {
 } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
-import type { FlashcardProposalViewModel, EditFormState } from '~/types/views/generate.types'
+import type { FlashcardProposalViewModel } from '~/types/views/generate.types'
 
 // Props
 interface Props {
@@ -99,85 +98,23 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-// Form state
-const editForm = ref<EditFormState>({
-  front: '',
-  back: '',
-  isValid: false,
-  errors: {},
-})
-
-// Computed
-const isValid = computed(() => {
-  return (
-    editForm.value.front.trim().length > 0 &&
-    editForm.value.front.length <= 200 &&
-    editForm.value.back.trim().length > 0 &&
-    editForm.value.back.length <= 500
-  )
-})
-
-// Methods
-const validateForm = () => {
-  editForm.value.isValid = isValid.value
-}
-
-const validateFront = () => {
-  const front = editForm.value.front
-  if (front.length === 0) {
-    editForm.value.errors.front = 'Przód fiszki jest wymagany'
-  } else if (front.length > 200) {
-    editForm.value.errors.front = 'Przód fiszki nie może przekraczać 200 znaków'
-  } else {
-    delete editForm.value.errors.front
-  }
-  validateForm()
-}
-
-const validateBack = () => {
-  const back = editForm.value.back
-  if (back.length === 0) {
-    editForm.value.errors.back = 'Tył fiszki jest wymagany'
-  } else if (back.length > 500) {
-    editForm.value.errors.back = 'Tył fiszki nie może przekraczać 500 znaków'
-  } else {
-    delete editForm.value.errors.back
-  }
-  validateForm()
-}
+// Form handling
+const { editForm, validateFront, validateBack, initializeForm, getEditedProposal } = useFlashcardEditForm(props.proposal)
 
 // Watch for proposal changes
 watch(
   () => props.proposal,
   newProposal => {
     if (newProposal) {
-      editForm.value = {
-        front: newProposal.front,
-        back: newProposal.back,
-        isValid: false,
-        errors: {},
-      }
-      validateForm()
+      initializeForm(newProposal)
     }
   },
   { immediate: true }
 )
 
-// Watch for form validity
-watch(isValid, newValidity => {
-  editForm.value.isValid = newValidity
-})
-
 const handleSave = () => {
   if (editForm.value.isValid) {
-    const editedProposal: FlashcardProposalViewModel = {
-      ...props.proposal,
-      front: editForm.value.front.trim(),
-      back: editForm.value.back.trim(),
-      isEdited: true,
-      source: 'ai-edited',
-    }
-    emit('save', editedProposal)
+    emit('save', getEditedProposal())
   }
 }
 
