@@ -101,93 +101,93 @@ test.describe('Login Flow - Real Test Data', () => {
     }
   })
 
-  //   test('login with real credentials shows success message', async ({ page }) => {
-  //     const testId = E2E_HELPERS.generateTestId()
-  //     E2E_HELPERS.logTestInfo(testId, 'Testing success message display')
+  test('login with real credentials shows success message', async ({ page }) => {
+    const testId = E2E_HELPERS.generateTestId()
+    E2E_HELPERS.logTestInfo(testId, 'Testing success message display')
 
-  //     await loginPage.navigate()
-  //     await loginPage.expectPageLoaded()
+    await loginPage.navigate()
+    await loginPage.expectPageLoaded()
 
-  //     // Wypełnienie formularza rzeczywistymi danymi
-  //     await loginPage.fillEmail(TEST_USERS.VALID_USER.email)
-  //     await loginPage.fillPassword(TEST_USERS.VALID_USER.password)
-  //     await loginPage.clickSubmit()
+    // Wypełnienie formularza rzeczywistymi danymi
+    await loginPage.fillEmail(TEST_USERS.VALID_USER.email)
+    await loginPage.fillPassword(TEST_USERS.VALID_USER.password)
+    await loginPage.clickSubmit()
 
-  //     // Sprawdzenie czy pojawia się komunikat sukcesu przed przekierowaniem
-  //     try {
-  //       await loginPage.expectSuccessMessage('Zalogowano pomyślnie. Przekierowywanie...')
-  //       E2E_HELPERS.logTestInfo(testId, '✅ Success message displayed correctly')
-  //     } catch (error) {
-  //       E2E_HELPERS.logTestInfo(testId, 'Success message not found, checking if redirect happened')
-  //       // Jeśli komunikat sukcesu nie pojawił się, sprawdź czy nastąpiło przekierowanie
-  //       await generatePage.expectPageLoaded()
-  //     }
-  //   })
+    // Sprawdzenie czy pojawia się komunikat sukcesu przed przekierowaniem
+    try {
+      await loginPage.expectSuccessMessage('Zalogowano pomyślnie. Przekierowywanie...')
+      E2E_HELPERS.logTestInfo(testId, '✅ Success message displayed correctly')
+    } catch (error) {
+      E2E_HELPERS.logTestInfo(testId, 'Success message not found, checking if redirect happened')
+      // Jeśli komunikat sukcesu nie pojawił się, sprawdź czy nastąpiło przekierowanie
+      await generatePage.expectPageLoaded()
+    }
+  })
 
-  //   test('invalid credentials show appropriate error message', async ({ page }) => {
-  //     const testId = E2E_HELPERS.generateTestId()
-  //     E2E_HELPERS.logTestInfo(testId, 'Testing invalid credentials error handling')
+  test('invalid credentials show appropriate error message', async ({ page }) => {
+    const testId = E2E_HELPERS.generateTestId()
+    E2E_HELPERS.logTestInfo(testId, 'Testing invalid credentials error handling')
 
-  //     await loginPage.navigate()
-  //     await loginPage.expectPageLoaded()
+    await loginPage.navigate()
+    await loginPage.expectPageLoaded()
 
-  //     // Wypełnienie formularza nieprawidłowymi danymi
-  //     await loginPage.fillEmail(TEST_USERS.INVALID_USER.email)
-  //     await loginPage.fillPassword(TEST_USERS.INVALID_USER.password)
-  //     await loginPage.clickSubmit()
+    // Wypełnienie formularza nieprawidłowymi danymi
+    await loginPage.fillEmail(TEST_USERS.INVALID_USER.email)
+    await loginPage.fillPassword(TEST_USERS.INVALID_USER.password)
+    await loginPage.clickSubmit()
 
-  //     // Sprawdzenie stanu ładowania
-  //     await loginPage.expectLoadingState()
+    // Sprawdzenie stanu ładowania
+    await loginPage.expectLoadingState()
 
-  //     // Oczekiwanie na komunikat błędu
-  //     await loginPage.expectErrorMessage()
-  //     E2E_HELPERS.logTestInfo(testId, '✅ Error message displayed for invalid credentials')
+    // Oczekiwanie na komunikat błędu
+    await loginPage.expectErrorMessage()
+    E2E_HELPERS.logTestInfo(testId, '✅ Error message displayed for invalid credentials')
 
-  //     // Sprawdzenie że pozostajemy na stronie logowania
-  //     await loginPage.expectPageLoaded()
-  //     await loginPage.expectFormEnabled()
-  //   })
+    // Sprawdzenie że pozostajemy na stronie logowania
+    await loginPage.expectPageLoaded()
+    await loginPage.expectFormEnabled()
+  })
 
-  //   test('complete real user login and logout flow', async ({ page }) => {
-  //     const testId = E2E_HELPERS.generateTestId()
-  //     E2E_HELPERS.logTestInfo(testId, 'Testing complete login/logout flow')
+  test('complete real user login and logout flow', async ({ page }) => {
+    const testId = E2E_HELPERS.generateTestId()
+    E2E_HELPERS.logTestInfo(testId, 'Testing complete login/logout flow')
 
-  //     // Kompletny scenariusz logowania
-  //     await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
+    // Kompletny scenariusz logowania
+    await loginPage.performLoginFlow(TEST_USERS.VALID_USER.email, TEST_USERS.VALID_USER.password)
 
-  //     // Weryfikacje po zalogowaniu
-  //     await generatePage.expectAllElementsVisible()
-  //     await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
+    // Weryfikacje po zalogowaniu
+    await generatePage.expectAllElementsVisible()
+    await navigation.expectAuthenticatedNavigation(TEST_USERS.VALID_USER.email)
 
-  //     E2E_HELPERS.logTestInfo(testId, 'Login successful, testing logout')
+    E2E_HELPERS.logTestInfo(testId, 'Login successful, testing logout')
 
-  //     // Test wylogowania
-  //     await navigation.performLogout()
-  //     await loginPage.expectPageLoaded()
+    // Test wylogowania
+    await navigation.performLogout()
+    await loginPage.expectPageLoaded()
 
-  //     E2E_HELPERS.logTestInfo(testId, '✅ Complete login/logout flow successful')
-  //   })
-  // })
+    E2E_HELPERS.logTestInfo(testId, '✅ Complete login/logout flow successful')
+  })
+})
 
-  // /**
-  //  * Test Suite: Environment Validation
-  //  * Testuje czy środowisko testowe jest poprawnie skonfigurowane
-  //  */
-  // test.describe('Test Environment Validation', () => {
-  //   test('environment variables are properly configured', async () => {
-  //     // Test czy wszystkie wymagane zmienne środowiskowe są ustawione
-  //     expect(TEST_USERS.VALID_USER.id).toBeTruthy()
-  //     expect(TEST_USERS.VALID_USER.email).toBeTruthy()
-  //     expect(TEST_USERS.VALID_USER.password).toBeTruthy()
+/**
+ * Test Suite: Environment Validation
+ * Testuje czy środowisko testowe jest poprawnie skonfigurowane
+ */
+test.describe('Test Environment Validation', () => {
+  test('environment variables are properly configured', async () => {
+    // Test czy wszystkie wymagane zmienne środowiskowe są ustawione
+    expect(TEST_USERS.VALID_USER.id).toBeTruthy()
+    expect(TEST_USERS.VALID_USER.email).toBeTruthy()
+    expect(TEST_USERS.VALID_USER.password).toBeTruthy()
 
-  //     // Test czy email ma poprawny format
-  //     expect(TEST_USERS.VALID_USER.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+    // Test czy email ma poprawny format
+    expect(TEST_USERS.VALID_USER.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
 
-  //     // Test czy hasło nie jest puste
-  //     expect(TEST_USERS.VALID_USER.password.length).toBeGreaterThan(0)
+    // Test czy hasło nie jest puste
+    expect(TEST_USERS.VALID_USER.password.length).toBeGreaterThan(0)
 
-  //     console.log('✅ All environment variables are properly configured')
-  //     console.log(`📧 Test user email: ${TEST_USERS.VALID_USER.email}`)
-  //     console.log(`🆔 Test user ID: ${TEST_USERS.VALID_USER.id}`)
-  //   })
+    console.log('✅ All environment variables are properly configured')
+    console.log(`📧 Test user email: ${TEST_USERS.VALID_USER.email}`)
+    console.log(`🆔 Test user ID: ${TEST_USERS.VALID_USER.id}`)
+  })
 })
