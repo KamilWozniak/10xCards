@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" @click="handleBackdropClick">
+  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" data-testid="flashcard-edit-modal" @click="handleBackdropClick">
     <!-- Backdrop -->
     <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
 
@@ -27,6 +27,7 @@
                   placeholder="Wprowadź treść przodu fiszki..."
                   rows="3"
                   maxlength="200"
+                  data-testid="edit-modal-front-textarea"
                   @input="validateFront"
                 />
                 <div class="flex justify-between items-center mt-1">
@@ -48,6 +49,7 @@
                   placeholder="Wprowadź treść tyłu fiszki..."
                   rows="4"
                   maxlength="500"
+                  data-testid="edit-modal-back-textarea"
                   @input="validateBack"
                 />
                 <div class="flex justify-between items-center mt-1">
@@ -60,8 +62,8 @@
             </div>
           </CardContent>
           <CardFooter class="flex justify-end space-x-2">
-            <Button variant="outline" @click="handleCancel"> Anuluj </Button>
-            <Button :disabled="!editForm.isValid" @click="handleSave"> Zapisz zmiany </Button>
+            <Button variant="outline" data-testid="edit-modal-cancel-button" @click="handleCancel"> Anuluj </Button>
+            <Button :disabled="!editForm.isValid" data-testid="edit-modal-save-button" @click="handleSave"> Zapisz zmiany </Button>
           </CardFooter>
         </Card>
       </div>

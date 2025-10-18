@@ -19,12 +19,12 @@
       />
 
       <!-- Loading Spinner -->
-      <div v-if="generationState.isLoading" class="flex justify-center">
+      <div v-if="generationState.isLoading" class="flex justify-center" data-testid="generation-loading-spinner">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
 
       <!-- Error Message -->
-      <div v-if="generationState.error" class="bg-red-50 border border-red-200 rounded-md p-4">
+      <div v-if="generationState.error" class="bg-red-50 border border-red-200 rounded-md p-4" data-testid="generation-error-message">
         <div class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -43,6 +43,7 @@
             <div class="mt-4">
               <button
                 class="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                data-testid="generation-retry-button"
                 @click="retryGeneration"
               >
                 Spróbuj ponownie
@@ -57,6 +58,7 @@
         v-if="generationState.proposals.length > 0"
         :proposals="generationState.proposals"
         :generation-id="generationState.generationId!"
+        data-testid="flashcard-proposals-list"
         @save-selected="handleSaveSelected"
         @proposal-accept="handleProposalAccept"
         @proposal-reject="handleProposalReject"

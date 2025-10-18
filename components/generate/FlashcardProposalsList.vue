@@ -1,5 +1,5 @@
 <template>
-  <Card>
+  <Card data-testid="flashcard-proposals-container">
     <CardHeader>
       <CardTitle>Propozycje fiszek</CardTitle>
       <CardDescription>
@@ -9,7 +9,7 @@
     <CardContent>
       <div class="space-y-4">
         <!-- Proposals List -->
-        <div v-if="proposals.length > 0" class="space-y-3">
+        <div v-if="proposals.length > 0" class="space-y-3" data-testid="proposals-list">
           <FlashcardProposalItem
             v-for="proposal in proposals"
             :key="proposal.id"
@@ -21,17 +21,21 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else class="text-center py-8 text-gray-500">
+        <div v-else class="text-center py-8 text-gray-500" data-testid="proposals-empty-state">
           <p>Brak propozycji do wyświetlenia</p>
         </div>
 
         <!-- Selection Summary -->
-        <div v-if="proposals.length > 0" class="bg-blue-50 border border-blue-200 rounded-md p-4">
+        <div
+          v-if="proposals.length > 0"
+          class="bg-blue-50 border border-blue-200 rounded-md p-4"
+          data-testid="selection-summary"
+        >
           <div class="flex items-center justify-between">
-            <div class="text-sm text-blue-800">
+            <div class="text-sm text-blue-800" data-testid="selected-count">
               <span class="font-medium">{{ selectedCount }}</span> fiszek wybranych do zapisania
             </div>
-            <div class="text-xs text-blue-600">
+            <div class="text-xs text-blue-600" data-testid="selection-breakdown">
               {{ acceptedCount }} zaakceptowanych, {{ editedCount }} edytowanych
             </div>
           </div>
@@ -39,7 +43,12 @@
       </div>
     </CardContent>
     <CardFooter>
-      <Button :disabled="!canSave" class="w-full" @click="handleSaveSelected">
+      <Button
+        :disabled="!canSave"
+        class="w-full"
+        data-testid="save-selected-flashcards-button"
+        @click="handleSaveSelected"
+      >
         Zapisz wybrane fiszki ({{ selectedCount }})
       </Button>
     </CardFooter>
