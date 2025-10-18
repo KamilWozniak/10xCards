@@ -14,6 +14,26 @@ AI - Komunikacja z modelami przez usługę Openrouter.ai:
 - Dostęp do szerokiej gamy modeli (OpenAI, Anthropic, Google i wiele innych), które pozwolą nam znaleźć rozwiązanie zapewniające wysoką efektywność i niskie koszta
 - Pozwala na ustawianie limitów finansowych na klucze API
 
+Testowanie:
+- Testy Jednostkowe:
+  - Vitest - główny framework do testów jednostkowych
+  - @nuxt/test-utils - narzędzia do testowania aplikacji Nuxt
+  - @vue/test-utils - oficjalne narzędzia do testowania komponentów Vue
+  - happy-dom - lekkie środowisko DOM
+  - @testing-library/vue - testy komponentów zorientowane na użytkownika
+  - @testing-library/dom - narzędzia do testowania DOM
+  - @pinia/testing - narzędzia do testowania stanu Pinia
+  - MSW - Mock Service Worker do mockowania HTTP
+  - @vitest/coverage-v8 - raportowanie pokrycia kodu
+  - @vitest/ui - interaktywny dashboard testowy
+  - @faker-js/faker - generowanie danych testowych
+
+- Testy End-to-End (E2E):
+  - Playwright - framework do testów E2E
+  - @playwright/test - runner testów Playwright
+  - Wsparcie dla testowania na różnych przeglądarkach (Chrome, Firefox, Safari)
+  - Testowanie responsywności (desktop, tablet, mobile)
+
 CI/CD i Hosting:
-- Github Actions do tworzenia pipeline’ów CI/CD
+- Github Actions do tworzenia pipeline'ów CI/CD
 - DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker

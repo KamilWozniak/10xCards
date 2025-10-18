@@ -22,3 +22,11 @@ logs
 .env
 .env.*
 !.env.example
+
+# Testing
+coverage
+.nyc_output
+tests/e2e/results
+test-results
+playwright-report
+playwright/.cache
