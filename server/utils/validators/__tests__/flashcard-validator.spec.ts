@@ -20,7 +20,9 @@ import type { CreateFlashcardsRequestDTO, CreateFlashcardDTO } from '~/types/dto
 
 describe('flashcard-validator', () => {
   // Helper function to create valid flashcard
-  const createValidFlashcard = (overrides: Partial<CreateFlashcardDTO> = {}): CreateFlashcardDTO => ({
+  const createValidFlashcard = (
+    overrides: Partial<CreateFlashcardDTO> = {}
+  ): CreateFlashcardDTO => ({
     front: 'Test front content',
     back: 'Test back content',
     source: 'ai-full',
@@ -53,7 +55,12 @@ describe('flashcard-validator', () => {
         flashcards: [
           createValidFlashcard({ front: 'Question 1', back: 'Answer 1' }),
           createValidFlashcard({ front: 'Question 2', back: 'Answer 2', source: 'ai-edited' }),
-          createValidFlashcard({ front: 'Question 3', back: 'Answer 3', source: 'manual', generation_id: null }),
+          createValidFlashcard({
+            front: 'Question 3',
+            back: 'Answer 3',
+            source: 'manual',
+            generation_id: null,
+          }),
         ],
       }
 
@@ -82,7 +89,7 @@ describe('flashcard-validator', () => {
         flashcards: [
           createValidFlashcard({
             front: 'A'.repeat(200), // Maximum front length
-            back: 'B'.repeat(500),  // Maximum back length
+            back: 'B'.repeat(500), // Maximum back length
           }),
         ],
       }
@@ -131,7 +138,9 @@ describe('flashcard-validator', () => {
       const invalidRequest = { otherField: 'value' }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Missing required field: flashcards')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Missing required field: flashcards'
+      )
     })
 
     it('should provide detailed error message for invalid JSON format', () => {
@@ -157,7 +166,9 @@ describe('flashcard-validator', () => {
       const invalidRequest = { flashcards: [] }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Flashcards array cannot be empty')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Flashcards array cannot be empty'
+      )
     })
 
     it('should reject flashcards array exceeding maximum length (51 flashcards)', () => {
@@ -176,7 +187,9 @@ describe('flashcard-validator', () => {
         validateCreateFlashcardsRequest(invalidRequest)
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
-        expect((error as ValidationError).details).toContain('Maximum 50 flashcards allowed per request. Received: 75')
+        expect((error as ValidationError).details).toContain(
+          'Maximum 50 flashcards allowed per request. Received: 75'
+        )
       }
     })
   })
@@ -188,7 +201,9 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid flashcard format')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid flashcard format'
+      )
     })
 
     it('should reject null flashcard', () => {
@@ -197,7 +212,9 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid flashcard format')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid flashcard format'
+      )
     })
 
     it('should provide correct index in error messages for multiple flashcards', () => {
@@ -230,14 +247,14 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Missing required field')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Missing required field'
+      )
     })
 
     it('should reject non-string front field', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ front: 123 as any }),
-        ],
+        flashcards: [createValidFlashcard({ front: 123 as any })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
@@ -246,9 +263,7 @@ describe('flashcard-validator', () => {
 
     it('should reject empty front field', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ front: '' }),
-        ],
+        flashcards: [createValidFlashcard({ front: '' })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
@@ -257,21 +272,19 @@ describe('flashcard-validator', () => {
 
     it('should reject front field exceeding maximum length (201 characters)', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ front: 'A'.repeat(201) }),
-        ],
+        flashcards: [createValidFlashcard({ front: 'A'.repeat(201) })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Field exceeds maximum length')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Field exceeds maximum length'
+      )
     })
 
     it('should provide detailed error message for front field length violation', () => {
       const longFront = 'A'.repeat(250)
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ front: longFront }),
-        ],
+        flashcards: [createValidFlashcard({ front: longFront })],
       }
 
       try {
@@ -283,9 +296,7 @@ describe('flashcard-validator', () => {
 
     it('should accept front field with exactly 200 characters', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ front: 'A'.repeat(200) }),
-        ],
+        flashcards: [createValidFlashcard({ front: 'A'.repeat(200) })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -295,9 +306,7 @@ describe('flashcard-validator', () => {
 
     it('should accept front field with 1 character', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ front: 'A' }),
-        ],
+        flashcards: [createValidFlashcard({ front: 'A' })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -319,14 +328,14 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Missing required field')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Missing required field'
+      )
     })
 
     it('should reject non-string back field', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ back: 123 as any }),
-        ],
+        flashcards: [createValidFlashcard({ back: 123 as any })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
@@ -335,9 +344,7 @@ describe('flashcard-validator', () => {
 
     it('should reject empty back field', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ back: '' }),
-        ],
+        flashcards: [createValidFlashcard({ back: '' })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
@@ -346,21 +353,19 @@ describe('flashcard-validator', () => {
 
     it('should reject back field exceeding maximum length (501 characters)', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ back: 'B'.repeat(501) }),
-        ],
+        flashcards: [createValidFlashcard({ back: 'B'.repeat(501) })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Field exceeds maximum length')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Field exceeds maximum length'
+      )
     })
 
     it('should provide detailed error message for back field length violation', () => {
       const longBack = 'B'.repeat(600)
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ back: longBack }),
-        ],
+        flashcards: [createValidFlashcard({ back: longBack })],
       }
 
       try {
@@ -372,9 +377,7 @@ describe('flashcard-validator', () => {
 
     it('should accept back field with exactly 500 characters', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ back: 'B'.repeat(500) }),
-        ],
+        flashcards: [createValidFlashcard({ back: 'B'.repeat(500) })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -384,9 +387,7 @@ describe('flashcard-validator', () => {
 
     it('should accept back field with 1 character', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ back: 'B' }),
-        ],
+        flashcards: [createValidFlashcard({ back: 'B' })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -408,14 +409,14 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Missing required field')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Missing required field'
+      )
     })
 
     it('should reject invalid source value', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'invalid-source' as any }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'invalid-source' as any })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
@@ -424,9 +425,7 @@ describe('flashcard-validator', () => {
 
     it('should provide detailed error message for invalid source', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'custom-source' as any }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'custom-source' as any })],
       }
 
       try {
@@ -438,9 +437,7 @@ describe('flashcard-validator', () => {
 
     it('should accept ai-full source', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'ai-full' }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'ai-full' })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -450,9 +447,7 @@ describe('flashcard-validator', () => {
 
     it('should accept ai-edited source', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'ai-edited' }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'ai-edited' })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -462,9 +457,7 @@ describe('flashcard-validator', () => {
 
     it('should accept manual source', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'manual', generation_id: null }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'manual', generation_id: null })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -487,7 +480,9 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should require generation_id for ai-edited source', () => {
@@ -503,51 +498,53 @@ describe('flashcard-validator', () => {
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should reject non-integer generation_id for AI sources', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ generation_id: 'not-a-number' as any }),
-        ],
+        flashcards: [createValidFlashcard({ generation_id: 'not-a-number' as any })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should reject float generation_id for AI sources', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ generation_id: 123.45 as any }),
-        ],
+        flashcards: [createValidFlashcard({ generation_id: 123.45 as any })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should reject zero generation_id for AI sources', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ generation_id: 0 }),
-        ],
+        flashcards: [createValidFlashcard({ generation_id: 0 })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should reject negative generation_id for AI sources', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ generation_id: -1 }),
-        ],
+        flashcards: [createValidFlashcard({ generation_id: -1 })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should accept positive integer generation_id for AI sources', () => {
@@ -568,13 +565,13 @@ describe('flashcard-validator', () => {
   describe('Generation ID validation for manual source', () => {
     it('should require null generation_id for manual source', () => {
       const invalidRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'manual', generation_id: 123 }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'manual', generation_id: 123 })],
       }
 
       expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(ValidationError)
-      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow('Invalid generation_id for source type')
+      expect(() => validateCreateFlashcardsRequest(invalidRequest)).toThrow(
+        'Invalid generation_id for source type'
+      )
     })
 
     it('should accept undefined generation_id for manual source', () => {
@@ -596,9 +593,7 @@ describe('flashcard-validator', () => {
 
     it('should accept null generation_id for manual source', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ source: 'manual', generation_id: null }),
-        ],
+        flashcards: [createValidFlashcard({ source: 'manual', generation_id: null })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -632,9 +627,7 @@ describe('flashcard-validator', () => {
       }
 
       const validRequest = {
-        flashcards: [
-          createValidFlashcard(specialContent),
-        ],
+        flashcards: [createValidFlashcard(specialContent)],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -650,9 +643,7 @@ describe('flashcard-validator', () => {
       }
 
       const validRequest = {
-        flashcards: [
-          createValidFlashcard(unicodeContent),
-        ],
+        flashcards: [createValidFlashcard(unicodeContent)],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
@@ -716,9 +707,7 @@ describe('flashcard-validator', () => {
 
     it('should handle large generation_id values', () => {
       const validRequest = {
-        flashcards: [
-          createValidFlashcard({ generation_id: Number.MAX_SAFE_INTEGER }),
-        ],
+        flashcards: [createValidFlashcard({ generation_id: Number.MAX_SAFE_INTEGER })],
       }
 
       const result = validateCreateFlashcardsRequest(validRequest)
