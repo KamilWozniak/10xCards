@@ -16,7 +16,8 @@ export default defineConfig({
   globalTeardown: './tests/e2e/global.teardown.ts',
 
   // Maximum time one test can run
-  timeout: 30 * 1000,
+  // Increased for CI environments which are slower
+  timeout: process.env.CI ? 60 * 1000 : 30 * 1000,
 
   // Run tests in files in parallel
   fullyParallel: true,
@@ -52,7 +53,12 @@ export default defineConfig({
     video: 'retain-on-failure',
 
     // Maximum time each action can take
-    actionTimeout: 10 * 1000,
+    // Increased for CI environments
+    actionTimeout: process.env.CI ? 15 * 1000 : 10 * 1000,
+
+    // Navigation timeout
+    // Increased for CI environments where page loads might be slower
+    navigationTimeout: process.env.CI ? 30 * 1000 : 15 * 1000,
   },
 
   // Configure projects for browsers
@@ -73,5 +79,16 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    // Pass environment variables to the dev server subprocess
+    // This ensures that in CI, the dev server has access to Supabase credentials
+    env: {
+      NUXT_PUBLIC_SUPABASE_URL: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      NUXT_PUBLIC_SUPABASE_KEY: process.env.NUXT_PUBLIC_SUPABASE_KEY || '',
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
+      E2E_USERNAME_ID: process.env.E2E_USERNAME_ID || '',
+      E2E_USERNAME: process.env.E2E_USERNAME || '',
+      E2E_PASSWORD: process.env.E2E_PASSWORD || '',
+      BASE_URL: process.env.BASE_URL || 'http://localhost:3000',
+    },
   },
 })
