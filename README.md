@@ -85,7 +85,7 @@ Manual creation of high-quality flashcards requires significant time and effort,
 
 ### Prerequisites
 
-- **Node.js** (v18 or higher recommended)
+- **Node.js** (v22 or higher recommended)
 - **pnpm** (recommended) or npm/yarn/bun
 - **Supabase account** (for backend services)
 - **Openrouter.ai API key** (for AI flashcard generation)
@@ -162,25 +162,62 @@ Manual creation of high-quality flashcards requires significant time and effort,
 
 ## 🚀 Deployment
 
-### Cloudflare Pages
+### Automated Deployment with GitHub Actions
 
-This project is configured for deployment on Cloudflare Pages. The configuration includes:
+This project uses **GitHub Actions** for automated CI/CD deployment to **Cloudflare Pages**. The deployment pipeline includes:
 
-- `wrangler.toml` - Main Cloudflare configuration file
-- `.cloudflare/pages.toml` - Cloudflare Pages specific settings
-- `.node-version` - Node.js version specification
+- **Automated Testing**: Lint checks and unit tests on every pull request
+- **Automated Deployment**: Automatic deployment to production on pushes to `master` branch
+- **Manual Deployment**: Option to trigger deployment manually via GitHub Actions
+
+#### CI/CD Pipeline Features
+
+✅ **Pull Request Workflow** (`.github/workflows/pull-request.yml`):
+- Code linting with ESLint
+- Unit tests with coverage reporting
+- E2E tests with Playwright
+- Automated status comments on PRs
+
+✅ **Master Deployment Workflow** (`.github/workflows/master.yml`):
+- Code quality checks
+- Unit tests with coverage
+- Cloudflare Pages deployment
+- Deployment status notifications
+
+#### Required GitHub Secrets
+
+Configure these secrets in your GitHub repository settings:
+
+```env
+# Cloudflare Configuration
+CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
+CLOUDFLARE_ACCOUNT_ID=your_cloudflare_account_id  
+CLOUDFLARE_PROJECT_NAME=your_project_name
+
+# Application Environment Variables
+NUXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NUXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_key
+OPENROUTER_API_KEY=your_openrouter_api_key
+```
+
+#### Manual Deployment Steps
+
+1. **Connect Repository**: Link your GitHub repository to Cloudflare Pages
+2. **Configure Secrets**: Add required secrets in GitHub repository settings
+3. **Trigger Deployment**: 
+   - Push to `master` branch for automatic deployment
+   - Use "Run workflow" button in GitHub Actions for manual deployment
+
+#### Build Configuration
+
+The project uses optimized build settings:
+- **Node.js Version**: 22 (specified in `.nvmrc`)
+- **Package Manager**: pnpm v9
+- **Build Command**: `pnpm build:cloudflare`
+- **Output Directory**: `dist/`
+- **Cloudflare Preset**: `cloudflare-pages`
 
 For detailed deployment instructions, see [Cloudflare Pages Deployment Guide](./docs/cloudflare-pages-deployment.md).
-
-#### Quick Deployment Steps
-
-1. Connect your GitHub repository to Cloudflare Pages
-2. Configure build settings:
-   - Framework preset: Nuxt
-   - Build command: `pnpm install --no-frozen-lockfile && pnpm run build:cloudflare`
-   - Build output directory: `.output/public`
-   - Node.js version: 22
-3. Add required environment variables in the Cloudflare Pages dashboard
 
 ## 📋 Project Scope
 
