@@ -1,0 +1,6 @@
+[build]
+command = "pnpm install --no-frozen-lockfile && pnpm run build:cloudflare"
+publish = ".output/public"
+
+[site]
+bucket = ".output/public"
