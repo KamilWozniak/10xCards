@@ -40,7 +40,7 @@ jobs:
           NODE_ENV: test
       
       - name: Upload unit test coverage
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: unit-test-coverage
           path: |
@@ -60,6 +60,9 @@ jobs:
         
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
+      
+      - name: Prepare Nuxt
+        run: pnpm postinstall
       
       - name: Install Playwright browsers
         run: pnpm playwright:install
@@ -82,7 +85,7 @@ jobs:
           CI_ENVIRONMENT: 'true'
       
       - name: Upload E2E test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: tests/e2e/results/
