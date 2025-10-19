@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "build:cloudflare": "NITRO_PRESET=cloudflare_pages nuxt build",
     "dev": "nuxt dev",
     "dev:e2e": "dotenv -e .env.test -- nuxt dev",
     "generate": "nuxt generate",

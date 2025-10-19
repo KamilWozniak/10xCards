@@ -1,0 +1,9 @@
+[build]
+command = "pnpm install --no-frozen-lockfile && pnpm run build:cloudflare"
+publish = ".output/public"
+
+[build.environment]
+NODE_VERSION = "22"
+
+[env.production]
+NODE_ENV = "production"

@@ -13,6 +13,7 @@ A web-based educational flashcard application that helps users create and manage
 - [Tech Stack](#-tech-stack)
 - [Getting Started Locally](#-getting-started-locally)
 - [Available Scripts](#-available-scripts)
+- [Deployment](#-deployment)
 - [Project Scope](#-project-scope)
 - [Project Status](#-project-status)
 - [License](#-license)
@@ -159,6 +160,28 @@ Manual creation of high-quality flashcards requires significant time and effort,
 | **test:e2e:ui** | `pnpm test:e2e:ui` | Run end-to-end tests with Playwright UI |
 | **postinstall** | `pnpm postinstall` | Automatically run after installation (prepares Nuxt) |
 
+## 🚀 Deployment
+
+### Cloudflare Pages
+
+This project is configured for deployment on Cloudflare Pages. The configuration includes:
+
+- `wrangler.toml` - Main Cloudflare configuration file
+- `.cloudflare/pages.toml` - Cloudflare Pages specific settings
+- `.node-version` - Node.js version specification
+
+For detailed deployment instructions, see [Cloudflare Pages Deployment Guide](./docs/cloudflare-pages-deployment.md).
+
+#### Quick Deployment Steps
+
+1. Connect your GitHub repository to Cloudflare Pages
+2. Configure build settings:
+   - Framework preset: Nuxt
+   - Build command: `pnpm install --no-frozen-lockfile && pnpm run build:cloudflare`
+   - Build output directory: `.output/public`
+   - Node.js version: 22
+3. Add required environment variables in the Cloudflare Pages dashboard
+
 ## 📋 Project Scope
 
 ### In Scope (MVP)
@@ -221,6 +244,7 @@ For more detailed information, please refer to:
 - [API Documentation](./docs/api/)
   - [POST /api/generations - Endpoint Documentation](./docs/api/generations-endpoint.md)
   - [POST /api/generations - Implementation Summary](./docs/api/generations-implementation-summary.md)
+- [Deployment Documentation](./docs/cloudflare-pages-deployment.md)
 
 ## 📄 License
 
