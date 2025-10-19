@@ -99,7 +99,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .output/public --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --compatibility-date=2025-07-15
+          command: pages deploy .output/public --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
 
   status-notification:
     name: Deployment Status

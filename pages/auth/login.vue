@@ -1,6 +1,6 @@
 <template>
   <div data-testid="login-page">
-    <h1>Test1</h1>
+    <h1>Test2</h1>
     <!-- Error/Success Message Display -->
     <AuthErrorDisplay :message="errorMessage" :type="messageType" />
 
