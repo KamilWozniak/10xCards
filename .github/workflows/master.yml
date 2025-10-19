@@ -1,0 +1,121 @@
+name: Master Deployment
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        
+      - name: Prepare Nuxt
+        run: pnpm postinstall
+        
+      - name: Run ESLint
+        run: pnpm exec eslint .
+
+  unit-test:
+    name: Unit Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        
+      - name: Run unit tests with coverage
+        run: pnpm test:unit:ci
+        env:
+          NODE_ENV: test
+      
+      - name: Upload unit test coverage
+        uses: actions/upload-artifact@v5
+        with:
+          name: unit-test-coverage
+          path: |
+            coverage/
+            !coverage/**/*:*
+          retention-days: 30
+
+  build:
+    name: Build for Cloudflare
+    needs: [lint, unit-test]
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        
+      - name: Build for Cloudflare Pages
+        run: pnpm build:cloudflare
+        env:
+          NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
+          NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: cloudflare-build
+          path: |
+            .output/
+            dist/
+          retention-days: 7
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: cloudflare-build
+          
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .output/public --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --compatibility-date=2025-07-15
+
+  status-notification:
+    name: Deployment Status
+    if: always()
+    needs: [lint, unit-test, build, deploy]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify deployment success
+        if: ${{ needs.deploy.result == 'success' }}
+        run: |
+          echo "✅ Deployment to Cloudflare Pages completed successfully!"
+          echo "🚀 Application is now live at production URL"
+          
+      - name: Notify deployment failure
+        if: ${{ needs.deploy.result == 'failure' }}
+        run: |
+          echo "❌ Deployment to Cloudflare Pages failed!"
+          echo "🔍 Check the logs for more details"
+          exit 1
