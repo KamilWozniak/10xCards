@@ -78,7 +78,7 @@ Manual creation of high-quality flashcards requires significant time and effort,
 
 ### CI/CD & Hosting
 - **GitHub Actions** - Automated CI/CD pipelines
-- **DigitalOcean** - Application hosting via Docker containers
+- **Cloudflare Pages** - Application and hosting platform with first-class Nuxt 3 support
 
 ## 🚀 Getting Started Locally
 

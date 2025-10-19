@@ -36,4 +36,4 @@ Testowanie:
 
 CI/CD i Hosting:
 - Github Actions do tworzenia pipeline'ów CI/CD
-- DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
+- Cloudflare Pages jako platforma hostingowa. Zapewnia doskonałe wsparcie dla aplikacji full-stack Nuxt 3, hojny plan darmowy z pozwoleniem na użytek komercyjny oraz wysoką wydajność dzięki globalnej sieci Cloudflare. Jest to optymalny wybór dla projektu z potencjałem start-upowym, minimalizujący koszty początkowe i eliminujący potrzebę przyszłych migracji.
