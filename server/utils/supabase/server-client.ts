@@ -20,7 +20,7 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
     return []
   }
 
-  return cookieHeader.split(';').map((cookie) => {
+  return cookieHeader.split(';').map(cookie => {
     const [name, ...rest] = cookie.trim().split('=')
     return { name, value: rest.join('=') }
   })

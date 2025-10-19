@@ -265,7 +265,9 @@ describe('generation-validator', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
         expect((error as ValidationError).message).toBe('Invalid input')
-        expect((error as ValidationError).details).toBe('source_text must be between 1000 and 10000 characters. Received: 800 characters')
+        expect((error as ValidationError).details).toBe(
+          'source_text must be between 1000 and 10000 characters. Received: 800 characters'
+        )
       }
     })
   })
@@ -304,7 +306,9 @@ describe('generation-validator', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
         expect((error as ValidationError).message).toBe('Invalid input')
-        expect((error as ValidationError).details).toBe('source_text must be between 1000 and 10000 characters. Received: 12000 characters')
+        expect((error as ValidationError).details).toBe(
+          'source_text must be between 1000 and 10000 characters. Received: 12000 characters'
+        )
       }
     })
   })
@@ -627,12 +631,14 @@ describe('generation-validator', () => {
         {
           input: { source_text: 'A'.repeat(500) },
           expectedMessage: 'Invalid input',
-          expectedDetails: 'source_text must be between 1000 and 10000 characters. Received: 500 characters',
+          expectedDetails:
+            'source_text must be between 1000 and 10000 characters. Received: 500 characters',
         },
         {
           input: { source_text: 'A'.repeat(15000) },
           expectedMessage: 'Invalid input',
-          expectedDetails: 'source_text must be between 1000 and 10000 characters. Received: 15000 characters',
+          expectedDetails:
+            'source_text must be between 1000 and 10000 characters. Received: 15000 characters',
         },
         {
           input: { source_text: 123 },
@@ -673,9 +679,10 @@ describe('generation-validator', () => {
     })
 
     it('should handle complex Unicode text efficiently', () => {
-      const complexText = '🌍🚀🎉💯⭐️🌟✨🎯🏆🎊'.repeat(100) + 
-                         '你好世界'.repeat(100) + 
-                         'àáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ'.repeat(50)
+      const complexText =
+        '🌍🚀🎉💯⭐️🌟✨🎯🏆🎊'.repeat(100) +
+        '你好世界'.repeat(100) +
+        'àáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ'.repeat(50)
 
       const validRequest = { source_text: complexText }
 
@@ -699,8 +706,9 @@ describe('generation-validator', () => {
     })
 
     it('should handle rapid successive validations', () => {
-      const texts = Array.from({ length: 10 }, (_, i) => 
-        `Text number ${i + 1} `.repeat(200) // Each ~3000 characters
+      const texts = Array.from(
+        { length: 10 },
+        (_, i) => `Text number ${i + 1} `.repeat(200) // Each ~3000 characters
       )
 
       const startTime = Date.now()
@@ -767,7 +775,7 @@ describe('generation-validator', () => {
         validateCreateGenerationRequest({ source_text: 'too short' })
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
-        
+
         const validationError = error as ValidationError
         expect(typeof validationError.message).toBe('string')
         expect(typeof validationError.details).toBe('string')

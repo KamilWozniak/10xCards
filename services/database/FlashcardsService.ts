@@ -28,7 +28,10 @@ export class FlashcardsService {
       user_id: userId,
     }))
 
-    const { data, error } = await this.supabase.from('flashcards').insert(flashcardsWithUserId).select()
+    const { data, error } = await this.supabase
+      .from('flashcards')
+      .insert(flashcardsWithUserId)
+      .select()
 
     if (error) {
       throw new Error(`Failed to create flashcards: ${error.message}`)
@@ -202,8 +205,6 @@ export class FlashcardsService {
  *
  * @param supabase - Supabase client instance
  */
-export function createFlashcardsService(
-  supabase: SupabaseClient<Database>
-): FlashcardsService {
+export function createFlashcardsService(supabase: SupabaseClient<Database>): FlashcardsService {
   return new FlashcardsService(supabase)
 }

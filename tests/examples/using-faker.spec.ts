@@ -18,9 +18,7 @@ describe('Faker.js Examples', () => {
         createdAt: faker.date.past(),
       }
 
-      expect(user.id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      )
+      expect(user.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
       expect(user.email).toContain('@')
       expect(user.firstName).toBeTruthy()
       expect(user.lastName).toBeTruthy()
@@ -32,10 +30,10 @@ describe('Faker.js Examples', () => {
         id: faker.string.uuid(),
         front: faker.lorem.sentence(),
         back: faker.lorem.paragraph(),
-        tags: faker.helpers.arrayElements(
-          ['javascript', 'vue', 'nuxt', 'testing'],
-          { min: 1, max: 3 }
-        ),
+        tags: faker.helpers.arrayElements(['javascript', 'vue', 'nuxt', 'testing'], {
+          min: 1,
+          max: 3,
+        }),
         difficulty: faker.helpers.arrayElement(['easy', 'medium', 'hard']),
       }
 
@@ -61,7 +59,7 @@ describe('Faker.js Examples', () => {
       expect(flashcards[0]).toHaveProperty('back')
 
       // Verify uniqueness
-      const ids = flashcards.map((f) => f.id)
+      const ids = flashcards.map(f => f.id)
       const uniqueIds = new Set(ids)
       expect(uniqueIds.size).toBe(5)
     })
@@ -81,7 +79,7 @@ describe('Faker.js Examples', () => {
 
       expect(selectedTags.length).toBeGreaterThanOrEqual(2)
       expect(selectedTags.length).toBeLessThanOrEqual(4)
-      selectedTags.forEach((tag) => {
+      selectedTags.forEach(tag => {
         expect(tags).toContain(tag)
       })
     })

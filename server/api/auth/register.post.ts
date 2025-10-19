@@ -33,7 +33,7 @@ import { createSupabaseServerClient } from '~/server/utils/supabase/server-clien
  * - 409: Email already exists
  * - 500: Internal server error
  */
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   try {
     // Parse request body
     const body = await readBody(event)
@@ -91,7 +91,10 @@ export default defineEventHandler(async (event) => {
       console.error('Supabase registration error:', error)
 
       // Map specific error codes to user-friendly messages
-      if (error.message.includes('already registered') || error.message.includes('already exists')) {
+      if (
+        error.message.includes('already registered') ||
+        error.message.includes('already exists')
+      ) {
         throw createError({
           statusCode: 409,
           statusMessage: 'Użytkownik z tym adresem email już istnieje',

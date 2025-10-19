@@ -90,11 +90,12 @@ export function createAIService() {
         },
       ]
 
-      const response = await openRouterService.generateStructuredResponse<FlashcardGenerationResponse>(
-        messages,
-        'flashcard_generation',
-        FLASHCARD_SCHEMA
-      )
+      const response =
+        await openRouterService.generateStructuredResponse<FlashcardGenerationResponse>(
+          messages,
+          'flashcard_generation',
+          FLASHCARD_SCHEMA
+        )
 
       return {
         proposals: response.flashcards,

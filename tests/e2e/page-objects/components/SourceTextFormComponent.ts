@@ -75,7 +75,7 @@ export class SourceTextFormComponent extends BasePage {
    */
   async expectValidationState(isValid: boolean): Promise<void> {
     await this.expectVisible(this.characterCount)
-    
+
     if (isValid) {
       // Sprawdzenie czy tekst ma zielony kolor (valid state)
       await this.page.waitForFunction(
@@ -110,7 +110,7 @@ export class SourceTextFormComponent extends BasePage {
    */
   async expectProgressBarColor(isValid: boolean): Promise<void> {
     await this.expectVisible(this.progressFill)
-    
+
     if (isValid) {
       // Sprawdzenie zielonego koloru dla valid state
       await this.page.waitForFunction(
@@ -181,7 +181,9 @@ export class SourceTextFormComponent extends BasePage {
     await this.expectVisible(this.generateButton)
     await this.page.waitForFunction(
       () => {
-        const button = document.querySelector('[data-testid="generate-flashcards-button"]') as HTMLButtonElement
+        const button = document.querySelector(
+          '[data-testid="generate-flashcards-button"]'
+        ) as HTMLButtonElement
         return button?.disabled === true
       },
       { timeout: 5000 }
@@ -195,7 +197,9 @@ export class SourceTextFormComponent extends BasePage {
     await this.expectVisible(this.generateButton)
     await this.page.waitForFunction(
       () => {
-        const button = document.querySelector('[data-testid="generate-flashcards-button"]') as HTMLButtonElement
+        const button = document.querySelector(
+          '[data-testid="generate-flashcards-button"]'
+        ) as HTMLButtonElement
         return button?.disabled === false
       },
       { timeout: 5000 }
@@ -229,16 +233,16 @@ export class SourceTextFormComponent extends BasePage {
   async fillAndValidateForm(text: string): Promise<void> {
     await this.expectFormVisible()
     await this.fillSourceText(text)
-    
+
     // Oczekiwanie na aktualizację licznika znaków
     await this.page.waitForTimeout(500)
-    
+
     const characterCount = await this.getCharacterCount()
     const isValid = characterCount >= 1000 && characterCount <= 10000
-    
+
     await this.expectValidationState(isValid)
     await this.expectProgressBarColor(isValid)
-    
+
     if (isValid) {
       await this.expectButtonEnabled()
       await this.expectNoFormError()

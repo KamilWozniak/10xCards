@@ -19,12 +19,20 @@
       />
 
       <!-- Loading Spinner -->
-      <div v-if="generationState.isLoading" class="flex justify-center" data-testid="generation-loading-spinner">
+      <div
+        v-if="generationState.isLoading"
+        class="flex justify-center"
+        data-testid="generation-loading-spinner"
+      >
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
 
       <!-- Error Message -->
-      <div v-if="generationState.error" class="bg-red-50 border border-red-200 rounded-md p-4" data-testid="generation-error-message">
+      <div
+        v-if="generationState.error"
+        class="bg-red-50 border border-red-200 rounded-md p-4"
+        data-testid="generation-error-message"
+      >
         <div class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">

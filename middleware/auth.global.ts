@@ -9,7 +9,7 @@ import { createSupabaseServerClient } from '~/server/utils/supabase/server-clien
  * Server-side: Verifies session from cookies
  * Client-side: Checks session and redirects to login if needed
  */
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async to => {
   // Public paths that don't require authentication
   const PUBLIC_PATHS = [
     // Auth pages
@@ -31,7 +31,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // SERVER-SIDE AUTH CHECK
-  if (process.server) {
+  if (import.meta.server) {
     const event = useRequestEvent()
 
     if (!event) {
@@ -66,7 +66,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // CLIENT-SIDE AUTH CHECK
-  if (process.client) {
+  if (import.meta.client) {
     try {
       const supabase = useSupabase()
 

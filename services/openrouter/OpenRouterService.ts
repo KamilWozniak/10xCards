@@ -82,9 +82,7 @@ async function executeRequest<T = unknown>(
   } catch (error: unknown) {
     console.error('OpenRouter API error details:', error)
     const openRouterError = error as OpenRouterError
-    throw new Error(
-      `OpenRouter API error: ${openRouterError.error?.message || 'Unknown error'}`
-    )
+    throw new Error(`OpenRouter API error: ${openRouterError.error?.message || 'Unknown error'}`)
   }
 }
 

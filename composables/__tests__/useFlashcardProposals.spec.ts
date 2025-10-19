@@ -109,9 +109,7 @@ describe('useFlashcardProposals', () => {
     it('should calculate canSave correctly when proposals are selected', () => {
       const { setProposals, canSave } = useFlashcardProposals()
 
-      const testProposals = [
-        createTestProposal('1', 'Q1', 'A1', { isAccepted: true }),
-      ]
+      const testProposals = [createTestProposal('1', 'Q1', 'A1', { isAccepted: true })]
 
       setProposals(testProposals)
 
@@ -740,7 +738,8 @@ describe('useFlashcardProposals', () => {
     })
 
     it('should maintain reactivity after reset', () => {
-      const { setProposals, resetProposals, acceptProposal, selectedCount } = useFlashcardProposals()
+      const { setProposals, resetProposals, acceptProposal, selectedCount } =
+        useFlashcardProposals()
 
       const testProposals = [createTestProposal('1', 'Q1', 'A1')]
       setProposals(testProposals)
@@ -804,7 +803,8 @@ describe('useFlashcardProposals', () => {
     })
 
     it('should handle user changing their mind about proposals', () => {
-      const { setProposals, acceptProposal, rejectProposal, selectedCount } = useFlashcardProposals()
+      const { setProposals, acceptProposal, rejectProposal, selectedCount } =
+        useFlashcardProposals()
 
       const testProposals = [createTestProposal('1', 'Q1', 'A1')]
       setProposals(testProposals)
@@ -849,10 +849,7 @@ describe('useFlashcardProposals', () => {
       } = useFlashcardProposals()
 
       // Start with some proposals
-      setProposals([
-        createTestProposal('1', 'Q1', 'A1'),
-        createTestProposal('2', 'Q2', 'A2'),
-      ])
+      setProposals([createTestProposal('1', 'Q1', 'A1'), createTestProposal('2', 'Q2', 'A2')])
 
       // Add a new proposal
       addProposal(createTestProposal('3', 'Q3', 'A3'))
@@ -893,4 +890,3 @@ describe('useFlashcardProposals', () => {
     })
   })
 })
-

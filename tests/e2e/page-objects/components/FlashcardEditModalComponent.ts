@@ -57,9 +57,9 @@ export class FlashcardEditModalComponent extends BasePage {
    * Oczekiwanie na otwarcie modala
    */
   async waitForModalOpen(timeout: number = 5000): Promise<void> {
-    await this.page.waitForSelector('[data-testid="flashcard-edit-modal"]', { 
+    await this.page.waitForSelector('[data-testid="flashcard-edit-modal"]', {
       state: 'visible',
-      timeout 
+      timeout,
     })
     await this.expectModalOpen()
   }
@@ -115,7 +115,7 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectFrontCharacterLimit(): Promise<void> {
     await this.expectVisible(this.frontTextarea)
-    
+
     // Sprawdź atrybut maxlength
     const maxLength = await this.frontTextarea.getAttribute('maxlength')
     if (maxLength !== '200') {
@@ -128,7 +128,7 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectBackCharacterLimit(): Promise<void> {
     await this.expectVisible(this.backTextarea)
-    
+
     // Sprawdź atrybut maxlength
     const maxLength = await this.backTextarea.getAttribute('maxlength')
     if (maxLength !== '500') {
@@ -149,14 +149,16 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectFrontCharacterCount(count: number): Promise<void> {
     await this.page.waitForFunction(
-      (expectedCount) => {
+      expectedCount => {
         const modal = document.querySelector('[data-testid="flashcard-edit-modal"]')
         if (!modal) return false
-        
+
         // Znajdź licznik znaków dla pola przodu
-        const frontSection = modal.querySelector('textarea[data-testid="edit-modal-front-textarea"]')?.closest('div')
+        const frontSection = modal
+          .querySelector('textarea[data-testid="edit-modal-front-textarea"]')
+          ?.closest('div')
         const counterText = frontSection?.querySelector('.text-xs.text-gray-500')?.textContent
-        
+
         return counterText && counterText.includes(`${expectedCount}/200 znaków`)
       },
       count,
@@ -169,14 +171,16 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectBackCharacterCount(count: number): Promise<void> {
     await this.page.waitForFunction(
-      (expectedCount) => {
+      expectedCount => {
         const modal = document.querySelector('[data-testid="flashcard-edit-modal"]')
         if (!modal) return false
-        
+
         // Znajdź licznik znaków dla pola tyłu
-        const backSection = modal.querySelector('textarea[data-testid="edit-modal-back-textarea"]')?.closest('div')
+        const backSection = modal
+          .querySelector('textarea[data-testid="edit-modal-back-textarea"]')
+          ?.closest('div')
         const counterText = backSection?.querySelector('.text-xs.text-gray-500')?.textContent
-        
+
         return counterText && counterText.includes(`${expectedCount}/500 znaków`)
       },
       count,
@@ -189,14 +193,16 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectFrontValidationError(message: string): Promise<void> {
     await this.page.waitForFunction(
-      (expectedMessage) => {
+      expectedMessage => {
         const modal = document.querySelector('[data-testid="flashcard-edit-modal"]')
         if (!modal) return false
-        
+
         // Znajdź komunikat błędu dla pola przodu
-        const frontSection = modal.querySelector('textarea[data-testid="edit-modal-front-textarea"]')?.closest('div')
+        const frontSection = modal
+          .querySelector('textarea[data-testid="edit-modal-front-textarea"]')
+          ?.closest('div')
         const errorText = frontSection?.querySelector('.text-sm.text-red-600')?.textContent
-        
+
         return errorText && errorText.includes(expectedMessage)
       },
       message,
@@ -209,14 +215,16 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectBackValidationError(message: string): Promise<void> {
     await this.page.waitForFunction(
-      (expectedMessage) => {
+      expectedMessage => {
         const modal = document.querySelector('[data-testid="flashcard-edit-modal"]')
         if (!modal) return false
-        
+
         // Znajdź komunikat błędu dla pola tyłu
-        const backSection = modal.querySelector('textarea[data-testid="edit-modal-back-textarea"]')?.closest('div')
+        const backSection = modal
+          .querySelector('textarea[data-testid="edit-modal-back-textarea"]')
+          ?.closest('div')
         const errorText = backSection?.querySelector('.text-sm.text-red-600')?.textContent
-        
+
         return errorText && errorText.includes(expectedMessage)
       },
       message,
@@ -232,7 +240,7 @@ export class FlashcardEditModalComponent extends BasePage {
       () => {
         const modal = document.querySelector('[data-testid="flashcard-edit-modal"]')
         if (!modal) return true
-        
+
         // Sprawdź czy nie ma komunikatów błędów
         const errors = modal.querySelectorAll('.text-sm.text-red-600')
         return errors.length === 0
@@ -263,11 +271,13 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectSaveButtonEnabled(enabled: boolean = true): Promise<void> {
     await this.expectVisible(this.saveButton)
-    
+
     if (enabled) {
       await this.page.waitForFunction(
         () => {
-          const button = document.querySelector('[data-testid="edit-modal-save-button"]') as HTMLButtonElement
+          const button = document.querySelector(
+            '[data-testid="edit-modal-save-button"]'
+          ) as HTMLButtonElement
           return button && !button.disabled
         },
         undefined,
@@ -276,7 +286,9 @@ export class FlashcardEditModalComponent extends BasePage {
     } else {
       await this.page.waitForFunction(
         () => {
-          const button = document.querySelector('[data-testid="edit-modal-save-button"]') as HTMLButtonElement
+          const button = document.querySelector(
+            '[data-testid="edit-modal-save-button"]'
+          ) as HTMLButtonElement
           return button && button.disabled
         },
         undefined,
@@ -328,17 +340,18 @@ export class FlashcardEditModalComponent extends BasePage {
   async fillBothFields(frontText: string, backText: string): Promise<void> {
     await this.fillFrontText(frontText)
     await this.fillBackText(backText)
-    
+
     // Sprawdź liczniki znaków
     await this.expectFrontCharacterCount(frontText.length)
     await this.expectBackCharacterCount(backText.length)
-    
+
     // Sprawdź czy przyciski są w odpowiednim stanie
-    const isValid = frontText.trim().length > 0 && 
-                   frontText.length <= 200 && 
-                   backText.trim().length > 0 && 
-                   backText.length <= 500
-    
+    const isValid =
+      frontText.trim().length > 0 &&
+      frontText.length <= 200 &&
+      backText.trim().length > 0 &&
+      backText.length <= 500
+
     await this.expectSaveButtonEnabled(isValid)
   }
 
@@ -351,11 +364,11 @@ export class FlashcardEditModalComponent extends BasePage {
     await this.expectModalDescription()
     await this.expectCharacterLimits()
     await this.expectButtonTexts()
-    
+
     await this.fillBothFields(frontText, backText)
     await this.expectNoValidationErrors()
     await this.expectSaveButtonEnabled(true)
-    
+
     await this.clickSaveButton()
     await this.waitForModalClose()
   }
@@ -374,14 +387,14 @@ export class FlashcardEditModalComponent extends BasePage {
    */
   async expectInitialData(expectedFront: string, expectedBack: string): Promise<void> {
     await this.expectModalOpen()
-    
+
     const currentFront = await this.getFrontText()
     const currentBack = await this.getBackText()
-    
+
     if (currentFront !== expectedFront) {
       throw new Error(`Expected front text "${expectedFront}", but got "${currentFront}"`)
     }
-    
+
     if (currentBack !== expectedBack) {
       throw new Error(`Expected back text "${expectedBack}", but got "${currentBack}"`)
     }

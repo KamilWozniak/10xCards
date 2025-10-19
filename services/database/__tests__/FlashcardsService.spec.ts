@@ -53,7 +53,7 @@ describe('FlashcardsService', () => {
       single: vi.fn(),
       then: vi.fn(), // For Promise-like behavior
     }
-    
+
     // Make all methods return the same chainable object by default
     mockSupabase.from.mockReturnValue(mockSupabase)
     mockSupabase.insert.mockReturnValue(mockSupabase)
@@ -64,12 +64,12 @@ describe('FlashcardsService', () => {
     mockSupabase.limit.mockReturnValue(mockSupabase)
     mockSupabase.range.mockReturnValue(mockSupabase)
     mockSupabase.single.mockReturnValue(mockSupabase)
-    
+
     // Make the mock awaitable by implementing then method
     mockSupabase.then.mockImplementation((resolve: any) => {
       return Promise.resolve({ data: [mockFlashcardDTO], error: null }).then(resolve)
     })
-    
+
     // Create service with mock
     service = new FlashcardsService(mockSupabase as unknown as SupabaseClient<Database>)
   })

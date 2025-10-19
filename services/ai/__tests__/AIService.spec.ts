@@ -57,7 +57,7 @@ describe('AIService', () => {
 
     it('should configure OpenRouter service with correct parameters', async () => {
       const { createOpenRouterService } = await import('~/services/openrouter/OpenRouterService')
-      
+
       createAIService()
 
       expect(createOpenRouterService).toHaveBeenCalledWith({
@@ -69,7 +69,7 @@ describe('AIService', () => {
 
     it('should create service instance only once per call', async () => {
       const { createOpenRouterService } = await import('~/services/openrouter/OpenRouterService')
-      
+
       const service1 = createAIService()
       const service2 = createAIService()
 
@@ -81,17 +81,21 @@ describe('AIService', () => {
   describe('generateFlashcards - Success scenarios', () => {
     it('should generate flashcards successfully from source text', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: [
-          { front: 'Co to jest JavaScript?', back: 'Język programowania do tworzenia stron internetowych' },
+          {
+            front: 'Co to jest JavaScript?',
+            back: 'Język programowania do tworzenia stron internetowych',
+          },
           { front: 'Jak działa pętla for?', back: 'Wykonuje kod określoną liczbę razy' },
         ],
       }
 
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce(mockResponse)
 
-      const sourceText = 'JavaScript jest językiem programowania używanym do tworzenia interaktywnych stron internetowych. Pętla for pozwala na wielokrotne wykonywanie tego samego kodu.'
+      const sourceText =
+        'JavaScript jest językiem programowania używanym do tworzenia interaktywnych stron internetowych. Pętla for pozwala na wielokrotne wykonywanie tego samego kodu.'
       const result = await aiService.generateFlashcards(sourceText)
 
       expect(result).toEqual({
@@ -102,7 +106,7 @@ describe('AIService', () => {
 
     it('should send correct messages to OpenRouter service', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -146,7 +150,7 @@ describe('AIService', () => {
 
     it('should handle empty flashcards array from API', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -161,10 +165,13 @@ describe('AIService', () => {
 
     it('should handle single flashcard response', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: [
-          { front: 'Czym jest React?', back: 'Biblioteka JavaScript do budowania interfejsów użytkownika' },
+          {
+            front: 'Czym jest React?',
+            back: 'Biblioteka JavaScript do budowania interfejsów użytkownika',
+          },
         ],
       }
 
@@ -180,7 +187,7 @@ describe('AIService', () => {
 
     it('should handle maximum number of flashcards (5)', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: Array.from({ length: 5 }, (_, i) => ({
           front: `Pytanie ${i + 1}`,
@@ -200,7 +207,7 @@ describe('AIService', () => {
   describe('generateFlashcards - System prompt validation', () => {
     it('should include Polish language requirement in system prompt', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -208,13 +215,15 @@ describe('AIService', () => {
       await aiService.generateFlashcards('Test content')
 
       const systemMessage = mockOpenRouterService.generateStructuredResponse.mock.calls[0][0][0]
-      
-      expect(systemMessage.content).toContain('WAŻNE: Wszystkie pytania i odpowiedzi muszą być w języku polskim')
+
+      expect(systemMessage.content).toContain(
+        'WAŻNE: Wszystkie pytania i odpowiedzi muszą być w języku polskim'
+      )
     })
 
     it('should include flashcard generation guidelines in system prompt', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -222,7 +231,7 @@ describe('AIService', () => {
       await aiService.generateFlashcards('Test content')
 
       const systemMessage = mockOpenRouterService.generateStructuredResponse.mock.calls[0][0][0]
-      
+
       expect(systemMessage.content).toContain('Stwórz 2-5 fiszek w zależności od bogactwa treści')
       expect(systemMessage.content).toContain('Skup się na kluczowych konceptach')
       expect(systemMessage.content).toContain('Pytania powinny być jasne, konkretne')
@@ -231,7 +240,7 @@ describe('AIService', () => {
 
     it('should include JSON response format instructions', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -239,7 +248,7 @@ describe('AIService', () => {
       await aiService.generateFlashcards('Test content')
 
       const systemMessage = mockOpenRouterService.generateStructuredResponse.mock.calls[0][0][0]
-      
+
       expect(systemMessage.content).toContain('Zwróć odpowiedź jako obiekt JSON')
       expect(systemMessage.content).toContain('"flashcards"')
       expect(systemMessage.content).toContain('"front"')
@@ -250,7 +259,7 @@ describe('AIService', () => {
   describe('generateFlashcards - JSON Schema validation', () => {
     it('should use correct JSON schema structure', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -258,7 +267,7 @@ describe('AIService', () => {
       await aiService.generateFlashcards('Test content')
 
       const schema = mockOpenRouterService.generateStructuredResponse.mock.calls[0][2]
-      
+
       expect(schema).toEqual({
         type: 'object',
         properties: {
@@ -282,7 +291,7 @@ describe('AIService', () => {
 
     it('should use correct schema name for structured response', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -290,7 +299,7 @@ describe('AIService', () => {
       await aiService.generateFlashcards('Test content')
 
       const schemaName = mockOpenRouterService.generateStructuredResponse.mock.calls[0][1]
-      
+
       expect(schemaName).toBe('flashcard_generation')
     })
   })
@@ -298,7 +307,7 @@ describe('AIService', () => {
   describe('generateFlashcards - Error handling', () => {
     it('should propagate OpenRouter service errors', async () => {
       const aiService = createAIService()
-      
+
       const error = new Error('OpenRouter API rate limit exceeded')
       mockOpenRouterService.generateStructuredResponse.mockRejectedValueOnce(error)
 
@@ -309,7 +318,7 @@ describe('AIService', () => {
 
     it('should handle network errors', async () => {
       const aiService = createAIService()
-      
+
       const networkError = new Error('Network connection failed')
       mockOpenRouterService.generateStructuredResponse.mockRejectedValueOnce(networkError)
 
@@ -320,7 +329,7 @@ describe('AIService', () => {
 
     it('should handle JSON parsing errors from OpenRouter', async () => {
       const aiService = createAIService()
-      
+
       const jsonError = new Error('Failed to parse structured response as JSON')
       mockOpenRouterService.generateStructuredResponse.mockRejectedValueOnce(jsonError)
 
@@ -331,7 +340,7 @@ describe('AIService', () => {
 
     it('should handle API authentication errors', async () => {
       const aiService = createAIService()
-      
+
       const authError = new Error('OpenRouter API error: Invalid API key')
       mockOpenRouterService.generateStructuredResponse.mockRejectedValueOnce(authError)
 
@@ -342,7 +351,7 @@ describe('AIService', () => {
 
     it('should handle malformed API responses', async () => {
       const aiService = createAIService()
-      
+
       const malformedError = new Error('Invalid response format from OpenRouter API')
       mockOpenRouterService.generateStructuredResponse.mockRejectedValueOnce(malformedError)
 
@@ -355,7 +364,7 @@ describe('AIService', () => {
   describe('generateFlashcards - Input validation and edge cases', () => {
     it('should handle very short source text', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -368,11 +377,9 @@ describe('AIService', () => {
 
     it('should handle very long source text', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
-        flashcards: [
-          { front: 'Długi tekst pytanie', back: 'Długi tekst odpowiedź' },
-        ],
+        flashcards: [{ front: 'Długi tekst pytanie', back: 'Długi tekst odpowiedź' }],
       })
 
       const longText = 'A'.repeat(10000)
@@ -392,11 +399,9 @@ describe('AIService', () => {
 
     it('should handle source text with special characters', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
-        flashcards: [
-          { front: 'Pytanie z emoji 🎉', back: 'Odpowiedź z Unicode: é ñ ü' },
-        ],
+        flashcards: [{ front: 'Pytanie z emoji 🎉', back: 'Odpowiedź z Unicode: é ñ ü' }],
       })
 
       const specialText = 'Text with émojis 🎉 and spëcial chars: ñ ü ç'
@@ -408,7 +413,7 @@ describe('AIService', () => {
 
     it('should handle source text with HTML/XML content', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [
           { front: 'Co to jest HTML?', back: 'Język znaczników do tworzenia stron web' },
@@ -431,11 +436,9 @@ describe('AIService', () => {
 
     it('should handle source text with code snippets', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
-        flashcards: [
-          { front: 'Co robi console.log()?', back: 'Wypisuje informacje do konsoli' },
-        ],
+        flashcards: [{ front: 'Co robi console.log()?', back: 'Wypisuje informacje do konsoli' }],
       })
 
       const codeText = 'function hello() { console.log("Hello World"); }'
@@ -454,7 +457,7 @@ describe('AIService', () => {
 
     it('should handle empty string input', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -467,7 +470,7 @@ describe('AIService', () => {
 
     it('should handle whitespace-only input', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [],
       })
@@ -481,11 +484,11 @@ describe('AIService', () => {
   describe('generateFlashcards - Response format validation', () => {
     it('should handle response with extra properties (should be filtered by schema)', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: [
-          { 
-            front: 'Pytanie', 
+          {
+            front: 'Pytanie',
             back: 'Odpowiedź',
             extraProperty: 'should be ignored', // This should be filtered by schema
           },
@@ -506,7 +509,7 @@ describe('AIService', () => {
 
     it('should handle response with missing required properties gracefully', async () => {
       const aiService = createAIService()
-      
+
       // This would normally be caught by the JSON schema validation
       const mockResponse = {
         flashcards: [
@@ -524,7 +527,7 @@ describe('AIService', () => {
 
     it('should return correct AIGenerationResult structure', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: [
           { front: 'Q1', back: 'A1' },
@@ -549,7 +552,7 @@ describe('AIService', () => {
   describe('getModel method', () => {
     it('should return current AI model name', () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.getModel.mockReturnValue('openai/gpt-4o-mini')
 
       const model = aiService.getModel()
@@ -560,7 +563,7 @@ describe('AIService', () => {
 
     it('should delegate to OpenRouter service getModel method', () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.getModel.mockReturnValue('custom/model-name')
 
       const model = aiService.getModel()
@@ -571,7 +574,7 @@ describe('AIService', () => {
 
     it('should return consistent model name across multiple calls', () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.getModel.mockReturnValue('openai/gpt-4o-mini')
 
       const model1 = aiService.getModel()
@@ -585,7 +588,7 @@ describe('AIService', () => {
   describe('Business rules and integration scenarios', () => {
     it('should support complete flashcard generation workflow', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: [
           { front: 'Co to jest TypeScript?', back: 'Nadbudowa JavaScript z typami statycznymi' },
@@ -611,30 +614,34 @@ describe('AIService', () => {
 
     it('should handle educational content in Polish correctly', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
         flashcards: [
-          { front: 'Czym jest fotosynteza?', back: 'Proces przekształcania światła słonecznego w energię przez rośliny' },
+          {
+            front: 'Czym jest fotosynteza?',
+            back: 'Proces przekształcania światła słonecznego w energię przez rośliny',
+          },
           { front: 'Gdzie zachodzi fotosynteza?', back: 'W chloroplastach komórek roślinnych' },
         ],
       }
 
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce(mockResponse)
 
-      const polishText = 'Fotosynteza to proces biologiczny zachodzący w roślinach, podczas którego energia światła słonecznego jest przekształcana w energię chemiczną.'
+      const polishText =
+        'Fotosynteza to proces biologiczny zachodzący w roślinach, podczas którego energia światła słonecznego jest przekształcana w energię chemiczną.'
       const result = await aiService.generateFlashcards(polishText)
 
-      expect(result.proposals.some(p => 
-        p.front.includes('Czym') || p.front.includes('Gdzie')
-      )).toBe(true)
-      expect(result.proposals.some(p => 
-        p.back.includes('proces') || p.back.includes('chloroplastach')
-      )).toBe(true)
+      expect(
+        result.proposals.some(p => p.front.includes('Czym') || p.front.includes('Gdzie'))
+      ).toBe(true)
+      expect(
+        result.proposals.some(p => p.back.includes('proces') || p.back.includes('chloroplastach'))
+      ).toBe(true)
     })
 
     it('should maintain consistency across multiple generations', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse
         .mockResolvedValueOnce({
           flashcards: [{ front: 'Q1', back: 'A1' }],
@@ -654,7 +661,7 @@ describe('AIService', () => {
 
     it('should handle concurrent generation requests', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse
         .mockResolvedValueOnce({
           flashcards: [{ front: 'Concurrent Q1', back: 'Concurrent A1' }],
@@ -677,7 +684,7 @@ describe('AIService', () => {
   describe('Performance and memory considerations', () => {
     it('should handle large source text efficiently', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [{ front: 'Large text question', back: 'Large text answer' }],
       })
@@ -691,7 +698,7 @@ describe('AIService', () => {
 
     it('should handle rapid successive generation calls', async () => {
       const aiService = createAIService()
-      
+
       // Mock responses for multiple calls
       for (let i = 0; i < 10; i++) {
         mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
@@ -714,7 +721,7 @@ describe('AIService', () => {
 
     it('should not leak memory on repeated calls', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValue({
         flashcards: [{ front: 'Memory test Q', back: 'Memory test A' }],
       })
@@ -731,7 +738,7 @@ describe('AIService', () => {
   describe('Constants and configuration', () => {
     it('should use correct AI model constant', async () => {
       const { createOpenRouterService } = await import('~/services/openrouter/OpenRouterService')
-      
+
       createAIService()
 
       expect(createOpenRouterService).toHaveBeenCalledWith(
@@ -743,7 +750,7 @@ describe('AIService', () => {
 
     it('should use correct temperature setting', async () => {
       const { createOpenRouterService } = await import('~/services/openrouter/OpenRouterService')
-      
+
       createAIService()
 
       expect(createOpenRouterService).toHaveBeenCalledWith(
@@ -755,7 +762,7 @@ describe('AIService', () => {
 
     it('should use correct max tokens setting', async () => {
       const { createOpenRouterService } = await import('~/services/openrouter/OpenRouterService')
-      
+
       createAIService()
 
       expect(createOpenRouterService).toHaveBeenCalledWith(
@@ -769,7 +776,7 @@ describe('AIService', () => {
   describe('Type safety and interfaces', () => {
     it('should return properly typed AIGenerationResult', async () => {
       const aiService = createAIService()
-      
+
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce({
         flashcards: [{ front: 'Type test Q', back: 'Type test A' }],
       })
@@ -784,11 +791,9 @@ describe('AIService', () => {
 
     it('should handle flashcard proposal structure correctly', async () => {
       const aiService = createAIService()
-      
+
       const mockResponse = {
-        flashcards: [
-          { front: 'Structured Q', back: 'Structured A' },
-        ],
+        flashcards: [{ front: 'Structured Q', back: 'Structured A' }],
       }
 
       mockOpenRouterService.generateStructuredResponse.mockResolvedValueOnce(mockResponse)

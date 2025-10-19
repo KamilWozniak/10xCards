@@ -9,7 +9,10 @@
         <!-- Front Content -->
         <div data-testid="proposal-front-section">
           <h4 class="text-sm font-medium text-gray-700 mb-2">Przód:</h4>
-          <p class="text-gray-900 bg-gray-50 p-3 rounded-md border" data-testid="proposal-front-content">
+          <p
+            class="text-gray-900 bg-gray-50 p-3 rounded-md border"
+            data-testid="proposal-front-content"
+          >
             {{ proposal.front }}
           </p>
         </div>
@@ -17,7 +20,10 @@
         <!-- Back Content -->
         <div data-testid="proposal-back-section">
           <h4 class="text-sm font-medium text-gray-700 mb-2">Tył:</h4>
-          <p class="text-gray-900 bg-gray-50 p-3 rounded-md border" data-testid="proposal-back-content">
+          <p
+            class="text-gray-900 bg-gray-50 p-3 rounded-md border"
+            data-testid="proposal-back-content"
+          >
             {{ proposal.back }}
           </p>
         </div>
@@ -35,7 +41,13 @@
           >
             {{ proposal.source === 'ai-full' ? 'AI' : 'Edytowane' }}
           </span>
-          <span v-if="proposal.isEdited" class="text-xs text-gray-500" data-testid="proposal-edited-label"> (edytowane) </span>
+          <span
+            v-if="proposal.isEdited"
+            class="text-xs text-gray-500"
+            data-testid="proposal-edited-label"
+          >
+            (edytowane)
+          </span>
         </div>
 
         <!-- Action Buttons -->
@@ -103,7 +115,11 @@
           </div>
 
           <!-- Status Indicator -->
-          <div v-if="proposal.isAccepted" class="flex items-center text-green-600" data-testid="proposal-accepted-status">
+          <div
+            v-if="proposal.isAccepted"
+            class="flex items-center text-green-600"
+            data-testid="proposal-accepted-status"
+          >
             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -114,7 +130,11 @@
             <span class="text-sm font-medium">Zaakceptowane</span>
           </div>
 
-          <div v-else-if="proposal.isRejected" class="flex items-center text-red-600" data-testid="proposal-rejected-status">
+          <div
+            v-else-if="proposal.isRejected"
+            class="flex items-center text-red-600"
+            data-testid="proposal-rejected-status"
+          >
             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"

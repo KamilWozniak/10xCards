@@ -18,9 +18,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  * }))
  * ```
  */
-export function createMockSupabaseClient(
-  overrides: Partial<SupabaseClient> = {}
-) {
+export function createMockSupabaseClient(overrides: Partial<SupabaseClient> = {}) {
   return {
     from: vi.fn().mockReturnValue({
       select: vi.fn().mockReturnThis(),
