@@ -40,6 +40,8 @@ If you encounter build issues:
 
 3. **Runtime errors**: Check the Functions logs in the Cloudflare Pages dashboard.
 
+4. **Crypto API issues**: The application uses Web Crypto API instead of Node.js crypto for Cloudflare compatibility. If you see `crypto.createHash is not implemented` errors, ensure all crypto operations use the Web Crypto API (`crypto.subtle`).
+
 ## Local Testing
 
 To test the Cloudflare Pages setup locally:

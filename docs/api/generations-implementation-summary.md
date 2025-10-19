@@ -124,8 +124,8 @@ types/
 ### 6. Utilities
 
 #### Hash (`/server/utils/crypto/hash.ts`)
-- **Function:** `computeHash(text: string): string`
-- **Algorithm:** MD5
+- **Function:** `computeHash(text: string): Promise<string>`
+- **Algorithm:** SHA-256 (Web Crypto API for Cloudflare compatibility)
 - **Purpose:** Source text hashing for audit and deduplication
 
 #### Timer (`/server/utils/timer.ts`)

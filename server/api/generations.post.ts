@@ -44,7 +44,7 @@ export default defineEventHandler(async event => {
 
     // 3. Preprocessing - compute hash and length
     const sourceText = validatedRequest.source_text
-    const sourceTextHash = computeHash(sourceText)
+    const sourceTextHash = await computeHash(sourceText)
     const sourceTextLength = sourceText.length
 
     // 4. Start timer for measuring generation duration
