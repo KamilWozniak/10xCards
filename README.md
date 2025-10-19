@@ -148,7 +148,7 @@ Manual creation of high-quality flashcards requires significant time and effort,
 
 | Script | Command | Description |
 |--------|---------|-------------|
-| **dev** | `pnpm dev` | Start the development server on `http://localhost:3000` |
+| **dev** | `pnpm dev` | Start the development server  on `http://localhost:3000` |
 | **build** | `pnpm build` | Build the application for production |
 | **generate** | `pnpm generate` | Generate a static version of the application |
 | **preview** | `pnpm preview` | Preview the production build locally |
