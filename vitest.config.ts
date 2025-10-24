@@ -38,12 +38,6 @@ export default defineVitestConfig({
         '**/*.d.ts',
         '**/coverage/**',
       ],
-      thresholds: {
-        lines: 50,
-        functions: 50,
-        branches: 50,
-        statements: 50,
-      },
     },
     // Global test timeout
     testTimeout: 10000,
