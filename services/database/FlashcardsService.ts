@@ -1,7 +1,10 @@
 import type { FlashcardDTO, FlashcardCreateData } from '~/types/dto/types'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database/database.types'
-import type { DeleteFlashcardCommand } from '~/types/commands/generation-commands'
+import type {
+  DeleteFlashcardCommand,
+  UpdateFlashcardCommand,
+} from '~/types/commands/generation-commands'
 
 /**
  * Database service for managing flashcards
@@ -195,6 +198,43 @@ export class FlashcardsService {
         return null
       }
       throw new Error(`Failed to get flashcard: ${error.message}`)
+    }
+
+    return data
+  }
+
+  /**
+   * Update a flashcard by ID and user ID
+   * Validates ownership before updating and performs partial update of provided fields
+   *
+   * @param command - Update command containing flashcard ID, user ID, and fields to update
+   * @returns Updated flashcard record
+   * @throws Error if flashcard not found or database operation fails
+   */
+  async updateFlashcard(command: UpdateFlashcardCommand): Promise<FlashcardDTO> {
+    const { id, user_id, ...updateFields } = command
+
+    // First, check if flashcard exists and belongs to user
+    const flashcard = await this.getById(id, user_id)
+    if (!flashcard) {
+      throw new Error('Flashcard not found or does not belong to user')
+    }
+
+    // Update the flashcard with provided fields
+    const { data, error } = await this.supabase
+      .from('flashcards')
+      .update(updateFields)
+      .eq('id', id)
+      .eq('user_id', user_id) // Extra safety check via RLS
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to update flashcard: ${error.message}`)
+    }
+
+    if (!data) {
+      throw new Error('No flashcard was updated')
     }
 
     return data

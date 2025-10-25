@@ -219,3 +219,180 @@ The endpoint provides detailed error messages to help developers understand and 
 - `POST /api/generations` - Create AI-generated flashcard proposals
 - `GET /api/flashcards` - Retrieve user's flashcards
 - `GET /api/generations` - Retrieve user's generations
+
+---
+
+# PUT /api/flashcards/{id} - Update Flashcard
+
+## Overview
+
+The PUT `/api/flashcards/{id}` endpoint allows authenticated users to update an existing flashcard they own. It supports partial updates, allowing users to modify only the fields they want to change while maintaining data integrity and ownership validation.
+
+## Endpoint Details
+
+- **URL**: `/api/flashcards/{id}`
+- **Method**: `PUT`
+- **Authentication**: Required (Bearer token)
+- **Content-Type**: `application/json`
+- **Path Parameters**:
+  - `id`: Integer - Unique identifier of the flashcard to update
+
+## Request Format
+
+### Headers
+```
+Authorization: Bearer <your-token>
+Content-Type: application/json
+```
+
+### Request Body
+```json
+{
+  "front": "string (max 200 chars, optional)",
+  "back": "string (max 500 chars, optional)",
+  "source": "ai-full" | "ai-edited" | "manual" (optional)"
+}
+```
+
+### Field Specifications
+
+| Field | Type | Required | Constraints | Description |
+|-------|------|----------|-------------|-------------|
+| `front` | String | No | 1-200 chars, non-empty if provided | The question or front side of the flashcard |
+| `back` | String | No | 1-500 chars, non-empty if provided | The answer or back side of the flashcard |
+| `source` | Enum | No | `ai-full`, `ai-edited`, `manual` | Source type of the flashcard |
+
+**Note**: At least one field (`front`, `back`, or `source`) must be provided in the request body.
+
+## Response Format
+
+### Success Response (200 OK)
+```json
+{
+  "id": 1,
+  "front": "Updated question?",
+  "back": "Updated answer",
+  "source": "manual",
+  "generation_id": null,
+  "user_id": "1b80fade-ccb5-43e8-ba09-c2e07bd3ddf9",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T11:45:00Z"
+}
+```
+
+### Error Responses
+
+#### 400 Bad Request - Missing Required Fields
+```json
+{
+  "error": "Missing required fields",
+  "details": "At least one field (front, back, or source) must be provided for update"
+}
+```
+
+#### 400 Bad Request - Validation Error
+```json
+{
+  "error": "Invalid input",
+  "details": "front exceeds maximum length of 200 characters. Received: 250"
+}
+```
+
+#### 400 Bad Request - Invalid ID Parameter
+```json
+{
+  "error": "Invalid flashcard ID",
+  "details": "ID must be a positive integer"
+}
+```
+
+#### 401 Unauthorized - Missing Authentication
+```json
+{
+  "error": "Unauthorized",
+  "details": "Authentication token is required"
+}
+```
+
+#### 404 Not Found - Flashcard Not Found
+```json
+{
+  "error": "Flashcard not found",
+  "details": "Flashcard does not exist or does not belong to the authenticated user"
+}
+```
+
+#### 500 Internal Server Error
+```json
+{
+  "error": "Internal server error",
+  "details": "Failed to update flashcard"
+}
+```
+
+## Business Rules
+
+1. **Authentication**: All requests must include a valid Bearer token
+2. **Ownership**: Only the owner of the flashcard can update it
+3. **Partial Updates**: At least one field must be provided for update
+4. **Validation**: All provided fields must pass validation rules
+5. **Data Sanitization**: Text fields are trimmed of whitespace
+6. **Timestamp Updates**: The `updated_at` field is automatically updated via database trigger
+
+## Examples
+
+### Example 1: Update Front and Back
+```bash
+curl -X PUT "https://api.10xcards.com/api/flashcards/123" \
+  -H "Authorization: Bearer your-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "front": "What is the capital of Germany?",
+    "back": "Berlin"
+  }'
+```
+
+### Example 2: Update Source Only
+```bash
+curl -X PUT "https://api.10xcards.com/api/flashcards/123" \
+  -H "Authorization: Bearer your-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "ai-edited"
+  }'
+```
+
+### Example 3: Update All Fields
+```bash
+curl -X PUT "https://api.10xcards.com/api/flashcards/123" \
+  -H "Authorization: Bearer your-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "front": "What is Node.js?",
+    "back": "A JavaScript runtime built on Chrome'\''s V8 JavaScript engine",
+    "source": "manual"
+  }'
+```
+
+## Error Handling
+
+The endpoint provides detailed error messages to help developers:
+
+- **Validation errors** specify which field failed validation and why
+- **Ownership errors** clearly indicate when a flashcard doesn't exist or doesn't belong to the user
+- **Parameter errors** specify issues with path parameters or request format
+- **Authentication errors** indicate missing or invalid tokens
+
+## Security Considerations
+
+- All user data is isolated using Row-Level Security (RLS)
+- Ownership validation prevents unauthorized updates
+- Input sanitization prevents injection attacks
+- Authentication tokens are validated on every request
+- Database triggers automatically update timestamps
+
+## Related Endpoints
+
+- `POST /api/flashcards` - Create new flashcards
+- `GET /api/flashcards` - Retrieve user's flashcards
+- `DELETE /api/flashcards/delete/{id}` - Delete a flashcard
