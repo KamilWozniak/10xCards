@@ -87,15 +87,19 @@ export type UpdateFlashcardDTO = Partial<Pick<FlashcardDTO, 'front' | 'back' | '
 
 /**
  * Query parameters for GET /flashcards
- * Supports pagination, sorting, and filtering
+ * Supports pagination
  */
 export interface FlashcardListQueryDTO {
   page?: number // default: 1
   limit?: number // default: 10
-  sort?: keyof FlashcardDTO // e.g., 'created_at'
-  order?: 'asc' | 'desc'
-  source?: FlashcardSource // optional filter
-  generation_id?: number // optional filter
+}
+
+/**
+ * Query model for getting flashcards with user context
+ * Used internally by services to pass query params with user_id
+ */
+export interface GetFlashcardsQuery extends FlashcardListQueryDTO {
+  user_id: string
 }
 
 /**

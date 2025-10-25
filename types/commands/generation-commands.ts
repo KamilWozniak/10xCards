@@ -35,3 +35,24 @@ export interface AIGenerationResult {
   }>
   count: number
 }
+
+/**
+ * Command for deleting a flashcard
+ * Contains flashcard ID and user ID for ownership validation
+ */
+export interface DeleteFlashcardCommand {
+  id: number
+  userId: string
+}
+
+/**
+ * Command for updating a flashcard
+ * Contains flashcard ID, user ID for ownership validation, and partial update data
+ */
+export interface UpdateFlashcardCommand {
+  id: number
+  user_id: string
+  front?: string
+  back?: string
+  source?: 'ai-full' | 'ai-edited' | 'manual'
+}

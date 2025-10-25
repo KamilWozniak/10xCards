@@ -1,6 +1,15 @@
-import type { FlashcardDTO, FlashcardCreateData } from '~/types/dto/types'
+import type {
+  FlashcardDTO,
+  FlashcardCreateData,
+  FlashcardListQueryDTO,
+  PaginatedFlashcardsResponseDTO,
+} from '~/types/dto/types'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database/database.types'
+import type {
+  DeleteFlashcardCommand,
+  UpdateFlashcardCommand,
+} from '~/types/commands/generation-commands'
 
 /**
  * Database service for managing flashcards
@@ -197,6 +206,155 @@ export class FlashcardsService {
     }
 
     return data
+  }
+
+  /**
+   * Update a flashcard by ID and user ID
+   * Validates ownership before updating and performs partial update of provided fields
+   *
+   * @param command - Update command containing flashcard ID, user ID, and fields to update
+   * @returns Updated flashcard record
+   * @throws Error if flashcard not found or database operation fails
+   */
+  async updateFlashcard(command: UpdateFlashcardCommand): Promise<FlashcardDTO> {
+    const { id, user_id, ...updateFields } = command
+
+    // First, check if flashcard exists and belongs to user
+    const flashcard = await this.getById(id, user_id)
+    if (!flashcard) {
+      throw new Error('Flashcard not found or does not belong to user')
+    }
+
+    // Update the flashcard with provided fields
+    const { data, error } = await this.supabase
+      .from('flashcards')
+      .update(updateFields)
+      .eq('id', id)
+      .eq('user_id', user_id) // Extra safety check via RLS
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to update flashcard: ${error.message}`)
+    }
+
+    if (!data) {
+      throw new Error('No flashcard was updated')
+    }
+
+    return data
+  }
+
+  /**
+   * Delete a flashcard by ID and user ID
+   * Validates ownership before deletion and optionally updates generation statistics
+   *
+   * @param command - Delete command containing flashcard ID and user ID
+   * @throws Error if flashcard not found or database operation fails
+   */
+  async deleteFlashcard(command: DeleteFlashcardCommand): Promise<void> {
+    const { id, userId } = command
+
+    // First, check if flashcard exists and belongs to user
+    const flashcard = await this.getById(id, userId)
+    if (!flashcard) {
+      throw new Error('Flashcard not found or does not belong to user')
+    }
+
+    // If flashcard has generation_id and was accepted (ai-full or ai-edited), update generation stats
+    if (
+      flashcard.generation_id &&
+      (flashcard.source === 'ai-full' || flashcard.source === 'ai-edited')
+    ) {
+      // Get current generation data to update counters
+      const { data: generation, error: fetchError } = await this.supabase
+        .from('generations')
+        .select('accepted_unedited_count, accepted_edited_count')
+        .eq('id', flashcard.generation_id)
+        .eq('user_id', userId)
+        .single()
+
+      if (fetchError) {
+        throw new Error(`Failed to fetch generation data: ${fetchError.message}`)
+      }
+
+      if (generation) {
+        // Determine which counter to decrement based on source
+        const counterField =
+          flashcard.source === 'ai-full' ? 'accepted_unedited_count' : 'accepted_edited_count'
+        const currentCount = generation[counterField] || 0
+        const newCount = Math.max(0, currentCount - 1) // Ensure doesn't go below 0
+
+        // Update the generation with decremented counter
+        const { error: updateError } = await this.supabase
+          .from('generations')
+          .update({ [counterField]: newCount })
+          .eq('id', flashcard.generation_id)
+          .eq('user_id', userId)
+
+        if (updateError) {
+          throw new Error(`Failed to update generation statistics: ${updateError.message}`)
+        }
+      }
+    }
+
+    // Delete the flashcard
+    const { error: deleteError } = await this.supabase
+      .from('flashcards')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId) // Extra safety check via RLS
+
+    if (deleteError) {
+      throw new Error(`Failed to delete flashcard: ${deleteError.message}`)
+    }
+  }
+
+  /**
+   * Get paginated flashcards for a user
+   *
+   * @param userId - ID of the user
+   * @param query - Pagination query parameters
+   * @returns Paginated flashcards response with data and pagination metadata
+   * @throws Error if database operation fails
+   */
+  async getPaginatedFlashcards(
+    userId: string,
+    query: FlashcardListQueryDTO
+  ): Promise<PaginatedFlashcardsResponseDTO> {
+    // Set default values for pagination
+    const page = query.page || 1
+    const limit = Math.min(query.limit || 10, 100) // Cap at 100 as per plan
+
+    // Calculate offset for pagination
+    const offset = (page - 1) * limit
+
+    // Build query with user filter and ordering
+    let supabaseQuery = this.supabase
+      .from('flashcards')
+      .select('*', { count: 'exact' })
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    // Apply pagination
+    supabaseQuery = supabaseQuery.range(offset, offset + limit - 1)
+
+    const { data, error, count } = await supabaseQuery
+
+    if (error) {
+      throw new Error(`Failed to get paginated flashcards: ${error.message}`)
+    }
+
+    const total = count || 0
+
+    return {
+      data: data || [],
+      pagination: {
+        page,
+        limit,
+        total,
+      },
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { validateCreateFlashcardsRequest } from '../flashcard-validator'
+import { validateCreateFlashcardsRequest, validateFlashcardListQuery } from '../flashcard-validator'
 import { ValidationError } from '../../errors/custom-errors'
-import type { CreateFlashcardsRequestDTO, CreateFlashcardDTO } from '~/types/dto/types'
+import type { CreateFlashcardsRequestDTO, CreateFlashcardDTO, FlashcardListQueryDTO } from '~/types/dto/types'
 
 /**
  * Test suite for flashcard-validator
@@ -16,6 +16,7 @@ import type { CreateFlashcardsRequestDTO, CreateFlashcardDTO } from '~/types/dto
  * - Error message accuracy
  * - Edge cases and boundary conditions
  * - Business rules enforcement
+ * - Query parameter validation for GET /flashcards
  */
 
 describe('flashcard-validator', () => {
@@ -909,6 +910,142 @@ describe('flashcard-validator', () => {
       expect(originalFlashcard.front).toBe('  Test  ')
       expect(originalFlashcard.back).toBe('  Test  ')
       expect(originalRequest.flashcards[0]).toBe(originalFlashcard)
+    })
+  })
+
+  describe('validateFlashcardListQuery', () => {
+    it('should accept empty query parameters', () => {
+      const query = {}
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({})
+    })
+
+    it('should accept valid page parameter', () => {
+      const query = { page: '2' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ page: 2 })
+    })
+
+    it('should accept valid limit parameter', () => {
+      const query = { limit: '50' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ limit: 50 })
+    })
+
+    it('should accept both page and limit parameters', () => {
+      const query = { page: '3', limit: '25' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ page: 3, limit: 25 })
+    })
+
+    it('should reject invalid page parameter (not a number)', () => {
+      const query = { page: 'invalid' }
+
+      expect(() => validateFlashcardListQuery(query)).toThrow(ValidationError)
+      expect(() => validateFlashcardListQuery(query)).toThrow('Invalid page parameter')
+    })
+
+    it('should reject page parameter less than 1', () => {
+      const query = { page: '0' }
+
+      expect(() => validateFlashcardListQuery(query)).toThrow(ValidationError)
+      expect(() => validateFlashcardListQuery(query)).toThrow('Invalid page parameter')
+    })
+
+    it('should reject negative page parameter', () => {
+      const query = { page: '-1' }
+
+      expect(() => validateFlashcardListQuery(query)).toThrow(ValidationError)
+      expect(() => validateFlashcardListQuery(query)).toThrow('Invalid page parameter')
+    })
+
+    it('should reject invalid limit parameter (not a number)', () => {
+      const query = { limit: 'invalid' }
+
+      expect(() => validateFlashcardListQuery(query)).toThrow(ValidationError)
+      expect(() => validateFlashcardListQuery(query)).toThrow('Invalid limit parameter')
+    })
+
+    it('should reject limit parameter less than 1', () => {
+      const query = { limit: '0' }
+
+      expect(() => validateFlashcardListQuery(query)).toThrow(ValidationError)
+      expect(() => validateFlashcardListQuery(query)).toThrow('Invalid limit parameter')
+    })
+
+    it('should reject limit parameter greater than 100', () => {
+      const query = { limit: '101' }
+
+      expect(() => validateFlashcardListQuery(query)).toThrow(ValidationError)
+      expect(() => validateFlashcardListQuery(query)).toThrow('Invalid limit parameter')
+    })
+
+    it('should accept minimum valid values', () => {
+      const query = { page: '1', limit: '1' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ page: 1, limit: 1 })
+    })
+
+    it('should accept maximum valid values', () => {
+      const query = { page: '1000', limit: '100' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ page: 1000, limit: 100 })
+    })
+
+    it('should handle float values by parsing as integers', () => {
+      const query = { page: '2.5', limit: '10.9' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ page: 2, limit: 10 })
+    })
+
+    it('should provide detailed error message for page validation', () => {
+      const query = { page: '0' }
+
+      try {
+        validateFlashcardListQuery(query)
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError)
+        expect((error as ValidationError).message).toBe('Invalid page parameter')
+        expect((error as ValidationError).details).toBe('page must be a positive integer starting from 1')
+      }
+    })
+
+    it('should provide detailed error message for limit validation', () => {
+      const query = { limit: '150' }
+
+      try {
+        validateFlashcardListQuery(query)
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError)
+        expect((error as ValidationError).message).toBe('Invalid limit parameter')
+        expect((error as ValidationError).details).toBe('limit must be a positive integer between 1 and 100')
+      }
+    })
+
+    it('should ignore unknown query parameters', () => {
+      const query = { page: '2', limit: '10', unknown: 'value', sort: 'created_at' }
+      const result = validateFlashcardListQuery(query)
+
+      expect(result).toEqual({ page: 2, limit: 10 })
+    })
+
+    it('should handle undefined query object', () => {
+      const result = validateFlashcardListQuery(undefined as any)
+
+      expect(result).toEqual({})
+    })
+
+    it('should handle null query object', () => {
+      const result = validateFlashcardListQuery(null as any)
+
+      expect(result).toEqual({})
     })
   })
 })

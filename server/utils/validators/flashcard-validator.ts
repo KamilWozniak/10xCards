@@ -2,6 +2,8 @@ import type {
   CreateFlashcardsRequestDTO,
   CreateFlashcardDTO,
   FlashcardSource,
+  UpdateFlashcardDTO,
+  FlashcardListQueryDTO,
 } from '~/types/dto/types'
 import { ValidationError } from '../errors/custom-errors'
 
@@ -193,4 +195,128 @@ function validateSingleFlashcard(flashcard: any, index: number): CreateFlashcard
     source,
     generation_id: source === 'manual' ? null : generationId,
   }
+}
+
+/**
+ * Validates the request body for PUT /api/flashcards/{id}
+ *
+ * @param body - Raw request body to validate
+ * @returns Validated UpdateFlashcardDTO
+ * @throws ValidationError if validation fails
+ */
+export function validateUpdateFlashcardRequest(body: any): UpdateFlashcardDTO {
+  // Check if body exists
+  if (!body || typeof body !== 'object') {
+    throw new ValidationError('Invalid JSON format', 'Request body must be a valid JSON object')
+  }
+
+  // Check if at least one field is provided
+  const hasFront = 'front' in body
+  const hasBack = 'back' in body
+  const hasSource = 'source' in body
+
+  if (!hasFront && !hasBack && !hasSource) {
+    throw new ValidationError(
+      'Missing required fields',
+      'At least one field (front, back, or source) must be provided for update'
+    )
+  }
+
+  const validatedData: UpdateFlashcardDTO = {}
+
+  // Validate front field if provided
+  if (hasFront) {
+    if (typeof body.front !== 'string') {
+      throw new ValidationError('Invalid field type', 'front must be a string')
+    }
+
+    if (body.front.length === 0) {
+      throw new ValidationError('Invalid field value', 'front cannot be empty')
+    }
+
+    if (body.front.length > 200) {
+      throw new ValidationError(
+        'Field exceeds maximum length',
+        `front exceeds maximum length of 200 characters. Received: ${body.front.length}`
+      )
+    }
+
+    validatedData.front = body.front.trim()
+  }
+
+  // Validate back field if provided
+  if (hasBack) {
+    if (typeof body.back !== 'string') {
+      throw new ValidationError('Invalid field type', 'back must be a string')
+    }
+
+    if (body.back.length === 0) {
+      throw new ValidationError('Invalid field value', 'back cannot be empty')
+    }
+
+    if (body.back.length > 500) {
+      throw new ValidationError(
+        'Field exceeds maximum length',
+        `back exceeds maximum length of 500 characters. Received: ${body.back.length}`
+      )
+    }
+
+    validatedData.back = body.back.trim()
+  }
+
+  // Validate source field if provided
+  if (hasSource) {
+    if (!VALID_SOURCES.includes(body.source)) {
+      throw new ValidationError(
+        'Invalid source value',
+        `source must be one of: ${VALID_SOURCES.join(', ')}. Received: ${body.source}`
+      )
+    }
+
+    validatedData.source = body.source
+  }
+
+  return validatedData
+}
+
+/**
+ * Validates query parameters for GET /api/flashcards
+ *
+ * @param query - Raw query parameters from the request
+ * @returns Validated FlashcardListQueryDTO with defaults applied
+ * @throws ValidationError if validation fails
+ */
+export function validateFlashcardListQuery(query: any): FlashcardListQueryDTO {
+  const validatedQuery: FlashcardListQueryDTO = {}
+
+  // Handle undefined or null query
+  if (!query || typeof query !== 'object') {
+    return validatedQuery
+  }
+
+  // Validate page parameter
+  if (query.page !== undefined) {
+    const page = parseInt(query.page, 10)
+    if (isNaN(page) || page < 1) {
+      throw new ValidationError(
+        'Invalid page parameter',
+        'page must be a positive integer starting from 1'
+      )
+    }
+    validatedQuery.page = page
+  }
+
+  // Validate limit parameter
+  if (query.limit !== undefined) {
+    const limit = parseInt(query.limit, 10)
+    if (isNaN(limit) || limit < 1 || limit > 100) {
+      throw new ValidationError(
+        'Invalid limit parameter',
+        'limit must be a positive integer between 1 and 100'
+      )
+    }
+    validatedQuery.limit = limit
+  }
+
+  return validatedQuery
 }
