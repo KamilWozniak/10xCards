@@ -1,6 +1,7 @@
 import type { FlashcardDTO, FlashcardCreateData } from '~/types/dto/types'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database/database.types'
+import type { DeleteFlashcardCommand } from '~/types/commands/generation-commands'
 
 /**
  * Database service for managing flashcards
@@ -197,6 +198,71 @@ export class FlashcardsService {
     }
 
     return data
+  }
+
+  /**
+   * Delete a flashcard by ID and user ID
+   * Validates ownership before deletion and optionally updates generation statistics
+   *
+   * @param command - Delete command containing flashcard ID and user ID
+   * @throws Error if flashcard not found or database operation fails
+   */
+  async deleteFlashcard(command: DeleteFlashcardCommand): Promise<void> {
+    const { id, userId } = command
+
+    // First, check if flashcard exists and belongs to user
+    const flashcard = await this.getById(id, userId)
+    if (!flashcard) {
+      throw new Error('Flashcard not found or does not belong to user')
+    }
+
+    // If flashcard has generation_id and was accepted (ai-full or ai-edited), update generation stats
+    if (
+      flashcard.generation_id &&
+      (flashcard.source === 'ai-full' || flashcard.source === 'ai-edited')
+    ) {
+      // Get current generation data to update counters
+      const { data: generation, error: fetchError } = await this.supabase
+        .from('generations')
+        .select('accepted_unedited_count, accepted_edited_count')
+        .eq('id', flashcard.generation_id)
+        .eq('user_id', userId)
+        .single()
+
+      if (fetchError) {
+        throw new Error(`Failed to fetch generation data: ${fetchError.message}`)
+      }
+
+      if (generation) {
+        // Determine which counter to decrement based on source
+        const counterField =
+          flashcard.source === 'ai-full' ? 'accepted_unedited_count' : 'accepted_edited_count'
+        const currentCount = generation[counterField] || 0
+        const newCount = Math.max(0, currentCount - 1) // Ensure doesn't go below 0
+
+        // Update the generation with decremented counter
+        const { error: updateError } = await this.supabase
+          .from('generations')
+          .update({ [counterField]: newCount })
+          .eq('id', flashcard.generation_id)
+          .eq('user_id', userId)
+
+        if (updateError) {
+          throw new Error(`Failed to update generation statistics: ${updateError.message}`)
+        }
+      }
+    }
+
+    // Delete the flashcard
+    const { error: deleteError } = await this.supabase
+      .from('flashcards')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId) // Extra safety check via RLS
+
+    if (deleteError) {
+      throw new Error(`Failed to delete flashcard: ${deleteError.message}`)
+    }
   }
 }
 

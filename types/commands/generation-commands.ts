@@ -35,3 +35,12 @@ export interface AIGenerationResult {
   }>
   count: number
 }
+
+/**
+ * Command for deleting a flashcard
+ * Contains flashcard ID and user ID for ownership validation
+ */
+export interface DeleteFlashcardCommand {
+  id: number
+  userId: string
+}
