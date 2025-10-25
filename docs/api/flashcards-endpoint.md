@@ -1,3 +1,179 @@
+# GET /api/flashcards - List Flashcards
+
+## Overview
+
+The GET `/api/flashcards` endpoint allows authenticated users to retrieve a paginated list of their flashcards. It supports pagination with customizable page size and provides metadata about the total number of flashcards and pagination details.
+
+## Endpoint Details
+
+- **URL**: `/api/flashcards`
+- **Method**: `GET`
+- **Authentication**: Required (Bearer token)
+- **Query Parameters**: Optional pagination controls
+
+## Request Format
+
+### Headers
+```
+Authorization: Bearer <your-token>
+```
+
+### Query Parameters
+```
+?page=1&limit=10
+```
+
+| Parameter | Type | Required | Default | Constraints | Description |
+|-----------|------|----------|---------|-------------|-------------|
+| `page` | Integer | No | 1 | ≥ 1 | Page number for pagination |
+| `limit` | Integer | No | 10 | 1-100 | Number of flashcards per page |
+
+## Response Format
+
+### Success Response (200 OK)
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "front": "What is the capital of France?",
+      "back": "Paris",
+      "source": "manual",
+      "generation_id": null,
+      "user_id": "1b80fade-ccb5-43e8-ba09-c2e07bd3ddf9",
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "front": "What is React?",
+      "back": "A JavaScript library for building user interfaces",
+      "source": "ai-full",
+      "generation_id": 123,
+      "user_id": "1b80fade-ccb5-43e8-ba09-c2e07bd3ddf9",
+      "created_at": "2024-01-15T10:35:00Z",
+      "updated_at": "2024-01-15T10:35:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25
+  }
+}
+```
+
+### Pagination Metadata
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `page` | Integer | Current page number |
+| `limit` | Integer | Number of items per page |
+| `total` | Integer | Total number of flashcards for the user |
+
+## Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Integer | Unique flashcard identifier |
+| `front` | String | Question or front side of flashcard (1-200 chars) |
+| `back` | String | Answer or back side of flashcard (1-500 chars) |
+| `source` | Enum | Source type: `manual`, `ai-full`, or `ai-edited` |
+| `generation_id` | Integer\|Null | ID of generation (null for manual flashcards) |
+| `user_id` | String | UUID of flashcard owner |
+| `created_at` | String | ISO 8601 timestamp of creation |
+| `updated_at` | String | ISO 8601 timestamp of last update |
+
+### Error Responses
+
+#### 400 Bad Request - Invalid Query Parameters
+```json
+{
+  "error": "Invalid page parameter",
+  "details": "page must be a positive integer starting from 1"
+}
+```
+
+#### 401 Unauthorized - Missing Authentication
+```json
+{
+  "error": "Unauthorized",
+  "details": "Authentication token is required"
+}
+```
+
+#### 500 Internal Server Error
+```json
+{
+  "error": "Internal server error",
+  "details": "Failed to retrieve flashcards"
+}
+```
+
+## Business Rules
+
+1. **Authentication**: All requests must include a valid Bearer token
+2. **Data Isolation**: Users can only access their own flashcards via Row-Level Security
+3. **Pagination**: Page numbers start from 1, limit is capped at 100 items
+4. **Sorting**: Flashcards are returned in descending order by creation date (newest first)
+5. **Empty Results**: Returns empty data array with total: 0 when no flashcards exist
+
+## Examples
+
+### Example 1: Get First Page (Default)
+```bash
+curl -X GET "https://api.10xcards.com/api/flashcards" \
+  -H "Authorization: Bearer your-token-here"
+```
+
+### Example 2: Get Specific Page with Custom Limit
+```bash
+curl -X GET "https://api.10xcards.com/api/flashcards?page=2&limit=5" \
+  -H "Authorization: Bearer your-token-here"
+```
+
+### Example 3: Get Large Page Size
+```bash
+curl -X GET "https://api.10xcards.com/api/flashcards?page=1&limit=50" \
+  -H "Authorization: Bearer your-token-here"
+```
+
+## Error Handling
+
+The endpoint provides detailed error messages:
+
+- **Query parameter errors** specify which parameter is invalid and why
+- **Authentication errors** indicate missing or invalid tokens
+- **Server errors** provide generic messages without exposing internal details
+
+## Rate Limiting
+
+- Pagination helps manage large result sets
+- Consider implementing client-side caching for frequently accessed pages
+- Rate limiting may be applied at the API gateway level
+
+## Security Considerations
+
+- All user data is isolated using Row-Level Security (RLS)
+- Authentication tokens are validated on every request
+- Query parameters are validated to prevent injection attacks
+- No sensitive data is exposed in responses
+
+## Performance Notes
+
+- Results are ordered by creation date (newest first)
+- Large datasets are efficiently paginated using database LIMIT and OFFSET
+- Index on `user_id` ensures fast filtering
+
+## Related Endpoints
+
+- `POST /api/flashcards` - Create new flashcards
+- `PUT /api/flashcards/{id}` - Update a specific flashcard
+- `DELETE /api/flashcards/{id}` - Delete a specific flashcard
+- `GET /api/generations` - Retrieve user's generations
+
+---
+
 # POST /api/flashcards - Create Flashcards
 
 ## Overview

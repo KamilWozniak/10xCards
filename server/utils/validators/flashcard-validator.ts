@@ -3,6 +3,7 @@ import type {
   CreateFlashcardDTO,
   FlashcardSource,
   UpdateFlashcardDTO,
+  FlashcardListQueryDTO,
 } from '~/types/dto/types'
 import { ValidationError } from '../errors/custom-errors'
 
@@ -276,4 +277,46 @@ export function validateUpdateFlashcardRequest(body: any): UpdateFlashcardDTO {
   }
 
   return validatedData
+}
+
+/**
+ * Validates query parameters for GET /api/flashcards
+ *
+ * @param query - Raw query parameters from the request
+ * @returns Validated FlashcardListQueryDTO with defaults applied
+ * @throws ValidationError if validation fails
+ */
+export function validateFlashcardListQuery(query: any): FlashcardListQueryDTO {
+  const validatedQuery: FlashcardListQueryDTO = {}
+
+  // Handle undefined or null query
+  if (!query || typeof query !== 'object') {
+    return validatedQuery
+  }
+
+  // Validate page parameter
+  if (query.page !== undefined) {
+    const page = parseInt(query.page, 10)
+    if (isNaN(page) || page < 1) {
+      throw new ValidationError(
+        'Invalid page parameter',
+        'page must be a positive integer starting from 1'
+      )
+    }
+    validatedQuery.page = page
+  }
+
+  // Validate limit parameter
+  if (query.limit !== undefined) {
+    const limit = parseInt(query.limit, 10)
+    if (isNaN(limit) || limit < 1 || limit > 100) {
+      throw new ValidationError(
+        'Invalid limit parameter',
+        'limit must be a positive integer between 1 and 100'
+      )
+    }
+    validatedQuery.limit = limit
+  }
+
+  return validatedQuery
 }

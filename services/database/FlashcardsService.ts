@@ -1,4 +1,9 @@
-import type { FlashcardDTO, FlashcardCreateData } from '~/types/dto/types'
+import type {
+  FlashcardDTO,
+  FlashcardCreateData,
+  FlashcardListQueryDTO,
+  PaginatedFlashcardsResponseDTO,
+} from '~/types/dto/types'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database/database.types'
 import type {
@@ -302,6 +307,53 @@ export class FlashcardsService {
 
     if (deleteError) {
       throw new Error(`Failed to delete flashcard: ${deleteError.message}`)
+    }
+  }
+
+  /**
+   * Get paginated flashcards for a user
+   *
+   * @param userId - ID of the user
+   * @param query - Pagination query parameters
+   * @returns Paginated flashcards response with data and pagination metadata
+   * @throws Error if database operation fails
+   */
+  async getPaginatedFlashcards(
+    userId: string,
+    query: FlashcardListQueryDTO
+  ): Promise<PaginatedFlashcardsResponseDTO> {
+    // Set default values for pagination
+    const page = query.page || 1
+    const limit = Math.min(query.limit || 10, 100) // Cap at 100 as per plan
+
+    // Calculate offset for pagination
+    const offset = (page - 1) * limit
+
+    // Build query with user filter and ordering
+    let supabaseQuery = this.supabase
+      .from('flashcards')
+      .select('*', { count: 'exact' })
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    // Apply pagination
+    supabaseQuery = supabaseQuery.range(offset, offset + limit - 1)
+
+    const { data, error, count } = await supabaseQuery
+
+    if (error) {
+      throw new Error(`Failed to get paginated flashcards: ${error.message}`)
+    }
+
+    const total = count || 0
+
+    return {
+      data: data || [],
+      pagination: {
+        page,
+        limit,
+        total,
+      },
     }
   }
 }

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { FlashcardsService } from '../FlashcardsService'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database/database.types'
-import type { FlashcardCreateData, FlashcardDTO } from '~/types/dto/types'
+import type { FlashcardCreateData, FlashcardDTO, FlashcardListQueryDTO, PaginatedFlashcardsResponseDTO } from '~/types/dto/types'
 
 /**
  * Test suite for FlashcardsService
@@ -12,6 +12,7 @@ import type { FlashcardCreateData, FlashcardDTO } from '~/types/dto/types'
  * - Validating generation ownership
  * - Retrieving flashcards by user ID
  * - Retrieving a single flashcard by ID
+ * - Retrieving paginated flashcards
  * - Error handling for all operations
  */
 
@@ -396,6 +397,131 @@ describe('FlashcardsService', () => {
       // Execute and verify
       await expect(service.getById(1, mockUserId)).rejects.toThrow(
         'Failed to get flashcard: Database error'
+      )
+    })
+  })
+
+  describe('getPaginatedFlashcards', () => {
+    const mockFlashcards = [mockFlashcardDTO, mockFlashcardDTO]
+    const mockPaginatedResponse: PaginatedFlashcardsResponseDTO = {
+      data: mockFlashcards,
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 25,
+      },
+    }
+
+    it('should get paginated flashcards with default values', async () => {
+      // Setup mock response
+      mockSupabase.range.mockResolvedValue({
+        data: mockFlashcards,
+        error: null,
+        count: 25,
+      })
+
+      // Execute method
+      const query: FlashcardListQueryDTO = {}
+      const result = await service.getPaginatedFlashcards(mockUserId, query)
+
+      // Verify result
+      expect(result).toEqual(mockPaginatedResponse)
+
+      // Verify method calls
+      expect(mockSupabase.from).toHaveBeenCalledWith('flashcards')
+      expect(mockSupabase.select).toHaveBeenCalledWith('*', { count: 'exact' })
+      expect(mockSupabase.eq).toHaveBeenCalledWith('user_id', mockUserId)
+      expect(mockSupabase.order).toHaveBeenCalledWith('created_at', { ascending: false })
+      expect(mockSupabase.range).toHaveBeenCalledWith(0, 9) // page 1, limit 10 (0-9)
+    })
+
+    it('should get paginated flashcards with custom page and limit', async () => {
+      // Setup mock response
+      mockSupabase.range.mockResolvedValue({
+        data: mockFlashcards,
+        error: null,
+        count: 25,
+      })
+
+      // Execute method
+      const query: FlashcardListQueryDTO = { page: 2, limit: 5 }
+      const result = await service.getPaginatedFlashcards(mockUserId, query)
+
+      // Verify result
+      expect(result).toEqual({
+        ...mockPaginatedResponse,
+        pagination: { page: 2, limit: 5, total: 25 },
+      })
+
+      // Verify method calls
+      expect(mockSupabase.range).toHaveBeenCalledWith(5, 9) // page 2, limit 5 (5-9)
+    })
+
+    it('should cap limit at 100', async () => {
+      // Setup mock response
+      mockSupabase.range.mockResolvedValue({
+        data: mockFlashcards,
+        error: null,
+        count: 25,
+      })
+
+      // Execute method
+      const query: FlashcardListQueryDTO = { limit: 200 }
+      const result = await service.getPaginatedFlashcards(mockUserId, query)
+
+      // Verify result
+      expect(result.pagination.limit).toBe(100)
+
+      // Verify method calls
+      expect(mockSupabase.range).toHaveBeenCalledWith(0, 99) // limit capped at 100
+    })
+
+    it('should handle null count from database', async () => {
+      // Setup mock response
+      mockSupabase.range.mockResolvedValue({
+        data: mockFlashcards,
+        error: null,
+        count: null,
+      })
+
+      // Execute method
+      const query: FlashcardListQueryDTO = {}
+      const result = await service.getPaginatedFlashcards(mockUserId, query)
+
+      // Verify result
+      expect(result.pagination.total).toBe(0)
+    })
+
+    it('should handle empty data array', async () => {
+      // Setup mock response
+      mockSupabase.range.mockResolvedValue({
+        data: null,
+        error: null,
+        count: 0,
+      })
+
+      // Execute method
+      const query: FlashcardListQueryDTO = {}
+      const result = await service.getPaginatedFlashcards(mockUserId, query)
+
+      // Verify result
+      expect(result.data).toEqual([])
+      expect(result.pagination.total).toBe(0)
+    })
+
+    it('should throw error when database query fails', async () => {
+      // Setup mock response
+      const mockError = { message: 'Database error' }
+      mockSupabase.range.mockResolvedValue({
+        data: null,
+        error: mockError,
+        count: null,
+      })
+
+      // Execute and verify
+      const query: FlashcardListQueryDTO = {}
+      await expect(service.getPaginatedFlashcards(mockUserId, query)).rejects.toThrow(
+        'Failed to get paginated flashcards: Database error'
       )
     })
   })
