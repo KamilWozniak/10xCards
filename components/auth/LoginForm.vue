@@ -1,57 +1,61 @@
 <template>
   <Card class="w-full max-w-md mx-auto login-form" data-testid="login-form">
-    <CardHeader>
-      <CardTitle>Zaloguj się</CardTitle>
-      <CardDescription> Wprowadź swoje dane logowania </CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div class="space-y-4">
-        <!-- Email Field -->
-        <div class="space-y-2">
-          <Label for="email">Email</Label>
-          <Input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            placeholder="twoj@email.com"
-            :disabled="isLoading"
-            data-testid="login-email-input"
-            @blur="validateEmailField"
-          />
-          <p v-if="errors.email" class="text-sm text-red-600" data-testid="login-email-error">
-            {{ errors.email }}
-          </p>
-        </div>
+    <form @submit.prevent="handleSubmit">
+      <CardHeader>
+        <CardTitle>Zaloguj się</CardTitle>
+        <CardDescription> Wprowadź swoje dane logowania </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <Label for="email">Email</Label>
+            <Input
+              id="email"
+              v-model="formData.email"
+              type="email"
+              placeholder="twoj@email.com"
+              :disabled="isLoading"
+              data-testid="login-email-input"
+              @blur="validateEmailField"
+            />
+            <p v-if="errors.email" class="text-sm text-red-600" data-testid="login-email-error">
+              {{ errors.email }}
+            </p>
+          </div>
 
-        <!-- Password Field -->
-        <div class="space-y-2">
-          <Label for="password">Hasło</Label>
-          <Input
-            id="password"
-            v-model="formData.password"
-            type="password"
-            placeholder="••••••••"
-            :disabled="isLoading"
-            data-testid="login-password-input"
-            @blur="validatePasswordField"
-          />
-          <p v-if="errors.password" class="text-sm text-red-600" data-testid="login-password-error">
-            {{ errors.password }}
-          </p>
+          <div class="space-y-2">
+            <Label for="password">Hasło</Label>
+            <Input
+              id="password"
+              v-model="formData.password"
+              type="password"
+              placeholder="••••••••"
+              :disabled="isLoading"
+              data-testid="login-password-input"
+              @blur="validatePasswordField"
+            />
+            <p
+              v-if="errors.password"
+              class="text-sm text-red-600"
+              data-testid="login-password-error"
+            >
+              {{ errors.password }}
+            </p>
+          </div>
         </div>
-      </div>
-    </CardContent>
-    <CardFooter>
-      <Button
-        :disabled="!isFormValid || isLoading"
-        class="w-full"
-        data-testid="login-submit-button"
-        @click="handleSubmit"
-      >
-        <span v-if="isLoading" data-testid="login-loading-text">Logowanie...</span>
-        <span v-else data-testid="login-submit-text">Zaloguj się</span>
-      </Button>
-    </CardFooter>
+      </CardContent>
+      <CardFooter>
+        <Button
+          type="submit"
+          :disabled="!isFormValid || isLoading"
+          class="w-full"
+          data-testid="login-submit-button"
+        >
+          <span v-if="isLoading" data-testid="login-loading-text">Logowanie...</span>
+          <span v-else data-testid="login-submit-text">Zaloguj się</span>
+        </Button>
+      </CardFooter>
+    </form>
   </Card>
 </template>
 
@@ -68,10 +72,11 @@ import {
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { useFormValidation } from '~/composables/useFormValidation'
+import { useAuthFormValidation } from '~/composables/useAuthFormValidation'
 import type { LoginFormData } from '~/types/auth/auth.types'
 
-// Props
+const { validateEmail, validatePassword } = useAuthFormValidation()
+
 interface Props {
   isLoading?: boolean
 }
@@ -80,27 +85,20 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
-// Emits
 const emit = defineEmits<{
   submit: [credentials: LoginFormData]
 }>()
 
-// Composables
-const { validateEmail, validatePassword } = useFormValidation()
-
-// Form data
 const formData = ref<LoginFormData>({
   email: '',
   password: '',
 })
 
-// Errors
 const errors = ref<Record<string, string | null>>({
   email: null,
   password: null,
 })
 
-// Computed
 const isFormValid = computed(() => {
   return (
     formData.value.email.trim().length > 0 &&
@@ -110,7 +108,6 @@ const isFormValid = computed(() => {
   )
 })
 
-// Methods
 const validateEmailField = () => {
   errors.value.email = validateEmail(formData.value.email)
 }

@@ -19,9 +19,6 @@ export class LoginPage extends BasePage {
   // Selektory dla komunikatów błędów i walidacji
   private readonly emailError: Locator
   private readonly passwordError: Locator
-  private readonly authMessageError: Locator
-  private readonly authMessageSuccess: Locator
-  private readonly authMessageText: Locator
 
   constructor(page: any) {
     super(page)
@@ -36,12 +33,9 @@ export class LoginPage extends BasePage {
     this.submitText = this.getByTestId('login-submit-text')
     this.registerLink = this.getByTestId('register-link')
 
-    // Komunikaty błędów
+    // Komunikaty błędów walidacji
     this.emailError = this.getByTestId('login-email-error')
     this.passwordError = this.getByTestId('login-password-error')
-    this.authMessageError = this.getByTestId('auth-message-error')
-    this.authMessageSuccess = this.getByTestId('auth-message-success')
-    this.authMessageText = this.getByTestId('auth-message-text')
   }
 
   /**
@@ -114,22 +108,52 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Sprawdzenie komunikatu sukcesu
+   * Sprawdzenie toasta Sonnera po tekście
+   */
+  private async expectToastWithText(text: string): Promise<void> {
+    // Sonner renderuje toasty jako elementy z rolą 'status' lub jako listy
+    // Szukamy po tekście w containerze toasta
+    const toast = this.page.locator('[data-sonner-toast]').filter({ hasText: text })
+    await toast.waitFor({ state: 'visible', timeout: 5000 })
+  }
+
+  /**
+   * Sprawdzenie toasta sukcesu
+   */
+  private async expectSuccessToast(message: string): Promise<void> {
+    await this.expectToastWithText(message)
+  }
+
+  /**
+   * Sprawdzenie toasta błędu
+   */
+  private async expectErrorToast(message: string): Promise<void> {
+    await this.expectToastWithText(message)
+  }
+
+  /**
+   * Sprawdzenie komunikatu sukcesu (kompatybilność wsteczna)
    */
   async expectSuccessMessage(message?: string): Promise<void> {
-    await this.expectVisible(this.authMessageSuccess)
     if (message) {
-      await this.expectText(this.authMessageText, message)
+      await this.expectSuccessToast(message)
+    } else {
+      // Jeśli nie podano konkretnego tekstu, sprawdź czy jakikolwiek toast jest widoczny
+      const anyToast = this.page.locator('[data-sonner-toast]')
+      await anyToast.first().waitFor({ state: 'visible', timeout: 5000 })
     }
   }
 
   /**
-   * Sprawdzenie komunikatu błędu
+   * Sprawdzenie komunikatu błędu (kompatybilność wsteczna)
    */
   async expectErrorMessage(message?: string): Promise<void> {
-    await this.expectVisible(this.authMessageError)
     if (message) {
-      await this.expectText(this.authMessageText, message)
+      await this.expectErrorToast(message)
+    } else {
+      // Jeśli nie podano konkretnego tekstu, sprawdź czy jakikolwiek toast jest widoczny
+      const anyToast = this.page.locator('[data-sonner-toast]')
+      await anyToast.first().waitFor({ state: 'visible', timeout: 5000 })
     }
   }
 

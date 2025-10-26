@@ -6,7 +6,6 @@
     </CardHeader>
     <CardContent>
       <div class="space-y-4">
-        <!-- Email Field -->
         <div class="space-y-2">
           <Label for="register-email">Email</Label>
           <Input
@@ -22,7 +21,6 @@
           </p>
         </div>
 
-        <!-- Password Field -->
         <div class="space-y-2">
           <Label for="register-password">Hasło</Label>
           <Input
@@ -39,7 +37,6 @@
           <p v-else class="text-xs text-gray-500">Hasło musi mieć minimum 6 znaków</p>
         </div>
 
-        <!-- Confirm Password Field -->
         <div class="space-y-2">
           <Label for="register-confirm-password">Powtórz hasło</Label>
           <Input
@@ -78,10 +75,9 @@ import {
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { useFormValidation } from '~/composables/useFormValidation'
+import { useAuthFormValidation } from '~/composables/useAuthFormValidation'
 import type { RegisterFormData } from '~/types/auth/auth.types'
 
-// Props
 interface Props {
   isLoading?: boolean
 }
@@ -90,29 +86,24 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
-// Emits
 const emit = defineEmits<{
   submit: [credentials: RegisterFormData]
 }>()
 
-// Composables
-const { validateEmail, validatePassword, validatePasswordMatch } = useFormValidation()
+const { validateEmail, validatePassword, validatePasswordMatch } = useAuthFormValidation()
 
-// Form data
 const formData = ref<RegisterFormData>({
   email: '',
   password: '',
   confirmPassword: '',
 })
 
-// Errors
 const errors = ref<Record<string, string | null>>({
   email: null,
   password: null,
   confirmPassword: null,
 })
 
-// Computed
 const isFormValid = computed(() => {
   return (
     formData.value.email.trim().length > 0 &&
@@ -124,14 +115,12 @@ const isFormValid = computed(() => {
   )
 })
 
-// Methods
 const validateEmailField = () => {
   errors.value.email = validateEmail(formData.value.email)
 }
 
 const validatePasswordField = () => {
   errors.value.password = validatePassword(formData.value.password, 6)
-  // Re-validate confirm password if it's already filled
   if (formData.value.confirmPassword.length > 0) {
     validateConfirmPasswordField()
   }

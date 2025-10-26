@@ -103,7 +103,7 @@ test.describe('Login Flow - Real Test Data', () => {
 
   test('login with real credentials shows success message', async ({ page }) => {
     const testId = E2E_HELPERS.generateTestId()
-    E2E_HELPERS.logTestInfo(testId, 'Testing success message display')
+    E2E_HELPERS.logTestInfo(testId, 'Testing success toast display')
 
     await loginPage.navigate()
     await loginPage.expectPageLoaded()
@@ -113,13 +113,13 @@ test.describe('Login Flow - Real Test Data', () => {
     await loginPage.fillPassword(TEST_USERS.VALID_USER.password)
     await loginPage.clickSubmit()
 
-    // Sprawdzenie czy pojawia się komunikat sukcesu przed przekierowaniem
+    // Sprawdzenie czy pojawia się toast sukcesu przed przekierowaniem
     try {
-      await loginPage.expectSuccessMessage('Zalogowano pomyślnie. Przekierowywanie...')
-      E2E_HELPERS.logTestInfo(testId, '✅ Success message displayed correctly')
+      await loginPage.expectSuccessMessage('Zalogowano pomyślnie!')
+      E2E_HELPERS.logTestInfo(testId, '✅ Success toast displayed correctly')
     } catch (error) {
-      E2E_HELPERS.logTestInfo(testId, 'Success message not found, checking if redirect happened')
-      // Jeśli komunikat sukcesu nie pojawił się, sprawdź czy nastąpiło przekierowanie
+      E2E_HELPERS.logTestInfo(testId, 'Success toast not found, checking if redirect happened')
+      // Jeśli toast sukcesu nie pojawił się (przekierowanie było za szybkie), sprawdź czy nastąpiło przekierowanie
       await generatePage.expectPageLoaded()
     }
   })
@@ -139,9 +139,9 @@ test.describe('Login Flow - Real Test Data', () => {
     // Sprawdzenie stanu ładowania
     await loginPage.expectLoadingState()
 
-    // Oczekiwanie na komunikat błędu
+    // Oczekiwanie na toast z komunikatem błędu
     await loginPage.expectErrorMessage()
-    E2E_HELPERS.logTestInfo(testId, '✅ Error message displayed for invalid credentials')
+    E2E_HELPERS.logTestInfo(testId, '✅ Error toast displayed for invalid credentials')
 
     // Sprawdzenie że pozostajemy na stronie logowania
     await loginPage.expectPageLoaded()

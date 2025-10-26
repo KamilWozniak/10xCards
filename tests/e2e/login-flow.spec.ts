@@ -77,7 +77,8 @@ test.describe('Login Flow - Page Object Model', () => {
     // Sprawdzenie stanu ładowania
     await loginPage.expectLoadingState()
 
-    // Oczekiwanie na komunikat błędu
+    // Oczekiwanie na toast z komunikatem błędu
+    // Toast pojawi się z błędem z Supabase (np. "Invalid login credentials")
     await loginPage.expectErrorMessage()
 
     // Sprawdzenie że pozostajemy na stronie logowania

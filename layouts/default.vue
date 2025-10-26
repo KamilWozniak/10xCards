@@ -1,11 +1,9 @@
 <template>
   <div class="min-h-screen bg-gray-50" data-testid="app-layout">
-    <!-- Navigation Bar -->
     <nav class="bg-white shadow-sm border-b" data-testid="main-navigation">
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
-          <!-- Logo/Brand -->
-          <div class="flex items-center">
+          <div class="flex items-center space-x-6">
             <NuxtLink
               to="/generate"
               class="text-2xl font-bold text-gray-900"
@@ -13,11 +11,25 @@
             >
               10xCards
             </NuxtLink>
+            <NuxtLink
+              to="/generate"
+              class="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors border-b-2 border-transparent hover:border-gray-300"
+              active-class="!text-gray-900 !border-gray-900"
+              data-testid="generate-link"
+            >
+              Generuj fiszki z AI
+            </NuxtLink>
+            <NuxtLink
+              to="/flashcards"
+              class="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors border-b-2 border-transparent hover:border-gray-300"
+              active-class="!text-gray-900 !border-gray-900"
+              data-testid="flashcards-link"
+            >
+              Moje fiszki
+            </NuxtLink>
           </div>
 
-          <!-- User Section (Right side) -->
           <div class="flex items-center space-x-4" data-testid="user-section">
-            <!-- User Avatar and Email -->
             <div class="flex items-center space-x-3">
               <Avatar data-testid="user-avatar">
                 <AvatarFallback>
@@ -31,7 +43,6 @@
               </div>
             </div>
 
-            <!-- Logout Button -->
             <Button variant="outline" data-testid="logout-button" @click="handleLogout">
               Wyloguj
             </Button>
@@ -40,7 +51,6 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
     <main data-testid="main-content">
       <slot />
     </main>
@@ -52,11 +62,9 @@ import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import { ref, onMounted } from 'vue'
 
-// Get user data
 const userEmail = ref<string>('Ładowanie...')
 const userInitial = ref<string>('U')
 
-// Fetch user data on mount
 onMounted(async () => {
   try {
     const supabase = useSupabase()
@@ -73,25 +81,17 @@ onMounted(async () => {
   }
 })
 
-// Logout handler
 const handleLogout = async () => {
   try {
-    console.log('Logging out...')
-
-    // Sign out from client-side Supabase (clears localStorage)
     const supabase = useSupabase()
     await supabase.supabase.auth.signOut()
 
-    // Call logout API endpoint (clears httpOnly cookies)
     await $fetch('/api/auth/logout', {
       method: 'POST',
     })
 
-    // Redirect to login with full page reload to ensure clean state
     await navigateTo('/auth/login', { external: true })
   } catch (error) {
-    console.error('Logout error:', error)
-    // Even if API fails, client is signed out, redirect anyway
     await navigateTo('/auth/login', { external: true })
   }
 }

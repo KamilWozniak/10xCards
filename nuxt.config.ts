@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     'shadcn-nuxt',
     '@pinia/nuxt',
   ],
+  css: ['vue-sonner/style.css'],
   // @ts-expect-error - shadcn-nuxt module types are not exported
   shadcn: {
     /**

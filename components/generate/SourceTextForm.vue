@@ -87,7 +87,7 @@ import {
 } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
-import { useFormValidation } from '~/composables/useFormValidation'
+import { useFlashcardsFormValidation } from '~/composables/useFlashcardsFormValidation'
 import type { SourceTextFormData } from '~/types/views/generate.types'
 
 // Props
@@ -104,7 +104,7 @@ const emit = defineEmits<{
 }>()
 
 // Composables
-const { formValidation, validateText, resetValidation } = useFormValidation()
+const { formValidation, validateText, resetValidation } = useFlashcardsFormValidation()
 
 // Form data
 const formData = ref<SourceTextFormData>({

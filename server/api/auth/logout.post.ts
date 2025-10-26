@@ -17,15 +17,9 @@ import { deleteCookie } from 'h3'
  */
 export default defineEventHandler(async event => {
   try {
-    // Create Supabase server client
     const supabase = createSupabaseServerClient(event)
 
-    // Sign out - this will clear the auth cookies
-    const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      console.error('Supabase logout error:', error)
-    }
+    await supabase.auth.signOut()
 
     // Manually delete Supabase auth cookie
     // The cookie name follows pattern: sb-{project-ref}-auth-token
@@ -36,22 +30,18 @@ export default defineEventHandler(async event => {
       sameSite: 'lax',
     })
 
-    // Return success
     return {
       success: true,
-      message: 'Wylogowano pomyślnie',
+      message: 'Logged out successfully',
     }
   } catch (error: any) {
-    // Re-throw H3 errors (already formatted)
     if (error.statusCode) {
       throw error
     }
 
-    // Handle unexpected errors
-    console.error('Unexpected logout error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Wystąpił błąd podczas wylogowania',
+      statusMessage: 'An error occurred during logout',
     })
   }
 })
