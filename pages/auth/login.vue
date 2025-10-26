@@ -2,7 +2,7 @@
   <div data-testid="login-page">
     <h1>Test4</h1>
     <!-- Error/Success Message Display -->
-    <AuthErrorDisplay :message="errorMessage" :type="messageType" />
+    <AuthMessageDisplay :message="message" :type="messageType" />
 
     <!-- Login Form -->
     <LoginForm :is-loading="isLoading" @submit="handleLogin" />
@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LoginForm from '~/components/auth/LoginForm.vue'
-import AuthErrorDisplay from '~/components/auth/AuthErrorDisplay.vue'
+import AuthMessageDisplay from '~/components/auth/AuthMessageDisplay.vue'
 import type { LoginFormData, AuthResponse } from '~/types/auth/auth.types'
 
 // Define page meta
@@ -37,16 +37,14 @@ definePageMeta({
 
 // State
 const isLoading = ref(false)
-const errorMessage = ref<string | null>(null)
+const message = ref<string | null>(null)
 const messageType = ref<'error' | 'success' | 'info'>('error')
 
 // Handlers
 const handleLogin = async (credentials: LoginFormData) => {
   try {
     isLoading.value = true
-    errorMessage.value = null
-
-    console.log('Login attempt with:', { email: credentials.email })
+    message.value = null
 
     // Call server-side login endpoint
     const response = await $fetch<AuthResponse>('/api/auth/login', {
@@ -57,13 +55,9 @@ const handleLogin = async (credentials: LoginFormData) => {
       },
     })
 
-    console.log('Login successful:', response)
-    console.log('Response has session?', !!response.session)
-    console.log('Session data:', response.session)
-
     // Login successful - show success message
     messageType.value = 'success'
-    errorMessage.value = 'Zalogowano pomyślnie. Przekierowywanie...'
+    message.value = 'Zalogowano pomyślnie. Przekierowywanie...'
 
     // Set session in client-side Supabase (for middleware to work)
     const supabase = useSupabase()
@@ -72,21 +66,18 @@ const handleLogin = async (credentials: LoginFormData) => {
       throw new Error('No session in response!')
     }
 
-    const { data, error: setSessionError } = await supabase.supabase.auth.setSession({
+    const { data, error: sessionError } = await supabase.supabase.auth.setSession({
       access_token: response.session.access_token,
       refresh_token: response.session.refresh_token,
     })
 
-    if (setSessionError) {
-      console.error('Error setting session:', setSessionError)
-      throw setSessionError
+    if (sessionError) {
+      throw sessionError
     }
 
     if (!data?.user) {
       throw new Error('No user returned from setSession!')
     }
-
-    console.log('User logged in successfully:', data.user.email)
 
     // Session is now set - redirect to /generate
     // Middleware will allow access because session is loaded in Supabase client
@@ -94,18 +85,9 @@ const handleLogin = async (credentials: LoginFormData) => {
   } catch (error: any) {
     messageType.value = 'error'
 
-    // Map error to user-friendly message
+    // Map error to user-friendly Polish message
     const { mapError } = useAuthErrors()
-
-    if (error?.data?.statusMessage) {
-      errorMessage.value = error.data.statusMessage
-    } else if (error?.statusMessage) {
-      errorMessage.value = error.statusMessage
-    } else {
-      errorMessage.value = mapError(error)
-    }
-
-    console.error('Login error:', error)
+    message.value = mapError(error)
   } finally {
     isLoading.value = false
   }

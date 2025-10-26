@@ -52,6 +52,50 @@ export function mapSupabaseAuthError(error: any): string {
     return DEFAULT_ERROR_MESSAGE
   }
 
+  // Handle error.data.statusMessage (from server endpoints)
+  if (error?.data?.statusMessage) {
+    const statusMessage = error.data.statusMessage.toLowerCase()
+
+    // Check for specific error messages
+    if (
+      statusMessage.includes('invalid login credentials') ||
+      statusMessage.includes('invalid credentials')
+    ) {
+      return ERROR_MESSAGES.invalid_credentials
+    }
+    if (
+      statusMessage.includes('email already exists') ||
+      statusMessage.includes('user already exists')
+    ) {
+      return ERROR_MESSAGES.email_exists
+    }
+    if (statusMessage.includes('weak password')) {
+      return ERROR_MESSAGES.weak_password
+    }
+  }
+
+  // Handle error.statusMessage (from server endpoints)
+  if (error?.statusMessage) {
+    const statusMessage = error.statusMessage.toLowerCase()
+
+    // Check for specific error messages
+    if (
+      statusMessage.includes('invalid login credentials') ||
+      statusMessage.includes('invalid credentials')
+    ) {
+      return ERROR_MESSAGES.invalid_credentials
+    }
+    if (
+      statusMessage.includes('email already exists') ||
+      statusMessage.includes('user already exists')
+    ) {
+      return ERROR_MESSAGES.email_exists
+    }
+    if (statusMessage.includes('weak password')) {
+      return ERROR_MESSAGES.weak_password
+    }
+  }
+
   // Handle Supabase AuthError with message field
   if (error.message) {
     const errorMessage = error.message.toLowerCase()

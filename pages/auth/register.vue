@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Error/Success Message Display -->
-    <AuthErrorDisplay :message="errorMessage" :type="messageType" />
+    <AuthMessageDisplay :message="message" :type="messageType" />
 
     <!-- Register Form -->
     <RegisterForm :is-loading="isLoading" @submit="handleRegister" />
@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import RegisterForm from '~/components/auth/RegisterForm.vue'
-import AuthErrorDisplay from '~/components/auth/AuthErrorDisplay.vue'
+import AuthMessageDisplay from '~/components/auth/AuthMessageDisplay.vue'
 import type { RegisterFormData, AuthResponse } from '~/types/auth/auth.types'
 
 // Define page meta
@@ -32,14 +32,14 @@ definePageMeta({
 
 // State
 const isLoading = ref(false)
-const errorMessage = ref<string | null>(null)
+const message = ref<string | null>(null)
 const messageType = ref<'error' | 'success' | 'info'>('error')
 
 // Handlers
 const handleRegister = async (credentials: RegisterFormData) => {
   try {
     isLoading.value = true
-    errorMessage.value = null
+    message.value = null
 
     console.log('Registration attempt with:', { email: credentials.email })
 
@@ -57,7 +57,7 @@ const handleRegister = async (credentials: RegisterFormData) => {
 
     // Registration successful - show success message
     messageType.value = 'success'
-    errorMessage.value = 'Konto zostało utworzone pomyślnie. Przekierowywanie...'
+    message.value = 'Konto zostało utworzone pomyślnie. Przekierowywanie...'
 
     // Set session in client-side Supabase (for middleware to work)
     const supabase = useSupabase()
@@ -88,16 +88,9 @@ const handleRegister = async (credentials: RegisterFormData) => {
   } catch (error: any) {
     messageType.value = 'error'
 
-    // Map error to user-friendly message
+    // Map error to user-friendly Polish message
     const { mapError } = useAuthErrors()
-
-    if (error?.data?.statusMessage) {
-      errorMessage.value = error.data.statusMessage
-    } else if (error?.statusMessage) {
-      errorMessage.value = error.statusMessage
-    } else {
-      errorMessage.value = mapError(error)
-    }
+    message.value = mapError(error)
 
     console.error('Registration error:', error)
   } finally {

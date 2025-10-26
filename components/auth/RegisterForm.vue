@@ -78,7 +78,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { useFormValidation } from '~/composables/useFormValidation'
+import { useAuthFormValidation } from '~/composables/useAuthFormValidation'
 import type { RegisterFormData } from '~/types/auth/auth.types'
 
 // Props
@@ -96,7 +96,7 @@ const emit = defineEmits<{
 }>()
 
 // Composables
-const { validateEmail, validatePassword, validatePasswordMatch } = useFormValidation()
+const { validateEmail, validatePassword, validatePasswordMatch } = useAuthFormValidation()
 
 // Form data
 const formData = ref<RegisterFormData>({

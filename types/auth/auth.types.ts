@@ -15,7 +15,7 @@ export interface RegisterCredentials {
   confirmPassword: string
 }
 
-export interface AuthErrorDisplayProps {
+export interface AuthMessageDisplayProps {
   message: string | null
   type: 'error' | 'success' | 'info'
 }

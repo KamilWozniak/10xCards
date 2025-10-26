@@ -20,8 +20,8 @@ const createMockFormValidation = () => ({
 })
 
 // Mock composables
-vi.mock('~/composables/useFormValidation', () => ({
-  useFormValidation: vi.fn(() => createMockFormValidation()),
+vi.mock('~/composables/useFlashcardsFormValidation', () => ({
+  useFlashcardsFormValidation: vi.fn(() => createMockFormValidation()),
 }))
 
 describe('SourceTextForm', () => {
@@ -150,9 +150,11 @@ describe('SourceTextForm', () => {
 
     it('should call validateText on input', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
       const mockValidateText = vi.fn()
-      vi.mocked(useFormValidation).mockReturnValue({
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 0,
@@ -226,8 +228,10 @@ describe('SourceTextForm', () => {
   describe('form validation display', () => {
     it('should show error message when validation fails', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 500,
@@ -252,8 +256,10 @@ describe('SourceTextForm', () => {
 
     it('should not show error message when validation passes', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5000,
@@ -279,8 +285,10 @@ describe('SourceTextForm', () => {
 
     it('should apply green color when form is valid', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5000,
@@ -305,8 +313,10 @@ describe('SourceTextForm', () => {
 
     it('should apply red color when form is invalid', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 500,
@@ -333,8 +343,10 @@ describe('SourceTextForm', () => {
   describe('progress bar', () => {
     it('should show progress bar with correct width for valid input', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5500,
@@ -368,8 +380,10 @@ describe('SourceTextForm', () => {
 
     it('should show green progress bar when valid', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5000,
@@ -394,8 +408,10 @@ describe('SourceTextForm', () => {
 
     it('should show red progress bar when invalid', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 500,
@@ -420,8 +436,10 @@ describe('SourceTextForm', () => {
 
     it('should calculate 0% progress for minimum length', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 1000,
@@ -447,8 +465,10 @@ describe('SourceTextForm', () => {
 
     it('should calculate 100% progress for maximum length', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 10000,
@@ -482,8 +502,10 @@ describe('SourceTextForm', () => {
   describe('generate button and emit', () => {
     it('should emit generate event with trimmed text on button click', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5000,
@@ -518,8 +540,10 @@ describe('SourceTextForm', () => {
 
     it('should not emit when form is invalid', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 500,
@@ -548,8 +572,10 @@ describe('SourceTextForm', () => {
 
     it('should not emit when text is empty after trim', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 0,
@@ -581,8 +607,10 @@ describe('SourceTextForm', () => {
 
     it('should enable button when form is valid and not disabled', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
-      vi.mocked(useFormValidation).mockReturnValue({
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5000,
@@ -610,9 +638,11 @@ describe('SourceTextForm', () => {
   describe('disabled state and form reset', () => {
     it('should reset form data when disabled changes to true', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
       const mockResetValidation = vi.fn()
-      vi.mocked(useFormValidation).mockReturnValue({
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: true,
           characterCount: 5000,
@@ -665,9 +695,11 @@ describe('SourceTextForm', () => {
 
     it('should not reset form when disabled changes to false', async () => {
       // Arrange
-      const { useFormValidation } = await import('~/composables/useFormValidation')
+      const { useFlashcardsFormValidation } = await import(
+        '~/composables/useFlashcardsFormValidation'
+      )
       const mockResetValidation = vi.fn()
-      vi.mocked(useFormValidation).mockReturnValue({
+      vi.mocked(useFlashcardsFormValidation).mockReturnValue({
         formValidation: ref({
           isValid: false,
           characterCount: 0,
