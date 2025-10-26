@@ -2,6 +2,8 @@
  * Authentication form types
  */
 
+import type { User, Session } from '@supabase/supabase-js'
+
 export interface LoginCredentials {
   email: string
   password: string
@@ -27,4 +29,9 @@ export interface RegisterFormData {
   email: string
   password: string
   confirmPassword: string
+}
+
+export interface AuthResponse {
+  user: User
+  session: Session
 }

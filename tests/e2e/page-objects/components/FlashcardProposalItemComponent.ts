@@ -104,7 +104,7 @@ export class FlashcardProposalItemComponent extends BasePage {
   /**
    * Pobranie treści przodu propozycji
    */
-  async getFrontContent(proposalId: string): Promise<string> {
+  async getFrontText(proposalId: string): Promise<string> {
     const frontContent = this.getFrontContent(proposalId)
     await this.expectVisible(frontContent)
     return (await frontContent.textContent()) || ''
@@ -113,7 +113,7 @@ export class FlashcardProposalItemComponent extends BasePage {
   /**
    * Pobranie treści tyłu propozycji
    */
-  async getBackContent(proposalId: string): Promise<string> {
+  async getBackText(proposalId: string): Promise<string> {
     const backContent = this.getBackContent(proposalId)
     await this.expectVisible(backContent)
     return (await backContent.textContent()) || ''

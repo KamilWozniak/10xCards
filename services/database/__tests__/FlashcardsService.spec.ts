@@ -2,7 +2,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { FlashcardsService } from '../FlashcardsService'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database/database.types'
-import type { FlashcardCreateData, FlashcardDTO, FlashcardListQueryDTO, PaginatedFlashcardsResponseDTO } from '~/types/dto/types'
+import type {
+  FlashcardCreateData,
+  FlashcardDTO,
+  FlashcardListQueryDTO,
+  PaginatedFlashcardsResponseDTO,
+} from '~/types/dto/types'
 
 /**
  * Test suite for FlashcardsService

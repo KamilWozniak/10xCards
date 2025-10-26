@@ -8,7 +8,9 @@ describe('useFlashcardEditForm', () => {
     front: 'Test front',
     back: 'Test back',
     isEdited: false,
-    source: 'ai',
+    isAccepted: false,
+    isRejected: false,
+    source: 'ai-full',
   }
 
   it('should initialize form with proposal data', () => {

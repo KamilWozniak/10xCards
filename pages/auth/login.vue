@@ -1,6 +1,6 @@
 <template>
   <div data-testid="login-page">
-    <h1>Test3</h1>
+    <h1>Test4</h1>
     <!-- Error/Success Message Display -->
     <AuthErrorDisplay :message="errorMessage" :type="messageType" />
 
@@ -27,7 +27,7 @@
 import { ref } from 'vue'
 import LoginForm from '~/components/auth/LoginForm.vue'
 import AuthErrorDisplay from '~/components/auth/AuthErrorDisplay.vue'
-import type { LoginFormData } from '~/types/auth/auth.types'
+import type { LoginFormData, AuthResponse } from '~/types/auth/auth.types'
 
 // Define page meta
 definePageMeta({
@@ -49,7 +49,7 @@ const handleLogin = async (credentials: LoginFormData) => {
     console.log('Login attempt with:', { email: credentials.email })
 
     // Call server-side login endpoint
-    const response = await $fetch('/api/auth/login', {
+    const response = await $fetch<AuthResponse>('/api/auth/login', {
       method: 'POST',
       body: {
         email: credentials.email,

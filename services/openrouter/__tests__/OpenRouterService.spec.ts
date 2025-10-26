@@ -122,11 +122,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-123',
         model: 'openai/gpt-4o-mini',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: 'Hello! How can I help you today?',
@@ -204,11 +201,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-456',
         model: 'openai/gpt-4-turbo',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: 'Response',
@@ -303,11 +297,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-999',
         model: 'openai/gpt-4o-mini',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: '6',
@@ -363,11 +354,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-json-1',
         model: 'openai/gpt-4o-mini',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: JSON.stringify(expectedData),
@@ -423,11 +411,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-json-2',
         model: 'openai/gpt-4o-mini',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: 'invalid json{',
@@ -460,11 +445,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-json-3',
         model: 'openai/gpt-4-turbo',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: '{"test": true}',
@@ -533,11 +515,8 @@ describe('OpenRouterService', () => {
       const mockResponse: OpenRouterResponse = {
         id: 'chatcmpl-json-4',
         model: 'openai/gpt-4o-mini',
-        created: 1234567890,
-        object: 'chat.completion',
         choices: [
           {
-            index: 0,
             message: {
               role: 'assistant',
               content: JSON.stringify(expectedData),

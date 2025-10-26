@@ -174,7 +174,8 @@ export class FlashcardProposalsListComponent extends BasePage {
       await this.expectVisible(this.selectionBreakdown)
 
       await this.page.waitForFunction(
-        (accepted, edited) => {
+        (arg: number[]) => {
+          const [accepted, edited] = arg
           const element = document.querySelector('[data-testid="selection-breakdown"]')
           const text = element?.textContent || ''
           return (
@@ -267,7 +268,8 @@ export class FlashcardProposalsListComponent extends BasePage {
     await this.expectVisible(descriptionLocator)
 
     await this.page.waitForFunction(
-      (selected, total) => {
+      (arg: number[]) => {
+        const [selected, total] = arg
         const descriptions = document.querySelectorAll(
           '[data-testid="flashcard-proposals-container"] p'
         )

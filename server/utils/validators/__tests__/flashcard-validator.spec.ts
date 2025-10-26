@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { validateCreateFlashcardsRequest, validateFlashcardListQuery } from '../flashcard-validator'
 import { ValidationError } from '../../errors/custom-errors'
-import type { CreateFlashcardsRequestDTO, CreateFlashcardDTO, FlashcardListQueryDTO } from '~/types/dto/types'
+import type {
+  CreateFlashcardsRequestDTO,
+  CreateFlashcardDTO,
+  FlashcardListQueryDTO,
+} from '~/types/dto/types'
 
 /**
  * Test suite for flashcard-validator
@@ -1013,7 +1017,9 @@ describe('flashcard-validator', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
         expect((error as ValidationError).message).toBe('Invalid page parameter')
-        expect((error as ValidationError).details).toBe('page must be a positive integer starting from 1')
+        expect((error as ValidationError).details).toBe(
+          'page must be a positive integer starting from 1'
+        )
       }
     })
 
@@ -1025,7 +1031,9 @@ describe('flashcard-validator', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError)
         expect((error as ValidationError).message).toBe('Invalid limit parameter')
-        expect((error as ValidationError).details).toBe('limit must be a positive integer between 1 and 100')
+        expect((error as ValidationError).details).toBe(
+          'limit must be a positive integer between 1 and 100'
+        )
       }
     })
 

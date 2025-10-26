@@ -41,6 +41,7 @@ export default withNuxt()
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-require-imports': 'off',
         '@typescript-eslint/no-useless-constructor': 'off',
+        '@typescript-eslint/triple-slash-reference': 'off',
       },
     }
   )
