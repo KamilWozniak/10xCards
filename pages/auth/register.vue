@@ -1,6 +1,5 @@
 <template>
   <div>
-    <AuthMessageDisplay :message="message" :type="messageType" />
     <RegisterForm :is-loading="isLoading" @submit="handleRegister" />
     <div class="mt-6 text-center">
       <p class="text-sm text-gray-600">
@@ -16,7 +15,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import RegisterForm from '~/components/auth/RegisterForm.vue'
-import AuthMessageDisplay from '~/components/auth/AuthMessageDisplay.vue'
 import type { RegisterFormData, AuthResponse } from '~/types/auth/auth.types'
 
 definePageMeta({
@@ -25,13 +23,12 @@ definePageMeta({
 })
 
 const isLoading = ref(false)
-const message = ref<string | null>(null)
-const messageType = ref<'error' | 'success' | 'info'>('error')
+
+const { showSuccess, showError } = useNotification()
 
 const handleRegister = async (credentials: RegisterFormData) => {
   try {
     isLoading.value = true
-    message.value = null
 
     const response = await $fetch<AuthResponse>('/api/auth/register', {
       method: 'POST',
@@ -41,9 +38,6 @@ const handleRegister = async (credentials: RegisterFormData) => {
         confirmPassword: credentials.confirmPassword,
       },
     })
-
-    messageType.value = 'success'
-    message.value = 'Konto zostało utworzone pomyślnie. Przekierowywanie...'
 
     if (response.session) {
       const supabase = useSupabase()
@@ -61,16 +55,16 @@ const handleRegister = async (credentials: RegisterFormData) => {
         throw new Error('No user returned from setSession!')
       }
 
+      showSuccess('Konto zostało utworzone pomyślnie!')
       await navigateTo('/generate')
     } else {
+      showSuccess('Konto zostało utworzone pomyślnie!')
       await new Promise(resolve => setTimeout(resolve, 1500))
       await navigateTo('/auth/login')
     }
   } catch (error: any) {
     const { mapError } = useAuthErrors()
-
-    messageType.value = 'error'
-    message.value = mapError(error)
+    showError(mapError(error))
   } finally {
     isLoading.value = false
   }

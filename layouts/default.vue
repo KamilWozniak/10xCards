@@ -1,5 +1,8 @@
 <template>
   <div class="min-h-screen bg-gray-50" data-testid="app-layout">
+    <ClientOnly>
+      <Toaster position="top-center" />
+    </ClientOnly>
     <nav class="bg-white shadow-sm border-b" data-testid="main-navigation">
       <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
@@ -60,6 +63,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
+import { Toaster } from '~/components/ui/sonner'
 import { ref, onMounted } from 'vue'
 
 const userEmail = ref<string>('Ładowanie...')

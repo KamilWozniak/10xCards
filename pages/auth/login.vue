@@ -1,7 +1,6 @@
 <template>
   <div data-testid="login-page">
     <h1>Test4</h1>
-    <AuthMessageDisplay :message="message" :type="messageType" />
     <LoginForm :is-loading="isLoading" @submit="handleLogin" />
     <div class="mt-6 text-center" data-testid="register-link-section">
       <p class="text-sm text-gray-600">
@@ -21,7 +20,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LoginForm from '~/components/auth/LoginForm.vue'
-import AuthMessageDisplay from '~/components/auth/AuthMessageDisplay.vue'
 import type { LoginFormData, AuthResponse } from '~/types/auth/auth.types'
 
 definePageMeta({
@@ -30,13 +28,12 @@ definePageMeta({
 })
 
 const isLoading = ref(false)
-const message = ref<string | null>(null)
-const messageType = ref<'error' | 'success' | 'info'>('error')
+
+const { showSuccess, showError } = useNotification()
 
 const handleLogin = async (credentials: LoginFormData) => {
   try {
     isLoading.value = true
-    message.value = null
 
     const response = await $fetch<AuthResponse>('/api/auth/login', {
       method: 'POST',
@@ -45,9 +42,6 @@ const handleLogin = async (credentials: LoginFormData) => {
         password: credentials.password,
       },
     })
-
-    messageType.value = 'success'
-    message.value = 'Zalogowano pomyślnie. Przekierowywanie...'
 
     const supabase = useSupabase()
 
@@ -68,12 +62,11 @@ const handleLogin = async (credentials: LoginFormData) => {
       throw new Error('No user returned from setSession!')
     }
 
+    showSuccess('Zalogowano pomyślnie!')
     await navigateTo('/generate')
   } catch (error: any) {
     const { mapError } = useAuthErrors()
-
-    messageType.value = 'error'
-    message.value = mapError(error)
+    showError(mapError(error))
   } finally {
     isLoading.value = false
   }
