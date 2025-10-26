@@ -1,8 +1,5 @@
 <template>
   <div class="auth-layout">
-    <ClientOnly>
-      <Toaster position="top-center" />
-    </ClientOnly>
     <div class="auth-container">
       <div class="text-center">
         <h1 class="text-4xl font-bold text-gray-900">10xCards</h1>
@@ -13,9 +10,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { Toaster } from '~/components/ui/sonner'
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 .auth-layout {
