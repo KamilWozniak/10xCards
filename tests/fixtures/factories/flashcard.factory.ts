@@ -13,7 +13,7 @@ export interface FlashcardFactoryOptions {
   back?: string
   source?: 'manual' | 'ai_generated'
   user_id?: string
-  generation_id?: string | null
+  generation_id?: number | null
   created_at?: string
   updated_at?: string
 }
@@ -34,7 +34,7 @@ export function createMockFlashcard(overrides: FlashcardFactoryOptions = {}): Fl
   const now = new Date().toISOString()
 
   return {
-    id: faker.string.uuid(),
+    id: faker.number.int({ min: 1, max: 999999 }),
     front: faker.lorem.sentence({ min: 5, max: 15 }),
     back: faker.lorem.paragraph({ min: 1, max: 3 }),
     source: faker.helpers.arrayElement(['manual', 'ai_generated']),
@@ -73,7 +73,7 @@ export function createMockFlashcards(
 export function createMockAIFlashcard(overrides: FlashcardFactoryOptions = {}): Flashcard {
   return createMockFlashcard({
     source: 'ai_generated',
-    generation_id: faker.string.uuid(),
+    generation_id: faker.number.int({ min: 1, max: 999999 }),
     ...overrides,
   })
 }

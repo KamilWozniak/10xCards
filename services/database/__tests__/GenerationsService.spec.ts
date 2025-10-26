@@ -39,6 +39,9 @@ describe('GenerationsService', () => {
         generated_count: 10,
         generation_duration: 2500,
         created_at: '2025-01-15T10:30:00Z',
+        updated_at: '2025-01-15T10:30:00Z',
+        accepted_edited_count: null,
+        accepted_unedited_count: null,
       }
 
       const mockSelect = vi.fn().mockReturnValue({
@@ -168,6 +171,9 @@ describe('GenerationsService', () => {
         generated_count: 5,
         generation_duration: 1200,
         created_at: '2025-01-15T11:00:00Z',
+        updated_at: '2025-01-15T11:00:00Z',
+        accepted_edited_count: null,
+        accepted_unedited_count: null,
       }
 
       const mockSelect = vi.fn().mockReturnValue({
@@ -217,6 +223,9 @@ describe('GenerationsService', () => {
         id: 3,
         ...command,
         created_at: '2025-01-15T12:00:00Z',
+        updated_at: '2025-01-15T12:00:00Z',
+        accepted_edited_count: null,
+        accepted_unedited_count: null,
       }
 
       const mockSelect = vi.fn().mockReturnValue({

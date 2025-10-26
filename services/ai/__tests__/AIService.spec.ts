@@ -23,6 +23,7 @@ vi.mock('~/services/openrouter/OpenRouterService', () => ({
 
 describe('AIService', () => {
   let mockOpenRouterService: {
+    generateResponse: ReturnType<typeof vi.fn>
     generateStructuredResponse: ReturnType<typeof vi.fn>
     getModel: ReturnType<typeof vi.fn>
   }
@@ -30,6 +31,7 @@ describe('AIService', () => {
   beforeEach(async () => {
     // Create mock OpenRouter service
     mockOpenRouterService = {
+      generateResponse: vi.fn(),
       generateStructuredResponse: vi.fn(),
       getModel: vi.fn(),
     }

@@ -217,7 +217,7 @@ export class GenerationStateComponent extends BasePage {
 
     return await this.page.evaluate(() => {
       const spinner = document.querySelector('[data-testid="generation-loading-spinner"]')
-      return spinner && window.getComputedStyle(spinner).display !== 'none'
+      return !!(spinner && window.getComputedStyle(spinner).display !== 'none')
     })
   }
 
@@ -230,7 +230,7 @@ export class GenerationStateComponent extends BasePage {
 
     return await this.page.evaluate(() => {
       const error = document.querySelector('[data-testid="generation-error-message"]')
-      return error && window.getComputedStyle(error).display !== 'none'
+      return !!(error && window.getComputedStyle(error).display !== 'none')
     })
   }
 

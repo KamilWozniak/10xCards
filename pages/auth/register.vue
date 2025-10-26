@@ -22,7 +22,7 @@
 import { ref } from 'vue'
 import RegisterForm from '~/components/auth/RegisterForm.vue'
 import AuthErrorDisplay from '~/components/auth/AuthErrorDisplay.vue'
-import type { RegisterFormData } from '~/types/auth/auth.types'
+import type { RegisterFormData, AuthResponse } from '~/types/auth/auth.types'
 
 // Define page meta
 definePageMeta({
@@ -44,7 +44,7 @@ const handleRegister = async (credentials: RegisterFormData) => {
     console.log('Registration attempt with:', { email: credentials.email })
 
     // Call server-side register endpoint
-    const response = await $fetch('/api/auth/register', {
+    const response = await $fetch<AuthResponse>('/api/auth/register', {
       method: 'POST',
       body: {
         email: credentials.email,

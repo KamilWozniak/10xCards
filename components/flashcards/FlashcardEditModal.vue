@@ -91,7 +91,6 @@
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
 import { Label } from '~/components/ui/label'
-import { useFormValidation } from '~/composables/useFormValidation'
 import type {
   FlashcardEditModalProps,
   FlashcardEditModalEmits,
@@ -113,9 +112,6 @@ const formData = ref<FlashcardEditFormState>({
 })
 
 const isLoading = ref(false)
-
-// Validation
-const { validateRequired, validateLength } = useFormValidation()
 
 const isFormValid = computed(() => {
   return (
