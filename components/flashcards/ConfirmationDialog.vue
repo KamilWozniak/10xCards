@@ -25,16 +25,16 @@
           <div class="flex justify-end space-x-3">
             <Button
               variant="outline"
-              @click="handleCancel"
               data-testid="confirmation-dialog-cancel"
+              @click="handleCancel"
             >
               Anuluj
             </Button>
             <Button
               variant="destructive"
               :disabled="isLoading"
-              @click="handleConfirm"
               data-testid="confirmation-dialog-confirm"
+              @click="handleConfirm"
             >
               <span v-if="isLoading">Usuwanie...</span>
               <span v-else>Usuń</span>
@@ -48,7 +48,10 @@
 
 <script setup lang="ts">
 import { Button } from '~/components/ui/button'
-import type { ConfirmationDialogProps, ConfirmationDialogEmits } from '~/types/views/flashcards.types'
+import type {
+  ConfirmationDialogProps,
+  ConfirmationDialogEmits,
+} from '~/types/views/flashcards.types'
 
 const props = defineProps<ConfirmationDialogProps>()
 
