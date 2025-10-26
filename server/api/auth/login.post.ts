@@ -45,7 +45,6 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Validate password (minimum 1 character)
     if (password.length < 1) {
       throw createError({
         statusCode: 400,

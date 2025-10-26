@@ -17,10 +17,8 @@ import { deleteCookie } from 'h3'
  */
 export default defineEventHandler(async event => {
   try {
-    // Create Supabase server client
     const supabase = createSupabaseServerClient(event)
 
-    // Sign out - this will clear the auth cookies
     await supabase.auth.signOut()
 
     // Manually delete Supabase auth cookie
@@ -32,19 +30,15 @@ export default defineEventHandler(async event => {
       sameSite: 'lax',
     })
 
-    // Return success
     return {
       success: true,
       message: 'Logged out successfully',
     }
   } catch (error: any) {
-    // Re-throw H3 errors (already formatted)
     if (error.statusCode) {
       throw error
     }
 
-    // Handle unexpected errors
-    console.error('Unexpected logout error:', error)
     throw createError({
       statusCode: 500,
       statusMessage: 'An error occurred during logout',

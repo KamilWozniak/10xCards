@@ -35,11 +35,9 @@ import { createSupabaseServerClient } from '~/server/utils/supabase/server-clien
  */
 export default defineEventHandler(async event => {
   try {
-    // Parse request body
     const body = await readBody(event)
     const { email, password, confirmPassword } = body
 
-    // Validate request body - all fields required
     if (!email || !password || !confirmPassword) {
       throw createError({
         statusCode: 400,
@@ -47,7 +45,6 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       throw createError({
@@ -56,7 +53,6 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Validate password length (minimum 6 characters per auth-spec.md)
     if (password.length < 6) {
       throw createError({
         statusCode: 400,
@@ -64,7 +60,6 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Validate password confirmation match
     if (password !== confirmPassword) {
       throw createError({
         statusCode: 400,
@@ -72,25 +67,17 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Create Supabase server client
     const supabase = createSupabaseServerClient(event)
 
-    // Attempt to sign up with Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
-        // Email confirmation can be configured in Supabase dashboard
-        // For MVP, we'll auto-confirm (set in Supabase settings)
         emailRedirectTo: undefined,
       },
     })
 
-    // Handle registration error
     if (error) {
-      console.error('Supabase registration error:', error)
-
-      // Check for network/connection errors first
       const errorMessage = error.message?.toLowerCase() || ''
       if (
         errorMessage.includes('fetch failed') ||
@@ -105,9 +92,6 @@ export default defineEventHandler(async event => {
         })
       }
 
-      // SECURITY: User enumeration prevention
-      // If user already exists, return success without session to prevent
-      // attackers from discovering which emails are registered
       if (
         error.message.includes('already registered') ||
         error.message.includes('already exists')
@@ -125,14 +109,12 @@ export default defineEventHandler(async event => {
         })
       }
 
-      // Generic error
       throw createError({
         statusCode: 400,
         statusMessage: error.message || 'Failed to create account',
       })
     }
 
-    // Check if user was created
     if (!data.user) {
       throw createError({
         statusCode: 500,
@@ -140,21 +122,15 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Return user data and session
-    // Cookies are set automatically by @supabase/ssr
-    // Session is returned so client can set it in browser
     return {
       user: data.user,
       session: data.session,
     }
   } catch (error: any) {
-    // Re-throw H3 errors (already formatted)
     if (error.statusCode) {
       throw error
     }
 
-    // Handle unexpected errors
-    console.error('Unexpected registration error:', error)
     throw createError({
       statusCode: 500,
       statusMessage: 'An error occurred during registration',

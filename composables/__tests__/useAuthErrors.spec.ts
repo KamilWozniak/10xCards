@@ -161,11 +161,11 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Email nie został potwierdzony')
     })
 
-    it('should map "User already registered" to Polish', () => {
+    it('should map "User already registered" to generic error (enumeration attack prevention)', () => {
       const error = { message: 'User already registered' }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
+      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
     it('should handle partial match for "invalid login credentials" (case insensitive)', () => {
@@ -182,18 +182,18 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Email nie został potwierdzony')
     })
 
-    it('should handle partial match for "user already registered"', () => {
+    it('should handle partial match for "user already registered" (enumeration attack prevention)', () => {
       const error = { message: 'User Already Registered in system' }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
+      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
-    it('should handle partial match for "already exists"', () => {
+    it('should handle partial match for "already exists" (enumeration attack prevention)', () => {
       const error = { message: 'Email already exists in database' }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
+      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
   })
 
@@ -391,14 +391,14 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should handle Supabase auth.signUp error for existing user', () => {
+    it('should handle Supabase auth.signUp error for existing user (enumeration attack prevention)', () => {
       const error = {
         message: 'User already registered',
         status: 422,
       }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
+      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
     it('should handle network error', () => {
