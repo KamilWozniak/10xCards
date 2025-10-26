@@ -7,7 +7,6 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-4">
-          <!-- Email Field -->
           <div class="space-y-2">
             <Label for="email">Email</Label>
             <Input
@@ -24,7 +23,6 @@
             </p>
           </div>
 
-          <!-- Password Field -->
           <div class="space-y-2">
             <Label for="password">Hasło</Label>
             <Input
@@ -77,7 +75,8 @@ import { Label } from '~/components/ui/label'
 import { useAuthFormValidation } from '~/composables/useAuthFormValidation'
 import type { LoginFormData } from '~/types/auth/auth.types'
 
-// Props
+const { validateEmail, validatePassword } = useAuthFormValidation()
+
 interface Props {
   isLoading?: boolean
 }
@@ -86,27 +85,20 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
-// Emits
 const emit = defineEmits<{
   submit: [credentials: LoginFormData]
 }>()
 
-// Composables
-const { validateEmail, validatePassword } = useAuthFormValidation()
-
-// Form data
 const formData = ref<LoginFormData>({
   email: '',
   password: '',
 })
 
-// Errors
 const errors = ref<Record<string, string | null>>({
   email: null,
   password: null,
 })
 
-// Computed
 const isFormValid = computed(() => {
   return (
     formData.value.email.trim().length > 0 &&
@@ -116,7 +108,6 @@ const isFormValid = computed(() => {
   )
 })
 
-// Methods
 const validateEmailField = () => {
   errors.value.email = validateEmail(formData.value.email)
 }

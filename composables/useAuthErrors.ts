@@ -1,39 +1,42 @@
 /**
- * Composable for mapping Supabase Auth errors to user-friendly Polish messages
+ * Composable for mapping auth error messages to Polish
+ * Handles errors from server endpoints which return English messages
  */
 
 /**
- * Error code to Polish message mapping
- * Based on auth-spec.md section 1.4.2
+ * English to Polish message mapping
+ * Contains all error messages used in auth endpoints
  */
 const ERROR_MESSAGES: Record<string, string> = {
-  // Authentication errors
-  invalid_credentials: 'Nieprawidłowy email lub hasło',
-  invalid_grant: 'Nieprawidłowy email lub hasło',
+  // Login endpoint errors
+  'Email and password are required': 'Email i hasło są wymagane',
+  'Invalid email format': 'Nieprawidłowy format email',
+  'Password is required': 'Hasło jest wymagane',
+  'Invalid email or password': 'Nieprawidłowy email lub hasło',
+  'An error occurred during login': 'Wystąpił błąd podczas logowania',
 
-  // Registration errors
-  email_exists: 'Użytkownik z tym adresem email już istnieje',
-  user_already_exists: 'Użytkownik z tym adresem email już istnieje',
+  // Register endpoint errors
+  'Email, password and confirm password are required':
+    'Email, hasło i potwierdzenie hasła są wymagane',
+  'Password must be at least 6 characters': 'Hasło musi mieć minimum 6 znaków',
+  'Passwords do not match': 'Hasła nie są identyczne',
+  'Password is too weak. Use at least 6 characters': 'Hasło jest za słabe. Użyj minimum 6 znaków',
+  'Failed to create account': 'Nie udało się utworzyć konta',
+  'Failed to create account. Please try again': 'Nie udało się utworzyć konta. Spróbuj ponownie',
+  'An error occurred during registration': 'Wystąpił błąd podczas rejestracji',
 
-  // Password errors
-  weak_password: 'Hasło jest za słabe. Użyj minimum 6 znaków',
+  // Logout endpoint messages
+  'Logged out successfully': 'Wylogowano pomyślnie',
+  'An error occurred during logout': 'Wystąpił błąd podczas wylogowania',
 
-  // Email validation
-  invalid_email: 'Nieprawidłowy format adresu email',
+  // Network/Connection errors
+  'Service temporarily unavailable. Please try again later':
+    'Usługa tymczasowo niedostępna. Spróbuj ponownie później',
 
-  // User not found
-  user_not_found: 'Nie znaleziono użytkownika z tym adresem email',
-
-  // Email confirmation
-  email_not_confirmed: 'Email nie został potwierdzony. Sprawdź swoją skrzynkę pocztową',
-
-  // Rate limiting
-  over_email_send_rate_limit: 'Wysłano zbyt wiele emaili. Spróbuj ponownie później',
-  too_many_requests: 'Zbyt wiele prób. Spróbuj ponownie później',
-
-  // Network/Server errors
-  network_error: 'Błąd połączenia. Sprawdź połączenie z internetem',
-  server_error: 'Błąd serwera. Spróbuj ponownie później',
+  // Supabase Auth error messages (may come through error.message)
+  'Invalid login credentials': 'Nieprawidłowy email lub hasło',
+  'Email not confirmed': 'Email nie został potwierdzony',
+  'Something went wrong': 'Wystąpił błąd. Spróbuj ponownie później',
 }
 
 /**
@@ -42,9 +45,22 @@ const ERROR_MESSAGES: Record<string, string> = {
 const DEFAULT_ERROR_MESSAGE = 'Wystąpił błąd. Spróbuj ponownie później'
 
 /**
- * Map Supabase Auth error to user-friendly Polish message
+ * HTTP status code fallbacks
+ */
+const STATUS_CODE_MESSAGES: Record<number, string> = {
+  400: 'Nieprawidłowe dane. Sprawdź formularz i spróbuj ponownie',
+  401: 'Nieprawidłowy email lub hasło',
+  403: 'Brak dostępu',
+  429: 'Zbyt wiele prób. Spróbuj ponownie później',
+  500: 'Błąd serwera. Spróbuj ponownie później',
+  502: 'Błąd serwera. Spróbuj ponownie później',
+  503: 'Błąd serwera. Spróbuj ponownie później',
+}
+
+/**
+ * Map auth error to Polish message
  *
- * @param error - Supabase error object or any error
+ * @param error - Error object from API call
  * @returns User-friendly error message in Polish
  */
 export function mapSupabaseAuthError(error: any): string {
@@ -52,93 +68,35 @@ export function mapSupabaseAuthError(error: any): string {
     return DEFAULT_ERROR_MESSAGE
   }
 
-  // Handle error.data.statusMessage (from server endpoints)
-  if (error?.data?.statusMessage) {
-    const statusMessage = error.data.statusMessage.toLowerCase()
+  // 1. Check error.data.statusMessage (most common for H3 errors)
+  const statusMessage = error?.data?.statusMessage || error?.statusMessage
+  if (statusMessage && ERROR_MESSAGES[statusMessage]) {
+    return ERROR_MESSAGES[statusMessage]
+  }
 
-    // Check for specific error messages
-    if (
-      statusMessage.includes('invalid login credentials') ||
-      statusMessage.includes('invalid credentials')
-    ) {
-      return ERROR_MESSAGES.invalid_credentials
+  // 2. Check error.message (for Supabase SDK errors)
+  if (error?.message && ERROR_MESSAGES[error.message]) {
+    return ERROR_MESSAGES[error.message]
+  }
+
+  // 3. Check for partial matches in error.message (for Supabase errors)
+  if (error?.message) {
+    const message = error.message.toLowerCase()
+    if (message.includes('invalid login credentials')) {
+      return ERROR_MESSAGES['Invalid login credentials']
     }
-    if (
-      statusMessage.includes('email already exists') ||
-      statusMessage.includes('user already exists')
-    ) {
-      return ERROR_MESSAGES.email_exists
-    }
-    if (statusMessage.includes('weak password')) {
-      return ERROR_MESSAGES.weak_password
+    if (message.includes('email not confirmed')) {
+      return ERROR_MESSAGES['Email not confirmed']
     }
   }
 
-  // Handle error.statusMessage (from server endpoints)
-  if (error?.statusMessage) {
-    const statusMessage = error.statusMessage.toLowerCase()
-
-    // Check for specific error messages
-    if (
-      statusMessage.includes('invalid login credentials') ||
-      statusMessage.includes('invalid credentials')
-    ) {
-      return ERROR_MESSAGES.invalid_credentials
-    }
-    if (
-      statusMessage.includes('email already exists') ||
-      statusMessage.includes('user already exists')
-    ) {
-      return ERROR_MESSAGES.email_exists
-    }
-    if (statusMessage.includes('weak password')) {
-      return ERROR_MESSAGES.weak_password
-    }
+  // 4. Fallback to HTTP status code
+  const statusCode = error?.data?.statusCode || error?.statusCode || error?.status
+  if (statusCode && STATUS_CODE_MESSAGES[statusCode]) {
+    return STATUS_CODE_MESSAGES[statusCode]
   }
 
-  // Handle Supabase AuthError with message field
-  if (error.message) {
-    const errorMessage = error.message.toLowerCase()
-
-    // Check if error message contains known error codes
-    for (const [code, message] of Object.entries(ERROR_MESSAGES)) {
-      if (errorMessage.includes(code.toLowerCase().replace('_', ' '))) {
-        return message
-      }
-    }
-  }
-
-  // Handle error with code field
-  if (error.code && ERROR_MESSAGES[error.code]) {
-    return ERROR_MESSAGES[error.code]
-  }
-
-  // Handle error with error_code field (some Supabase errors use this)
-  if (error.error_code && ERROR_MESSAGES[error.error_code]) {
-    return ERROR_MESSAGES[error.error_code]
-  }
-
-  // Handle error.status for HTTP errors
-  if (error.status) {
-    switch (error.status) {
-      case 400:
-        return 'Nieprawidłowe dane. Sprawdź formularz i spróbuj ponownie'
-      case 401:
-        return 'Nieprawidłowy email lub hasło'
-      case 403:
-        return 'Brak dostępu. Sprawdź swoje uprawnienia'
-      case 429:
-        return ERROR_MESSAGES.too_many_requests
-      case 500:
-      case 502:
-      case 503:
-        return ERROR_MESSAGES.server_error
-      default:
-        return DEFAULT_ERROR_MESSAGE
-    }
-  }
-
-  // Return default error message
+  // 5. Return default error message
   return DEFAULT_ERROR_MESSAGE
 }
 

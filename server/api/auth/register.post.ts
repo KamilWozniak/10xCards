@@ -43,7 +43,7 @@ export default defineEventHandler(async event => {
     if (!email || !password || !confirmPassword) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Email, hasło i potwierdzenie hasła są wymagane',
+        statusMessage: 'Email, password and confirm password are required',
       })
     }
 
@@ -52,7 +52,7 @@ export default defineEventHandler(async event => {
     if (!emailRegex.test(email)) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Nieprawidłowy format email',
+        statusMessage: 'Invalid email format',
       })
     }
 
@@ -60,7 +60,7 @@ export default defineEventHandler(async event => {
     if (password.length < 6) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Hasło musi mieć minimum 6 znaków',
+        statusMessage: 'Password must be at least 6 characters',
       })
     }
 
@@ -68,7 +68,7 @@ export default defineEventHandler(async event => {
     if (password !== confirmPassword) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Hasła nie są identyczne',
+        statusMessage: 'Passwords do not match',
       })
     }
 
@@ -90,28 +90,45 @@ export default defineEventHandler(async event => {
     if (error) {
       console.error('Supabase registration error:', error)
 
-      // Map specific error codes to user-friendly messages
+      // Check for network/connection errors first
+      const errorMessage = error.message?.toLowerCase() || ''
+      if (
+        errorMessage.includes('fetch failed') ||
+        errorMessage.includes('network') ||
+        errorMessage.includes('connection') ||
+        errorMessage.includes('econnrefused') ||
+        errorMessage.includes('timeout')
+      ) {
+        throw createError({
+          statusCode: 503,
+          statusMessage: 'Service temporarily unavailable. Please try again later',
+        })
+      }
+
+      // SECURITY: User enumeration prevention
+      // If user already exists, return success without session to prevent
+      // attackers from discovering which emails are registered
       if (
         error.message.includes('already registered') ||
         error.message.includes('already exists')
       ) {
-        throw createError({
-          statusCode: 409,
-          statusMessage: 'Użytkownik z tym adresem email już istnieje',
-        })
+        return {
+          user: null,
+          session: null,
+        }
       }
 
       if (error.message.includes('weak') || error.message.includes('password')) {
         throw createError({
           statusCode: 400,
-          statusMessage: 'Hasło jest za słabe. Użyj minimum 6 znaków',
+          statusMessage: 'Password is too weak. Use at least 6 characters',
         })
       }
 
       // Generic error
       throw createError({
         statusCode: 400,
-        statusMessage: error.message || 'Nie udało się utworzyć konta',
+        statusMessage: error.message || 'Failed to create account',
       })
     }
 
@@ -119,7 +136,7 @@ export default defineEventHandler(async event => {
     if (!data.user) {
       throw createError({
         statusCode: 500,
-        statusMessage: 'Nie udało się utworzyć konta. Spróbuj ponownie',
+        statusMessage: 'Failed to create account. Please try again',
       })
     }
 
@@ -140,7 +157,7 @@ export default defineEventHandler(async event => {
     console.error('Unexpected registration error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Wystąpił błąd podczas rejestracji',
+      statusMessage: 'An error occurred during registration',
     })
   }
 })

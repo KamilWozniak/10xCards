@@ -4,183 +4,200 @@ import { useAuthErrors, mapSupabaseAuthError } from '../useAuthErrors'
 /**
  * Test suite for useAuthErrors composable
  *
- * Tests cover:
- * - Error mapping function (mapSupabaseAuthError)
- * - Known error codes and messages
- * - HTTP status code handling
- * - Edge cases and fallback behavior
- * - Composable hook functionality
- * - Polish error message localization
- * - Various error object structures
+ * Tests the simplified error mapping implementation that:
+ * - Maps English error messages from server endpoints to Polish
+ * - Handles Supabase SDK error messages
+ * - Falls back to HTTP status codes
+ * - Returns user-friendly default messages
  */
 
 describe('useAuthErrors', () => {
-  describe('mapSupabaseAuthError - Known error codes', () => {
-    it('should map invalid_credentials to Polish message', () => {
-      const error = { code: 'invalid_credentials' }
+  describe('mapSupabaseAuthError - Server endpoint errors (error.data.statusMessage)', () => {
+    it('should map "Email and password are required" to Polish', () => {
+      const error = { data: { statusMessage: 'Email and password are required' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Email i hasło są wymagane')
+    })
+
+    it('should map "Invalid email format" to Polish', () => {
+      const error = { data: { statusMessage: 'Invalid email format' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Nieprawidłowy format email')
+    })
+
+    it('should map "Password is required" to Polish', () => {
+      const error = { data: { statusMessage: 'Password is required' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Hasło jest wymagane')
+    })
+
+    it('should map "Invalid email or password" to Polish', () => {
+      const error = { data: { statusMessage: 'Invalid email or password' } }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should map invalid_grant to Polish message', () => {
-      const error = { code: 'invalid_grant' }
+    it('should map "An error occurred during login" to Polish', () => {
+      const error = { data: { statusMessage: 'An error occurred during login' } }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Nieprawidłowy email lub hasło')
+      expect(result).toBe('Wystąpił błąd podczas logowania')
     })
 
-    it('should map email_exists to Polish message', () => {
-      const error = { code: 'email_exists' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
-    })
-
-    it('should map user_already_exists to Polish message', () => {
-      const error = { code: 'user_already_exists' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
-    })
-
-    it('should map weak_password to Polish message', () => {
-      const error = { code: 'weak_password' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
-    })
-
-    it('should map invalid_email to Polish message', () => {
-      const error = { code: 'invalid_email' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Nieprawidłowy format adresu email')
-    })
-
-    it('should map user_not_found to Polish message', () => {
-      const error = { code: 'user_not_found' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Nie znaleziono użytkownika z tym adresem email')
-    })
-
-    it('should map email_not_confirmed to Polish message', () => {
-      const error = { code: 'email_not_confirmed' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Email nie został potwierdzony. Sprawdź swoją skrzynkę pocztową')
-    })
-
-    it('should map over_email_send_rate_limit to Polish message', () => {
-      const error = { code: 'over_email_send_rate_limit' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Wysłano zbyt wiele emaili. Spróbuj ponownie później')
-    })
-
-    it('should map too_many_requests to Polish message', () => {
-      const error = { code: 'too_many_requests' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Zbyt wiele prób. Spróbuj ponownie później')
-    })
-
-    it('should map network_error to Polish message', () => {
-      const error = { code: 'network_error' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Błąd połączenia. Sprawdź połączenie z internetem')
-    })
-
-    it('should map server_error to Polish message', () => {
-      const error = { code: 'server_error' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Błąd serwera. Spróbuj ponownie później')
-    })
-  })
-
-  describe('mapSupabaseAuthError - Error code field variations', () => {
-    it('should handle error_code field (alternative to code)', () => {
-      const error = { error_code: 'invalid_credentials' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Nieprawidłowy email lub hasło')
-    })
-
-    it('should prioritize code field over error_code field', () => {
+    it('should map "Email, password and confirm password are required" to Polish', () => {
       const error = {
-        code: 'weak_password',
-        error_code: 'invalid_credentials',
+        data: { statusMessage: 'Email, password and confirm password are required' },
+      }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Email, hasło i potwierdzenie hasła są wymagane')
+    })
+
+    it('should map "Password must be at least 6 characters" to Polish', () => {
+      const error = { data: { statusMessage: 'Password must be at least 6 characters' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Hasło musi mieć minimum 6 znaków')
+    })
+
+    it('should map "Passwords do not match" to Polish', () => {
+      const error = { data: { statusMessage: 'Passwords do not match' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Hasła nie są identyczne')
+    })
+
+    it('should map "Password is too weak. Use at least 6 characters" to Polish', () => {
+      const error = {
+        data: { statusMessage: 'Password is too weak. Use at least 6 characters' },
       }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
     })
 
-    it('should handle unknown error codes gracefully', () => {
-      const error = { code: 'unknown_error_code' }
+    it('should map "Failed to create account" to Polish', () => {
+      const error = { data: { statusMessage: 'Failed to create account' } }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
+      expect(result).toBe('Nie udało się utworzyć konta')
+    })
+
+    it('should map "Failed to create account. Please try again" to Polish', () => {
+      const error = {
+        data: { statusMessage: 'Failed to create account. Please try again' },
+      }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Nie udało się utworzyć konta. Spróbuj ponownie')
+    })
+
+    it('should map "An error occurred during registration" to Polish', () => {
+      const error = { data: { statusMessage: 'An error occurred during registration' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Wystąpił błąd podczas rejestracji')
+    })
+
+    it('should map "Logged out successfully" to Polish', () => {
+      const error = { data: { statusMessage: 'Logged out successfully' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Wylogowano pomyślnie')
+    })
+
+    it('should map "An error occurred during logout" to Polish', () => {
+      const error = { data: { statusMessage: 'An error occurred during logout' } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Wystąpił błąd podczas wylogowania')
+    })
+
+    it('should map "Service temporarily unavailable. Please try again later" to Polish', () => {
+      const error = {
+        data: { statusMessage: 'Service temporarily unavailable. Please try again later' },
+      }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Usługa tymczasowo niedostępna. Spróbuj ponownie później')
     })
   })
 
-  describe('mapSupabaseAuthError - Message field parsing', () => {
-    it('should parse error message containing "invalid credentials"', () => {
-      const error = { message: 'Authentication failed: invalid credentials provided' }
+  describe('mapSupabaseAuthError - Fallback to error.statusMessage', () => {
+    it('should use error.statusMessage if error.data.statusMessage is not present', () => {
+      const error = { statusMessage: 'Invalid email or password' }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should parse error message containing "weak password"', () => {
-      const error = { message: 'Password validation failed: weak password detected' }
+    it('should prioritize error.data.statusMessage over error.statusMessage', () => {
+      const error = {
+        data: { statusMessage: 'Invalid email format' },
+        statusMessage: 'Password is required',
+      }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
+      expect(result).toBe('Nieprawidłowy format email')
+    })
+  })
+
+  describe('mapSupabaseAuthError - Supabase SDK error messages', () => {
+    it('should map "Invalid login credentials" to Polish', () => {
+      const error = { message: 'Invalid login credentials' }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should parse error message containing "email exists"', () => {
-      const error = { message: 'Registration failed: email exists in system' }
+    it('should map "Email not confirmed" to Polish', () => {
+      const error = { message: 'Email not confirmed' }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Email nie został potwierdzony')
+    })
+
+    it('should map "User already registered" to Polish', () => {
+      const error = { message: 'User already registered' }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Użytkownik z tym adresem email już istnieje')
     })
 
-    it('should parse error message containing "user not_found"', () => {
-      const error = { message: 'Login failed: user not_found in database' }
-      const result = mapSupabaseAuthError(error)
-
-      // The implementation looks for "user not_found" (only first underscore replaced with space)
-      expect(result).toBe('Nie znaleziono użytkownika z tym adresem email')
-    })
-
-    it('should handle message parsing with underscores converted to spaces', () => {
-      const error = { message: 'Error: too many_requests detected' }
-      const result = mapSupabaseAuthError(error)
-
-      // The implementation looks for "too many_requests" (only first underscore replaced)
-      expect(result).toBe('Zbyt wiele prób. Spróbuj ponownie później')
-    })
-
-    it('should handle case insensitive message parsing', () => {
-      const error = { message: 'INVALID CREDENTIALS PROVIDED' }
+    it('should handle partial match for "invalid login credentials" (case insensitive)', () => {
+      const error = { message: 'Authentication failed: Invalid Login Credentials' }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should return default message for unrecognized message content', () => {
-      const error = { message: 'Some unknown error occurred' }
+    it('should handle partial match for "email not confirmed"', () => {
+      const error = { message: 'Email Not Confirmed, please check your inbox' }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
+      expect(result).toBe('Email nie został potwierdzony')
+    })
+
+    it('should handle partial match for "user already registered"', () => {
+      const error = { message: 'User Already Registered in system' }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
+    })
+
+    it('should handle partial match for "already exists"', () => {
+      const error = { message: 'Email already exists in database' }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
     })
   })
 
-  describe('mapSupabaseAuthError - HTTP status codes', () => {
+  describe('mapSupabaseAuthError - HTTP status code fallback', () => {
     it('should handle 400 Bad Request status', () => {
       const error = { status: 400 }
       const result = mapSupabaseAuthError(error)
@@ -199,7 +216,7 @@ describe('useAuthErrors', () => {
       const error = { status: 403 }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Brak dostępu. Sprawdź swoje uprawnienia')
+      expect(result).toBe('Brak dostępu')
     })
 
     it('should handle 429 Too Many Requests status', () => {
@@ -230,18 +247,42 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Błąd serwera. Spróbuj ponownie później')
     })
 
-    it('should handle unknown HTTP status codes', () => {
-      const error = { status: 418 } // I'm a teapot
+    it('should handle 503 from error.data.statusCode', () => {
+      const error = { data: { statusCode: 503 } }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
+      expect(result).toBe('Błąd serwera. Spróbuj ponownie później')
+    })
+
+    it('should use status from error.data.statusCode', () => {
+      const error = { data: { statusCode: 401 } }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Nieprawidłowy email lub hasło')
+    })
+
+    it('should use status from error.statusCode', () => {
+      const error = { statusCode: 429 }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Zbyt wiele prób. Spróbuj ponownie później')
     })
   })
 
   describe('mapSupabaseAuthError - Priority and precedence', () => {
-    it('should prioritize message parsing over status code', () => {
+    it('should prioritize statusMessage over message', () => {
       const error = {
-        message: 'Authentication failed: invalid credentials',
+        data: { statusMessage: 'Invalid email format' },
+        message: 'Invalid login credentials',
+      }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Nieprawidłowy format email')
+    })
+
+    it('should prioritize message over status code', () => {
+      const error = {
+        message: 'Invalid login credentials',
         status: 500,
       }
       const result = mapSupabaseAuthError(error)
@@ -249,41 +290,19 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should prioritize message parsing over code field', () => {
+    it('should use status code when statusMessage and message are not mapped', () => {
       const error = {
-        code: 'weak_password',
-        message: 'Authentication failed: invalid credentials',
-      }
-      const result = mapSupabaseAuthError(error)
-
-      // Message parsing happens first, so "invalid credentials" is found first
-      expect(result).toBe('Nieprawidłowy email lub hasło')
-    })
-
-    it('should use status code when message parsing fails', () => {
-      const error = {
-        message: 'Unknown authentication error',
+        data: { statusMessage: 'Unknown error' },
+        message: 'Some unknown error',
         status: 401,
       }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Nieprawidłowy email lub hasło')
     })
-
-    it('should handle complex error object with all fields', () => {
-      const error = {
-        code: 'invalid_credentials',
-        error_code: 'weak_password',
-        message: 'Some other error message',
-        status: 500,
-      }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Nieprawidłowy email lub hasło')
-    })
   })
 
-  describe('mapSupabaseAuthError - Edge cases and null handling', () => {
+  describe('mapSupabaseAuthError - Edge cases', () => {
     it('should handle null error', () => {
       const result = mapSupabaseAuthError(null)
 
@@ -302,29 +321,22 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
-    it('should handle error with empty string message', () => {
-      const error = { message: '' }
+    it('should handle error with unknown statusMessage', () => {
+      const error = { data: { statusMessage: 'Some unknown error' } }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
-    it('should handle error with null message', () => {
-      const error = { message: null }
+    it('should handle error with unknown message', () => {
+      const error = { message: 'Some unknown error' }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
-    it('should handle error with empty string code', () => {
-      const error = { code: '' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
-    })
-
-    it('should handle error with zero status', () => {
-      const error = { status: 0 }
+    it('should handle error with unknown status code', () => {
+      const error = { status: 418 } // I'm a teapot
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
@@ -336,49 +348,61 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
-    it('should handle number error (not object)', () => {
-      const result = mapSupabaseAuthError(404)
+    it('should handle error with empty string statusMessage', () => {
+      const error = { data: { statusMessage: '' } }
+      const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
   })
 
-  describe('mapSupabaseAuthError - Real-world Supabase error scenarios', () => {
-    it('should handle typical Supabase AuthError structure', () => {
+  describe('mapSupabaseAuthError - Real-world scenarios', () => {
+    it('should handle typical $fetch error from login endpoint', () => {
       const error = {
-        name: 'AuthError',
+        data: {
+          statusCode: 401,
+          statusMessage: 'Invalid email or password',
+        },
+      }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Nieprawidłowy email lub hasło')
+    })
+
+    it('should handle typical $fetch error from register endpoint', () => {
+      const error = {
+        data: {
+          statusCode: 400,
+          statusMessage: 'Passwords do not match',
+        },
+      }
+      const result = mapSupabaseAuthError(error)
+
+      expect(result).toBe('Hasła nie są identyczne')
+    })
+
+    it('should handle Supabase auth.signInWithPassword error', () => {
+      const error = {
         message: 'Invalid login credentials',
         status: 400,
       }
       const result = mapSupabaseAuthError(error)
 
-      // Message parsing fails (no exact match), so falls back to status 400
-      expect(result).toBe('Nieprawidłowe dane. Sprawdź formularz i spróbuj ponownie')
+      expect(result).toBe('Nieprawidłowy email lub hasło')
     })
 
-    it('should handle Supabase signup error with weak password', () => {
-      const error = {
-        message: 'Password should be at least 6 characters: weak password',
-        status: 422,
-      }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
-    })
-
-    it('should handle Supabase email already registered error', () => {
+    it('should handle Supabase auth.signUp error for existing user', () => {
       const error = {
         message: 'User already registered',
         status: 422,
       }
       const result = mapSupabaseAuthError(error)
 
-      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
+      expect(result).toBe('Użytkownik z tym adresem email już istnieje')
     })
 
-    it('should handle network timeout error', () => {
+    it('should handle network error', () => {
       const error = {
-        name: 'TypeError',
         message: 'Failed to fetch',
         cause: { code: 'NETWORK_ERROR' },
       }
@@ -387,46 +411,28 @@ describe('useAuthErrors', () => {
       expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
     })
 
-    it('should handle rate limiting error from Supabase', () => {
+    it('should handle rate limiting', () => {
       const error = {
-        message: 'For security purposes, you can only request this once every 60 seconds',
-        status: 429,
+        data: {
+          statusCode: 429,
+          statusMessage: 'Too many requests',
+        },
       }
       const result = mapSupabaseAuthError(error)
 
       expect(result).toBe('Zbyt wiele prób. Spróbuj ponownie później')
     })
-  })
 
-  describe('mapSupabaseAuthError - Message parsing edge cases', () => {
-    it('should handle message with multiple matching patterns', () => {
-      const error = { message: 'invalid credentials and weak password detected' }
+    it('should handle service unavailable (database connection error)', () => {
+      const error = {
+        data: {
+          statusCode: 503,
+          statusMessage: 'Service temporarily unavailable. Please try again later',
+        },
+      }
       const result = mapSupabaseAuthError(error)
 
-      // Should match the first pattern found (invalid credentials)
-      expect(result).toBe('Nieprawidłowy email lub hasło')
-    })
-
-    it('should handle message with partial matches', () => {
-      const error = { message: 'credential validation failed' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Wystąpił błąd. Spróbuj ponownie później')
-    })
-
-    it('should handle message with special characters', () => {
-      const error = { message: 'Error: invalid credentials (auth/failed)' }
-      const result = mapSupabaseAuthError(error)
-
-      // The message contains "invalid credentials" which matches the pattern
-      expect(result).toBe('Nieprawidłowy email lub hasło')
-    })
-
-    it('should handle message with Unicode characters', () => {
-      const error = { message: 'Błąd: invalid credentials 🔒' }
-      const result = mapSupabaseAuthError(error)
-
-      expect(result).toBe('Nieprawidłowy email lub hasło')
+      expect(result).toBe('Usługa tymczasowo niedostępna. Spróbuj ponownie później')
     })
   })
 
@@ -446,128 +452,27 @@ describe('useAuthErrors', () => {
     it('should work correctly when called through composable', () => {
       const { mapError } = useAuthErrors()
 
-      const error = { code: 'invalid_credentials' }
+      const error = { data: { statusMessage: 'Invalid email format' } }
       const result = mapError(error)
 
-      expect(result).toBe('Nieprawidłowy email lub hasło')
+      expect(result).toBe('Nieprawidłowy format email')
     })
 
     it('should maintain function behavior across multiple composable calls', () => {
       const auth1 = useAuthErrors()
       const auth2 = useAuthErrors()
 
-      const error = { code: 'weak_password' }
+      const error = { message: 'Invalid login credentials' }
 
       expect(auth1.mapError(error)).toBe(auth2.mapError(error))
-      expect(auth1.mapError(error)).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
+      expect(auth1.mapError(error)).toBe('Nieprawidłowy email lub hasło')
     })
   })
 
-  describe('Business rules and integration scenarios', () => {
-    it('should handle authentication flow errors consistently', () => {
-      const { mapError } = useAuthErrors()
-
-      // Login scenario
-      const loginError = { status: 401 }
-      expect(mapError(loginError)).toBe('Nieprawidłowy email lub hasło')
-
-      // Registration scenario
-      const registrationError = { code: 'email_exists' }
-      expect(mapError(registrationError)).toBe('Użytkownik z tym adresem email już istnieje')
-
-      // Password validation scenario
-      const passwordError = { code: 'weak_password' }
-      expect(mapError(passwordError)).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
-    })
-
-    it('should provide user-friendly messages for all error types', () => {
-      const testCases = [
-        { error: { code: 'invalid_credentials' }, expectsUserFriendly: true },
-        { error: { code: 'email_exists' }, expectsUserFriendly: true },
-        { error: { status: 500 }, expectsUserFriendly: true },
-        { error: { message: 'Network error' }, expectsUserFriendly: true },
-        { error: {}, expectsUserFriendly: true },
-      ]
-
-      testCases.forEach(({ error, expectsUserFriendly }) => {
-        const result = mapSupabaseAuthError(error)
-
-        if (expectsUserFriendly) {
-          expect(result).not.toContain('Error')
-          expect(result).not.toContain('error')
-          expect(result).not.toContain('failed')
-          expect(result).not.toContain('invalid')
-          expect(typeof result).toBe('string')
-          expect(result.length).toBeGreaterThan(0)
-        }
-      })
-    })
-
-    it('should handle errors from different authentication providers', () => {
-      // Supabase-style error
-      const supabaseError = { message: 'Authentication failed: invalid credentials' }
-      expect(mapSupabaseAuthError(supabaseError)).toBe('Nieprawidłowy email lub hasło')
-
-      // Generic HTTP error
-      const httpError = { status: 401 }
-      expect(mapSupabaseAuthError(httpError)).toBe('Nieprawidłowy email lub hasło')
-
-      // Custom error code
-      const customError = { code: 'user_not_found' }
-      expect(mapSupabaseAuthError(customError)).toBe(
-        'Nie znaleziono użytkownika z tym adresem email'
-      )
-    })
-
-    it('should maintain consistency across error mapping calls', () => {
-      const error = { code: 'invalid_credentials' }
-
-      // Multiple calls should return the same result
-      const result1 = mapSupabaseAuthError(error)
-      const result2 = mapSupabaseAuthError(error)
-      const result3 = mapSupabaseAuthError(error)
-
-      expect(result1).toBe(result2)
-      expect(result2).toBe(result3)
-      expect(result1).toBe('Nieprawidłowy email lub hasło')
-    })
-  })
-
-  describe('Performance and memory considerations', () => {
-    it('should handle large error objects efficiently', () => {
-      const largeError = {
-        code: 'invalid_credentials',
-        message: 'A'.repeat(10000), // Large message
-        stack: 'B'.repeat(5000), // Large stack trace
-        details: { data: 'C'.repeat(1000) },
-        timestamp: Date.now(),
-        requestId: 'req-' + 'D'.repeat(100),
-      }
-
-      const result = mapSupabaseAuthError(largeError)
-
-      expect(result).toBe('Nieprawidłowy email lub hasło')
-    })
-
-    it('should handle rapid successive error mapping calls', () => {
-      const errors = Array.from({ length: 100 }, (_, i) => ({
-        code: i % 2 === 0 ? 'invalid_credentials' : 'weak_password',
-      }))
-
-      const results = errors.map(error => mapSupabaseAuthError(error))
-
-      results.forEach((result, index) => {
-        if (index % 2 === 0) {
-          expect(result).toBe('Nieprawidłowy email lub hasło')
-        } else {
-          expect(result).toBe('Hasło jest za słabe. Użyj minimum 6 znaków')
-        }
-      })
-    })
-
+  describe('Consistency and immutability', () => {
     it('should not modify the original error object', () => {
       const originalError = {
-        code: 'invalid_credentials',
+        data: { statusMessage: 'Invalid email format' },
         message: 'Original message',
         status: 401,
       }
@@ -576,6 +481,36 @@ describe('useAuthErrors', () => {
       mapSupabaseAuthError(originalError)
 
       expect(originalError).toEqual(errorCopy)
+    })
+
+    it('should return consistent results for the same error', () => {
+      const error = { data: { statusMessage: 'Invalid email or password' } }
+
+      const result1 = mapSupabaseAuthError(error)
+      const result2 = mapSupabaseAuthError(error)
+      const result3 = mapSupabaseAuthError(error)
+
+      expect(result1).toBe(result2)
+      expect(result2).toBe(result3)
+      expect(result1).toBe('Nieprawidłowy email lub hasło')
+    })
+
+    it('should always return a string', () => {
+      const testCases = [
+        { data: { statusMessage: 'Invalid email format' } },
+        { message: 'Invalid login credentials' },
+        { status: 401 },
+        {},
+        null,
+        undefined,
+        'string error',
+      ]
+
+      testCases.forEach(error => {
+        const result = mapSupabaseAuthError(error)
+        expect(typeof result).toBe('string')
+        expect(result.length).toBeGreaterThan(0)
+      })
     })
   })
 })

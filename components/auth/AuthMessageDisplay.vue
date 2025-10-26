@@ -15,7 +15,6 @@
 import { computed } from 'vue'
 import { Alert, AlertDescription } from '~/components/ui/alert'
 
-// Props
 interface Props {
   message: string | null
   type?: 'error' | 'success' | 'info'
@@ -25,7 +24,6 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'error',
 })
 
-// Computed
 const alertVariant = computed(() => {
   switch (props.type) {
     case 'success':

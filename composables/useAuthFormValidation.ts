@@ -62,11 +62,6 @@ export function validatePasswordMatch(password: string, confirmPassword: string)
   return null
 }
 
-/**
- * Composable hook for auth form validation
- *
- * @returns Object with validation functions
- */
 export const useAuthFormValidation = () => {
   return {
     validateEmail,
