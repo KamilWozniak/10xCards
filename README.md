@@ -94,7 +94,7 @@ Manual creation of high-quality flashcards requires significant time and effort,
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/10xCards.git
+   git clone https://github.com/KamilWozniak/10xCards.git
    cd 10xCards
    ```
 
