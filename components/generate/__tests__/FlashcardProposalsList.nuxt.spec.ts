@@ -114,7 +114,7 @@ describe('FlashcardProposalsList', () => {
       })
 
       // Assert
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
       expect(button.attributes('disabled')).toBeDefined()
     })
 
@@ -183,7 +183,7 @@ describe('FlashcardProposalsList', () => {
       })
 
       // Assert
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
       expect(button.attributes('disabled')).toBeDefined()
     })
   })
@@ -288,7 +288,7 @@ describe('FlashcardProposalsList', () => {
       })
 
       // Assert
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
       expect(button.attributes('disabled')).toBeUndefined()
     })
 
@@ -528,7 +528,7 @@ describe('FlashcardProposalsList', () => {
         },
       })
 
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
 
       // Act
       await button.trigger('click')
@@ -557,7 +557,7 @@ describe('FlashcardProposalsList', () => {
         },
       })
 
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
 
       // Act
       await button.trigger('click')
@@ -585,7 +585,7 @@ describe('FlashcardProposalsList', () => {
         },
       })
 
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
 
       // Act
       await button.trigger('click')
@@ -605,7 +605,7 @@ describe('FlashcardProposalsList', () => {
         },
       })
 
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
 
       // Act
       await button.trigger('click')
@@ -630,7 +630,7 @@ describe('FlashcardProposalsList', () => {
       })
 
       // Assert
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
       expect(button.text()).toContain('Zapisz wybrane fiszki (3)')
     })
   })
@@ -686,7 +686,7 @@ describe('FlashcardProposalsList', () => {
         },
       })
 
-      const button = wrapper.find('button')
+      const button = wrapper.find('[data-testid="save-selected-flashcards-button"]')
       expect(button.attributes('disabled')).toBeDefined()
 
       const updatedProposals = [{ ...mockProposals[0], isAccepted: true }]
@@ -696,7 +696,7 @@ describe('FlashcardProposalsList', () => {
       await nextTick()
 
       // Assert
-      const buttonAfter = wrapper.find('button')
+      const buttonAfter = wrapper.find('[data-testid="save-selected-flashcards-button"]')
       expect(buttonAfter.attributes('disabled')).toBeUndefined()
     })
   })

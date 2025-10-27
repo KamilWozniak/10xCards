@@ -1,6 +1,5 @@
 <template>
   <div data-testid="login-page">
-    <h1>Test4</h1>
     <LoginForm :is-loading="isLoading" @submit="handleLogin" />
     <div class="mt-6 text-center" data-testid="register-link-section">
       <p class="text-sm text-gray-600">

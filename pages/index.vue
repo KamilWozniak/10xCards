@@ -16,15 +16,11 @@ if (import.meta.client) {
     } = await supabase.supabase.auth.getUser()
 
     if (user) {
-      // User is authenticated, redirect to generate page
       await navigateTo('/generate', { external: true })
     } else {
-      // User is not authenticated, redirect to login page
       await navigateTo('/auth/login', { external: true })
     }
   } catch (error) {
-    console.error('Error checking auth status:', error)
-    // On error, redirect to login
     await navigateTo('/auth/login', { external: true })
   }
 }

@@ -8,6 +8,26 @@
     </CardHeader>
     <CardContent>
       <div class="space-y-4">
+        <!-- Bulk Actions -->
+        <div v-if="proposals.length > 0" class="flex gap-2 justify-end" data-testid="bulk-actions">
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="accept-all-button"
+            @click="handleAcceptAll"
+          >
+            Akceptuj wszystkie
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="reject-all-button"
+            @click="handleRejectAll"
+          >
+            Odrzuć wszystkie
+          </Button>
+        </div>
+
         <!-- Proposals List -->
         <div v-if="proposals.length > 0" class="space-y-3" data-testid="proposals-list">
           <FlashcardProposalItem
@@ -136,6 +156,18 @@ const handleSaveEdit = (editedProposal: FlashcardProposalViewModel) => {
 
 const handleCancelEdit = () => {
   editingProposal.value = null
+}
+
+const handleAcceptAll = () => {
+  props.proposals.forEach(proposal => {
+    emit('proposal-accept', proposal)
+  })
+}
+
+const handleRejectAll = () => {
+  props.proposals.forEach(proposal => {
+    emit('proposal-reject', proposal)
+  })
 }
 
 const handleSaveSelected = () => {
