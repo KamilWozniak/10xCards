@@ -1,7 +1,6 @@
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl" data-testid="generate-page">
     <div class="space-y-8">
-      <!-- Header -->
       <div class="text-center" data-testid="generate-page-header">
         <h1 class="text-3xl font-bold text-gray-900" data-testid="generate-page-title">
           Generuj fiszki z AI
@@ -11,14 +10,12 @@
         </p>
       </div>
 
-      <!-- Source Text Form -->
       <SourceTextForm
         :is-loading="generationState.isLoading"
         :disabled="generationState.isLoading"
         @generate="handleGenerate"
       />
 
-      <!-- Loading Spinner -->
       <div
         v-if="generationState.isLoading"
         class="flex justify-center"
@@ -27,7 +24,6 @@
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Error Message -->
       <div
         v-if="generationState.error"
         class="bg-red-50 border border-red-200 rounded-md p-4"
@@ -61,7 +57,6 @@
         </div>
       </div>
 
-      <!-- Flashcard Proposals List -->
       <FlashcardProposalsList
         v-if="generationState.proposals.length > 0"
         :proposals="generationState.proposals"
@@ -70,7 +65,6 @@
         @save-selected="handleSaveSelected"
         @proposal-accept="handleProposalAccept"
         @proposal-reject="handleProposalReject"
-        @proposal-edit="handleProposalEdit"
         @proposal-save-edit="handleProposalSaveEdit"
       />
     </div>
@@ -83,18 +77,12 @@ import SourceTextForm from '~/components/generate/SourceTextForm.vue'
 import FlashcardProposalsList from '~/components/generate/FlashcardProposalsList.vue'
 import type { FlashcardProposalViewModel } from '~/types/views/generate.types'
 
-// Use default layout with navigation
 definePageMeta({
   layout: 'default',
 })
 
-// Authentication is handled by middleware/auth.global.ts
-// No need to check here
-
-// Composables
 const { generationState, generateFlashcards, saveFlashcards, clearError } = useGenerationState()
 
-// Handlers
 const handleGenerate = async (text: string) => {
   try {
     clearError()
@@ -111,9 +99,6 @@ const handleSaveSelected = async (selectedProposals: FlashcardProposalViewModel[
     }
 
     await saveFlashcards(selectedProposals, generationState.value.generationId!)
-
-    // Stay on the generate page after successful save
-    // User can continue generating more flashcards
   } catch (error) {
     console.error('Error saving flashcards:', error)
   }
@@ -123,7 +108,6 @@ const retryGeneration = () => {
   clearError()
 }
 
-// Proposal action handlers
 const handleProposalAccept = (proposal: FlashcardProposalViewModel) => {
   const index = generationState.value.proposals.findIndex(
     (p: FlashcardProposalViewModel) => p.id === proposal.id
@@ -142,11 +126,6 @@ const handleProposalReject = (proposal: FlashcardProposalViewModel) => {
     generationState.value.proposals[index].isAccepted = false
     generationState.value.proposals[index].isRejected = true
   }
-}
-
-const handleProposalEdit = () => {
-  // This is handled by the FlashcardProposalsList component internally
-  // No action needed here
 }
 
 const handleProposalSaveEdit = (editedProposal: FlashcardProposalViewModel) => {

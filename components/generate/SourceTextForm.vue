@@ -8,7 +8,6 @@
     </CardHeader>
     <CardContent>
       <div class="space-y-4">
-        <!-- Textarea -->
         <div>
           <Textarea
             v-model="formData.text"
@@ -20,7 +19,6 @@
           />
         </div>
 
-        <!-- Character Counter -->
         <div
           class="flex justify-between items-center text-sm"
           data-testid="character-counter-section"
@@ -37,7 +35,6 @@
             </span>
           </div>
 
-          <!-- Progress Bar -->
           <div class="w-32 bg-gray-200 rounded-full h-2" data-testid="character-progress-bar">
             <div
               :class="[
@@ -50,7 +47,6 @@
           </div>
         </div>
 
-        <!-- Error Message -->
         <div
           v-if="formValidation.errorMessage"
           class="text-sm text-red-600"
@@ -90,7 +86,6 @@ import { Textarea } from '~/components/ui/textarea'
 import { useFlashcardsFormValidation } from '~/composables/useFlashcardsFormValidation'
 import type { SourceTextFormData } from '~/types/views/generate.types'
 
-// Props
 interface Props {
   isLoading: boolean
   disabled: boolean
@@ -98,22 +93,18 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Emits
 const emit = defineEmits<{
   generate: [text: string]
 }>()
 
-// Composables
 const { formValidation, validateText, resetValidation } = useFlashcardsFormValidation()
 
-// Form data
 const formData = ref<SourceTextFormData>({
   text: '',
   characterCount: 0,
   isValid: false,
 })
 
-// Computed
 const progressPercentage = computed(() => {
   const { minLength, maxLength } = formValidation.value
   const current = formData.value.characterCount
@@ -122,11 +113,9 @@ const progressPercentage = computed(() => {
   return progress
 })
 
-// Methods
 const handleTextInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
   formData.value.text = target.value
-  // Use trimmed length for character count to match validation
   formData.value.characterCount = target.value.trim().length
   formData.value.isValid = validateText(target.value)
 }
@@ -137,12 +126,10 @@ const handleGenerate = () => {
   }
 }
 
-// Watch for external changes
 watch(
   () => props.disabled,
   newDisabled => {
     if (newDisabled) {
-      // Reset form when disabled
       formData.value = {
         text: '',
         characterCount: 0,
